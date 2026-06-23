@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunicações — Escola de Ciclismo</title>
+<style>
+:root{
+  --red:#CC0000;--red-bg:#FFF0F0;--red-bd:rgba(204,0,0,.25);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-bd:rgba(24,95,165,.25);
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-bd:rgba(15,110,86,.25);
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-bd:rgba(133,79,11,.25);
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-bd:rgba(59,109,17,.25);
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-bd:rgba(83,74,183,.25);
+  --gray:#5F5E5A;--gray-bg:#F1EFE8;--gray-bd:rgba(95,94,90,.25);
+  --bg:#F5F4F1;--surface:#fff;--border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.16);
+  --text:#1A1A1A;--muted:#666660;--hint:#9A9A94;
+  --r:10px;--rs:6px;--sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sb-logo{padding:1.1rem 1rem .9rem;border-bottom:.5px solid var(--border)}
+.sb-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.sb-icon{width:32px;height:32px;background:var(--red);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.sb-name{font-size:13px;font-weight:600;line-height:1.2}
+.sb-season{font-size:11px;color:var(--hint);padding-left:40px}
+.sb-nav{padding:.6rem .5rem;flex:1;overflow-y:auto}
+.nav-sec{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;padding:.5rem .5rem .2rem;margin-top:.4rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.45rem .75rem;border-radius:var(--rs);cursor:pointer;color:var(--muted);font-size:13px;transition:background .1s,color .1s;text-decoration:none}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500}
+.nav-badge{margin-left:auto;background:var(--red-bg);color:var(--red);font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-foot{padding:.7rem 1rem;border-top:.5px solid var(--border);display:flex;align-items:center;gap:8px}
+.ua{width:28px;height:28px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:.5px solid var(--border);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-title{font-size:16px;font-weight:600}
+.tb-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.tb-actions{display:flex;gap:8px}
+.content{padding:1.1rem 1.5rem;flex:1}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:1rem;align-items:start}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+.b-ok{background:var(--green-bg);color:var(--green)}
+.b-warn{background:var(--amber-bg);color:var(--amber)}
+.b-danger{background:var(--red-bg);color:var(--red)}
+.b-info{background:var(--blue-bg);color:var(--blue)}
+.b-gray{background:var(--gray-bg);color:var(--gray)}
+.b-purple{background:var(--purple-bg);color:var(--purple)}
+
+/* BUTTONS */
+button,.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rs);border:.5px solid var(--border2);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;transition:background .11s;font-family:inherit;white-space:nowrap}
+button:hover,.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn-primary:hover{background:#AA0000}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-wa{background:#25D366;border-color:#25D366;color:#fff;font-weight:600}
+.btn-wa:hover{background:#1aad53}
+.btn-wa-lg{font-size:15px;padding:10px 20px}
+
+select,input,textarea{padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--surface);color:var(--text);outline:none;font-family:inherit}
+select:focus,input:focus,textarea:focus{border-color:var(--blue)}
+
+/* TABS */
+.tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--rs);padding:3px;border:.5px solid var(--border);margin-bottom:1.1rem;width:fit-content}
+.tab{padding:6px 14px;border-radius:4px;font-size:13px;cursor:pointer;color:var(--muted);border:none;background:transparent;transition:all .12s;font-family:inherit}
+.tab.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* TIPOS DE MENSAGEM */
+.tipo-grid{display:grid;grid-template-columns:1fr;gap:6px;margin-bottom:1rem}
+.tipo-btn{display:flex;align-items:center;gap:10px;padding:.65rem .85rem;border-radius:var(--rs);border:.5px solid var(--border);background:var(--surface);cursor:pointer;transition:all .12s;text-align:left}
+.tipo-btn:hover{border-color:var(--border2);background:var(--bg)}
+.tipo-btn.active{border-color:var(--blue-bd);background:var(--blue-bg)}
+.tipo-ico{font-size:20px;width:32px;text-align:center}
+.tipo-nome{font-size:13px;font-weight:500}
+.tipo-desc{font-size:11px;color:var(--muted)}
+
+/* GRUPOS */
+.grupos-wrap{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.85rem;margin-bottom:1rem}
+.grupos-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem}
+.grupo-pills{display:flex;gap:5px;flex-wrap:wrap}
+.grupo-pill{font-size:12px;padding:4px 10px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px}
+.grupo-pill:hover{border-color:var(--border2)}
+.grupo-pill.active{color:#fff;font-weight:500;border-color:transparent}
+.grupo-pill.sel-todos{background:var(--purple)}
+.grupo-pill.sel-escolas{background:var(--teal)}
+.grupo-pill.sel-sub{background:var(--blue)}
+.grupo-pill.sel-staff{background:var(--gray)}
+
+/* EDITOR */
+.editor-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+.editor-hd{padding:.85rem 1rem;border-bottom:.5px solid var(--border);background:var(--bg);display:flex;align-items:center;gap:8px}
+.editor-body{padding:1rem}
+.editor-titulo{width:100%;padding:8px 10px;border:.5px solid var(--border);border-radius:var(--rs);font-size:14px;font-weight:500;margin-bottom:.75rem}
+.editor-titulo:focus{border-color:var(--blue);outline:none}
+.editor-textarea{width:100%;padding:10px 12px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;min-height:220px;resize:vertical;line-height:1.6;font-family:inherit}
+.editor-textarea:focus{border-color:var(--blue);outline:none}
+.editor-foot{padding:.85rem 1rem;border-top:.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* PREVIEW WA */
+.wa-preview{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden;position:sticky;top:80px}
+.wa-preview-hd{padding:.75rem 1rem;background:#075E54;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.wa-bubble{background:#DCF8C6;border-radius:8px 8px 0 8px;padding:.75rem .9rem;margin:.85rem;font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.1);position:relative}
+.wa-bubble-info{font-size:11px;color:#8a8a8a;text-align:right;margin-top:4px}
+.wa-preview-foot{padding:.75rem 1rem;border-top:.5px solid var(--border);text-align:center}
+
+/* HISTÓRICO */
+.hist-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden;cursor:pointer;transition:border-color .1s}
+.hist-card:hover{border-color:var(--border2)}
+.hist-hd{padding:.75rem 1rem;display:flex;align-items:center;gap:10px}
+.hist-ico{font-size:18px;width:32px;text-align:center}
+.hist-title{font-size:13px;font-weight:500;flex:1}
+.hist-meta{font-size:11px;color:var(--muted);margin-top:1px}
+.hist-body{padding:.75rem 1rem 1rem;border-top:.5px solid var(--border);display:none;background:var(--bg)}
+.hist-body.open{display:block}
+.hist-msg{font-size:12px;white-space:pre-wrap;line-height:1.6;background:#DCF8C6;border-radius:8px;padding:.7rem .9rem}
+.hist-grupos{display:flex;gap:4px;flex-wrap:wrap;margin-top:.5rem}
+
+/* RASCUNHOS */
+.rasc-card{background:var(--surface);border:.5px solid var(--amber-bd);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+
+/* ANIVERSÁRIOS */
+.bday-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);margin-bottom:8px;padding:.75rem 1rem;display:flex;align-items:center;gap:10px}
+.bday-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.bday-today{background:var(--red-bg);color:var(--red)}
+.bday-week{background:var(--blue-bg);color:var(--blue)}
+
+/* INFO BOX */
+.info-box{padding:.65rem .85rem;border-radius:var(--rs);font-size:12px;margin-bottom:.8rem}
+.ib-blue{background:var(--blue-bg);color:var(--blue)}
+.ib-green{background:var(--green-bg);color:var(--green)}
+.ib-warn{background:var(--amber-bg);color:var(--amber)}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:.55rem .95rem;border-radius:var(--rs);font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .18s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--green)}
+.toast.warn{background:var(--amber)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-icon">🚴</div>
+      <div class="sb-name">Escola de<br>Ciclismo</div>
+    </div>
+    <div class="sb-season">Época 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Principal</div>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">⬡ Cockpit</a>
+    <div class="nav-sec">Equipa</div>
+    <a class="nav-item" href="atletas_standalone.html">👥 Atletas</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🪪 Staff</a>
+    <div class="nav-sec">Desportivo</div>
+    <a class="nav-item" href="calendario_standalone.html">📅 Calendário</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🏆 Resultados</a>
+    <div class="nav-sec">Gestão</div>
+    <a class="nav-item" href="equipamentos_standalone.html">🚐 Logística</a>
+    <a class="nav-item" href="financeira_standalone.html">💰 Financeira</a>
+    <a class="nav-item" href="patrocinadores_standalone.html">🤝 Patrocinadores</a>
+    <a class="nav-item active" href="#">📢 Comunicações</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="ua">JP</div>
+    <div><div style="font-size:12px;font-weight:500">João Paulo Serra</div><div style="font-size:11px;color:var(--muted)">Treinador</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+<div class="topbar">
+  <div>
+    <div class="tb-title">Comunicações</div>
+    <div class="tb-sub">Mensagens para pais, atletas e staff via WhatsApp</div>
+  </div>
+  <div class="tb-actions">
+    <button onclick="setTab('aniversarios')">🎂 Aniversários</button>
+    <button onclick="setTab('historico')">📋 Histórico</button>
+    <button class="btn-primary" onclick="setTab('nova')">+ Nova mensagem</button>
+  </div>
+</div>
+
+<div class="content">
+  <div class="tabs">
+    <button class="tab active" id="tab-nova" onclick="setTab('nova')">✉️ Nova mensagem</button>
+    <button class="tab" id="tab-aniversarios" onclick="setTab('aniversarios')">🎂 Aniversários</button>
+    <button class="tab" id="tab-historico" onclick="setTab('historico')">📋 Histórico</button>
+    <button class="tab" id="tab-rascunhos" onclick="setTab('rascunhos')">📝 Rascunhos <span class="badge b-warn" style="font-size:10px">1</span></button>
+  </div>
+
+  <div id="content-nova"></div>
+  <div id="content-aniversarios" style="display:none"></div>
+  <div id="content-historico" style="display:none"></div>
+  <div id="content-rascunhos" style="display:none"></div>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<script>
+// ============================================================
+// COMUNICACOES_DB.JS
+// ============================================================
+
+const COMUNICACOES_DB = {
+
+  // Grupos WhatsApp por escalão (configuráveis)
+  grupos: [
+    { id:'g_todos', nome:'Todos', escalao:'todos', descricao:'Toda a escola', icone:'📢', cor:'#534AB7' },
+    { id:'g_escolas', nome:'Escolas', escalao:'escolas', descricao:'SUB7 a SUB15', icone:'🏫', cor:'#0F6E56' },
+    { id:'g_sub7', nome:'SUB7', escalao:'sub7', descricao:'Escolas — SUB7', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub9', nome:'SUB9', escalao:'sub9', descricao:'Escolas — SUB9', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub11', nome:'SUB11', escalao:'sub11', descricao:'Escolas — SUB11', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub13', nome:'SUB13', escalao:'sub13', descricao:'Escolas — SUB13', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub15', nome:'SUB15', escalao:'sub15', descricao:'Escolas — SUB15', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub17', nome:'SUB17', escalao:'sub17', descricao:'Escalão SUB17', icone:'🚴', cor:'#185FA5' },
+    { id:'g_sub19', nome:'SUB19', escalao:'sub19', descricao:'Escalão SUB19', icone:'🚴', cor:'#854F0B' },
+    { id:'g_sub23', nome:'SUB23', escalao:'sub23', descricao:'Escalão SUB23', icone:'🚴', cor:'#534AB7' },
+    { id:'g_para', nome:'Paraciclismo', escalao:'paraciclismo', descricao:'Escalão Paraciclismo', icone:'♿', cor:'#CC0000' },
+    { id:'g_staff', nome:'Staff', escalao:'staff', descricao:'Treinadores e equipa técnica', icone:'🪪', cor:'#5F5E5A' },
+  ],
+
+  // Templates de mensagens por tipo
+  templates: {
+    aviso: {
+      nome: 'Aviso geral',
+      icone: '📢',
+      template: (dados) => `📢 *AVISO — Escola de Ciclismo de Formação*\n\n${dados.texto}\n\n${dados.rodape||''}`,
+    },
+    convocatoria: {
+      nome: 'Convocatória',
+      icone: '🏁',
+      template: (dados) => `🚴 *CONVOCATÓRIA — ${dados.corrida}*\n📅 ${dados.data}\n📍 ${dados.local||'Local a confirmar'}\n🕐 Concentração: ${dados.hora||'—'}\n\n*Atletas convocados:*\n${dados.atletas||'—'}\n\nConfirmar presença até ${dados.prazo||'breve'}.\n\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+    resultado: {
+      nome: 'Resultado',
+      icone: '🏆',
+      template: (dados) => `🏆 *RESULTADO — ${dados.corrida}*\n📅 ${dados.data} · ${dados.local||''}\n\n*${dados.escalao}:*\n${dados.resultados||'—'}\n\nParabéns a todos! 💪\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+    treino: {
+      nome: 'Informação de treino',
+      icone: '🔄',
+      template: (dados) => `🔄 *TREINO — ${dados.titulo}*\n📅 ${dados.data}\n📍 ${dados.local||'Local habitual'}\n🕐 ${dados.hora||'Hora habitual'}\n\n${dados.texto||''}\n\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+    pagamento: {
+      nome: 'Alerta de pagamento',
+      icone: '💰',
+      template: (dados) => `💰 *MENSALIDADE — Escola de Ciclismo de Formação*\n\nCaro(a) Encarregado(a),\n\nInformamos que existe(m) mensalidade(s) em atraso referente(s) ao atleta *${dados.atleta}*, no valor de *${dados.valor}*.\n\nPor favor regularize a situação com a brevidade possível.\n\nObrigado,\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+    parabens: {
+      nome: 'Parabéns',
+      icone: '🎂',
+      template: (dados) => `🎂🚴 *PARABÉNS, ${(dados.nome||'').toUpperCase()}!* 🚴🎂\n\n${dados.texto||`Hoje é dia de celebrar! Toda a equipa da Escola de Ciclismo deseja-te um dia incrível, cheio de alegria e muita pedalada! 🎉`}\n\nCom muito carinho,\n_Escola de Ciclismo de Formação_ 🚲💛`,
+    },
+    informacao: {
+      nome: 'Informação geral',
+      icone: 'ℹ️',
+      template: (dados) => `ℹ️ *INFORMAÇÃO — Escola de Ciclismo de Formação*\n\n${dados.texto}\n\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+  },
+
+  // Histórico de comunicações enviadas
+  historico: [
+    {
+      id:'h1', tipo:'convocatoria', titulo:'Convocatória — II Circuito São Pedro Cadeira',
+      grupos:['g_escolas','g_sub17'], data:'2026-03-05', hora:'14:30',
+      autor:'JP Serra', estado:'enviado',
+      texto:'🚴 *CONVOCATÓRIA — II Circuito São Pedro Cadeira*\n📅 7 Mar 2026\n📍 Cadeira, Sintra\n🕐 Concentração: 07:15\n\n*Atletas convocados:*\n• Afonso Ferreira\n• Ana Costa\n• João Silva\n• Dinis Dias\n• Maria Santos\n• Sofia Lopes\n\nConfirmar presença até 6 Mar.\n\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+    {
+      id:'h2', tipo:'resultado', titulo:'Resultado — II Circuito São Pedro Cadeira',
+      grupos:['g_escolas','g_sub17'], data:'2026-03-07', hora:'17:45',
+      autor:'JP Serra', estado:'enviado',
+      texto:'🏆 *RESULTADO — II Circuito São Pedro Cadeira*\n📅 7 Mar 2026 · Cadeira, Sintra\n\n*Escolas SUB15:*\n🥇 1º Maria Santos\n🥈 4º Sofia Lopes\n\n*SUB17:*\n🥈 2º Afonso Ferreira\n🏅 5º Ana Costa\n\nParabéns a todos! 💪\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+    {
+      id:'h3', tipo:'aviso', titulo:'Aviso — Alteração horário treino',
+      grupos:['g_todos'], data:'2026-03-10', hora:'09:15',
+      autor:'JP Serra', estado:'enviado',
+      texto:'📢 *AVISO — Escola de Ciclismo de Formação*\n\nInformamos que o treino de quinta-feira (12 Mar) está cancelado por indisponibilidade do espaço.\n\nO próximo treino será na semana seguinte, no horário habitual.\n\nPedimos desculpa pelo inconveniente.\n\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+    {
+      id:'h4', tipo:'parabens', titulo:'Parabéns — Afonso Ferreira',
+      grupos:['g_sub17'], data:'2026-01-15', hora:'08:05',
+      autor:'JP Serra', estado:'enviado',
+      texto:'🎂🚴 *PARABÉNS, AFONSO!* 🚴🎂\n\nHoje é dia de celebrar! Toda a equipa da Escola de Ciclismo deseja-te um dia incrível, cheio de alegria e muita pedalada! 🎉\n\nCom muito carinho,\n_Escola de Ciclismo de Formação_ 🚲💛'
+    },
+    {
+      id:'h5', tipo:'pagamento', titulo:'Alerta pagamento — Maria Santos',
+      grupos:['g_escolas'], data:'2026-05-15', hora:'10:30',
+      autor:'Sistema', estado:'enviado',
+      texto:'💰 *MENSALIDADE — Escola de Ciclismo de Formação*\n\nCaro(a) Encarregado(a),\n\nInformamos que existe(m) mensalidade(s) em atraso referente(s) ao atleta *Maria Santos*, no valor de *75,00€*.\n\nPor favor regularize a situação com a brevidade possível.\n\nObrigado,\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+  ],
+
+  // Rascunhos
+  rascunhos: [
+    {
+      id:'r1', tipo:'convocatoria', titulo:'Convocatória — GP Cascais Escolas',
+      grupos:['g_escolas'], data:'2026-04-15',
+      texto:'🚴 *CONVOCATÓRIA — GP Cascais Escolas*\n📅 18 Abr 2026\n📍 Cascais\n🕐 Concentração: —\n\n*Atletas convocados:*\n— (por definir)\n\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+  ],
+
+  getGrupo(id) { return this.grupos.find(g=>g.id===id); },
+  getTemplate(tipo) { return this.templates[tipo]; },
+};
+
+</script>
+<script>
+// ============================================================
+// DATA.JS — Base de dados de atletas (mock)
+// ============================================================
+
+const DB = {
+  epoca_atual: 2026,
+
+  atletas: [
+    {
+      id: 1,
+      // Dados permanentes
+      nome: 'Afonso Ferreira',
+      apelidos: 'Ferreira Costa',
+      nasc: '2009-06-12',
+      genero: 'Masculino',
+      cc: '12345678 9 ZZ4',
+      cc_validade: '2028-06-12',
+      nif: '234567890',
+      email: 'afonso@email.com',
+      tel: '912 345 678',
+      tel2: '',
+      morada: 'R. das Flores, 12, 2º Dt.',
+      local: 'Cascais',
+      cp: '2750-123',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      // Filiação
+      pai_nome: 'Carlos Ferreira',
+      pai_tel: '913 456 789',
+      pai_email: 'carlos.f@email.com',
+      pai_enc: true,
+      mae_nome: 'Ana Ferreira',
+      mae_tel: '914 567 890',
+      mae_email: 'ana.f@email.com',
+      mae_enc: false,
+      // Tutor
+      tutor_nome: '',
+      tutor_cc: '',
+      tutor_email: '',
+      tutor_tel: '',
+      // Emergência
+      emerg_nome: 'Carlos Ferreira',
+      emerg_tel: '913 456 789',
+      // Escolar
+      escola: 'EB 2,3 de Cascais',
+      curso: '9º ano',
+      // Documentos
+      doc_imagem: true,
+      doc_seguro: true,
+      doc_medico: false,
+      // Épocas
+      epocas: {
+        2025: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2025-00412', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom resultado na volta a Cascais.' },
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00847', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom atleta, muito dedicado.' }
+      }
+    },
+    {
+      id: 2,
+      nome: 'Maria Santos',
+      apelidos: 'Santos Rodrigues',
+      nasc: '2011-03-22',
+      genero: 'Feminino',
+      cc: '23456789 1 AB2',
+      cc_validade: '2029-03-22',
+      nif: '345678901',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'Av. Central, 45',
+      local: 'Sintra',
+      cp: '2710-001',
+      distrito: 'Lisboa',
+      concelho: 'Sintra',
+      pai_nome: 'Rui Santos',
+      pai_tel: '915 234 567',
+      pai_email: 'rui.s@email.com',
+      pai_enc: true,
+      mae_nome: 'Sofia Santos',
+      mae_tel: '916 345 678',
+      mae_email: 'sofia.s@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Rui Santos',
+      emerg_tel: '915 234 567',
+      escola: 'EB1 de Sintra',
+      curso: '6º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2026-00312', mensalidade:'atraso', equipamento:'Jersey S · Calções S · Meias 36', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 3,
+      nome: 'Rui Fonseca',
+      apelidos: 'Fonseca Matos',
+      nasc: '2007-09-05',
+      genero: 'Masculino',
+      cc: '98765432 1 ZZ2',
+      cc_validade: '2027-09-05',
+      nif: '456789012',
+      email: 'rui.f@email.com',
+      tel: '918 567 890',
+      tel2: '',
+      morada: 'R. Nova, 8',
+      local: 'Oeiras',
+      cp: '2780-010',
+      distrito: 'Lisboa',
+      concelho: 'Oeiras',
+      pai_nome: 'António Fonseca',
+      pai_tel: '917 456 789',
+      pai_email: 'ant.f@email.com',
+      pai_enc: true,
+      mae_nome: '',
+      mae_tel: '',
+      mae_email: '',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'António Fonseca',
+      emerg_tel: '917 456 789',
+      escola: '', curso: '',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'cedido', escalao:'sub19', subescalao:'', clube_origem:'GD Oeiras', licenca:'2026-GD-089', mensalidade:'definir', equipamento:'Jersey M · Calções M', estado:'ativo', obs:'Cedido para 3 corridas em 2026.' }
+      }
+    },
+    {
+      id: 4,
+      nome: 'João Silva',
+      apelidos: 'Silva Pereira',
+      nasc: '2010-11-18',
+      genero: 'Masculino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'R. do Pinheiro, 3',
+      local: 'Cascais',
+      cp: '2750-456',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Manuel Silva',
+      pai_tel: '919 678 901',
+      pai_email: 'man.s@email.com',
+      pai_enc: true,
+      mae_nome: 'Lúcia Silva',
+      mae_tel: '910 789 012',
+      mae_email: 'lucia.s@email.com',
+      mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Manuel Silva',
+      emerg_tel: '919 678 901',
+      escola: 'Colégio São José', curso: '7º ano',
+      doc_imagem: true, doc_seguro: false, doc_medico: false,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'', mensalidade:'atraso', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'Licença a renovar com urgência. Seguro em falta.' }
+      }
+    },
+    {
+      id: 5,
+      nome: 'Dinis Dias',
+      apelidos: 'Dias Cunha',
+      nasc: '2016-06-13',
+      genero: 'Masculino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'Tv. das Rosas, 2',
+      local: 'Matos Cheirinhos',
+      cp: '2775-001',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Pedro Dias',
+      pai_tel: '911 890 123',
+      pai_email: 'pedro.d@email.com',
+      pai_enc: true,
+      mae_nome: 'Carla Dias',
+      mae_tel: '912 901 234',
+      mae_email: 'carla.d@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Pedro Dias',
+      emerg_tel: '911 890 123',
+      escola: 'EB1 de Matos Cheirinhos', curso: '4º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub11', clube_origem:'', licenca:'2026-00123', mensalidade:'pago', equipamento:'Jersey XS · Calções XS · Meias 32', estado:'ativo', obs:'Aniversário hoje! 🎂' }
+      }
+    },
+    {
+      id: 6,
+      nome: 'Ana Costa',
+      apelidos: 'Costa Mendes',
+      nasc: '2010-06-15',
+      genero: 'Feminino',
+      cc: '11223344 5 AB6',
+      cc_validade: '2028-06-15',
+      nif: '567890123',
+      email: 'ana.c@email.com',
+      tel: '915 234 567',
+      tel2: '',
+      morada: 'Av. das Flores, 22',
+      local: 'Cascais',
+      cp: '2750-200',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Jorge Costa',
+      pai_tel: '913 012 345',
+      pai_email: 'jorge.c@email.com',
+      pai_enc: false,
+      mae_nome: 'Beatriz Costa',
+      mae_tel: '914 123 456',
+      mae_email: 'bea.c@email.com',
+      mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Beatriz Costa',
+      emerg_tel: '914 123 456',
+      escola: 'ES de Cascais', curso: '7º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2025: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2025-00211', mensalidade:'pago', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'' },
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00634', mensalidade:'pago', equipamento:'Jersey S · Calções S · Meias 37', estado:'ativo', obs:'Subiu de escalão em 2026.' }
+      }
+    },
+    {
+      id: 7,
+      nome: 'Marco Silva',
+      apelidos: 'Silva Rodrigues',
+      nasc: '2005-06-14',
+      genero: 'Masculino',
+      cc: '22334455 6 CD7',
+      cc_validade: '2027-06-14',
+      nif: '678901234',
+      email: 'marco.s@email.com',
+      tel: '917 456 789',
+      tel2: '',
+      morada: 'R. do Lago, 7',
+      local: 'Sintra',
+      cp: '2710-100',
+      distrito: 'Lisboa',
+      concelho: 'Sintra',
+      pai_nome: '', pai_tel: '', pai_email: '', pai_enc: false,
+      mae_nome: '', mae_tel: '', mae_email: '', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Clara Silva',
+      emerg_tel: '916 345 678',
+      escola: '', curso: '',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub23', subescalao:'', clube_origem:'', licenca:'2026-00789', mensalidade:'pago', equipamento:'Jersey L · Calções L · Meias 42', estado:'ativo', obs:'Maior de 18 anos.' }
+      }
+    },
+    {
+      id: 8,
+      nome: 'Sofia Lopes',
+      apelidos: 'Lopes Ferreira',
+      nasc: '2012-08-30',
+      genero: 'Feminino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'R. das Acácias, 15',
+      local: 'Cascais',
+      cp: '2750-300',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Nuno Lopes',
+      pai_tel: '918 567 890',
+      pai_email: 'nuno.l@email.com',
+      pai_enc: true,
+      mae_nome: 'Rita Lopes',
+      mae_tel: '919 678 901',
+      mae_email: 'rita.l@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Nuno Lopes',
+      emerg_tel: '918 567 890',
+      escola: 'EB 2,3 de Alcabideche', curso: '5º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: false,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub13', clube_origem:'', licenca:'2026-00456', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 9,
+      nome: 'Tomás Oliveira',
+      apelidos: 'Oliveira Santos',
+      nasc: '2014-01-20',
+      genero: 'Masculino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'R. do Mar, 5', local: 'Cascais', cp: '2750-500',
+      distrito: 'Lisboa', concelho: 'Cascais',
+      pai_nome: 'Carlos Oliveira', pai_tel: '920 123 456', pai_email: 'c.oli@email.com', pai_enc: true,
+      mae_nome: 'Marta Oliveira', mae_tel: '921 234 567', mae_email: 'm.oli@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Carlos Oliveira', emerg_tel: '920 123 456',
+      escola: 'EB1 de Cascais', curso: '3º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00234', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 10,
+      nome: 'Inês Martins',
+      apelidos: 'Martins Faria',
+      nasc: '2015-05-10',
+      genero: 'Feminino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'Av. Nova, 33', local: 'Sintra', cp: '2710-200',
+      distrito: 'Lisboa', concelho: 'Sintra',
+      pai_nome: 'Luís Martins', pai_tel: '922 345 678', pai_email: 'l.mar@email.com', pai_enc: false,
+      mae_nome: 'Vera Martins', mae_tel: '923 456 789', mae_email: 'v.mar@email.com', mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Vera Martins', emerg_tel: '923 456 789',
+      escola: 'EB1 de Sintra', curso: '2º ano',
+      doc_imagem: false, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00567', mensalidade:'isento', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'Autorização de imagem pendente.' }
+      }
+    },
+    {
+      id: 11,
+      nome: 'Rodrigo Pinto',
+      apelidos: 'Pinto Alves',
+      nasc: '2008-04-03',
+      genero: 'Masculino',
+      cc: '33445566 7 EF8', cc_validade: '2026-04-03', nif: '789012345',
+      email: 'r.pinto@email.com', tel: '924 567 890', tel2: '',
+      morada: 'R. das Palmeiras, 18', local: 'Oeiras', cp: '2780-100',
+      distrito: 'Lisboa', concelho: 'Oeiras',
+      pai_nome: 'Fernando Pinto', pai_tel: '925 678 901', pai_email: 'f.pin@email.com', pai_enc: true,
+      mae_nome: 'Helena Pinto', mae_tel: '926 789 012', mae_email: 'h.pin@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Fernando Pinto', emerg_tel: '925 678 901',
+      escola: 'ES de Oeiras', curso: '8º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub19', subescalao:'', clube_origem:'', licenca:'2026-00901', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 40', estado:'ativo', obs:'CC a renovar — expirou em Abril.' }
+      }
+    },
+    {
+      id: 12,
+      nome: 'Beatriz Ferreira',
+      apelidos: 'Ferreira Nunes',
+      nasc: '2017-11-25',
+      genero: 'Feminino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'R. dos Pinheiros, 9', local: 'Cascais', cp: '2750-600',
+      distrito: 'Lisboa', concelho: 'Cascais',
+      pai_nome: 'Ricardo Ferreira', pai_tel: '927 890 123', pai_email: 'r.fer@email.com', pai_enc: true,
+      mae_nome: 'Sandra Ferreira', mae_tel: '928 901 234', mae_email: 's.fer@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Ricardo Ferreira', emerg_tel: '927 890 123',
+      escola: 'EB1 de Cascais', curso: '2º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub7', clube_origem:'', licenca:'2026-00678', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    }
+  ],
+
+  // Atletas inativos
+  atletas_inativos: [
+    { id:101, nome:'Pedro Carvalho', nasc:'2008-07-14', escalao:'sub19', tipo:'proprio', estado:'inativo', motivo:'Mudou de clube', epoca_saida: 2025 },
+    { id:102, nome:'Clara Mendes', nasc:'2012-02-28', escalao:'escolas', tipo:'proprio', estado:'inativo', motivo:'Deixou o ciclismo', epoca_saida: 2025 }
+  ],
+
+  getAtletasAtivos() {
+    return this.atletas.filter(a => {
+      const ep = a.epocas[this.epoca_atual];
+      return ep && ep.estado === 'ativo';
+    });
+  },
+
+  getEpocaAtleta(id) {
+    const a = this.atletas.find(x => x.id === id);
+    return a ? (a.epocas[this.epoca_atual] || null) : null;
+  },
+
+  getAniversariosHoje() {
+    const hoje = new Date();
+    return this.atletas.filter(a => {
+      const d = new Date(a.nasc);
+      return d.getMonth() === hoje.getMonth() && d.getDate() === hoje.getDate();
+    });
+  },
+
+  getAniversariosSemana() {
+    const hoje = new Date();
+    const semana = new Date(hoje); semana.setDate(hoje.getDate() + 7);
+    return this.atletas.filter(a => {
+      const d = new Date(a.nasc);
+      const esteAno = new Date(hoje.getFullYear(), d.getMonth(), d.getDate());
+      return esteAno > hoje && esteAno <= semana;
+    });
+  },
+
+  getAlertas() {
+    return this.atletas.filter(a => {
+      const ep = a.epocas[this.epoca_atual];
+      if (!ep || ep.estado !== 'ativo') return false;
+      return ep.mensalidade === 'atraso' || !a.doc_seguro || !a.doc_medico || ep.licenca === '' || ep.licenca === 'renovar';
+    });
+  }
+};
+
+</script>
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let TAB = 'nova';
+let TIPO_SEL = 'aviso';
+let GRUPOS_SEL = new Set();
+let HIST_OPEN = null;
+let EDITOR_TEXTO = '';
+let EDITOR_TITULO = '';
+
+// ============================================================
+// UTILS
+// ============================================================
+function fmtDate(d) { if(!d) return '—'; return new Date(d+'T00:00:00').toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function fmtDateLong(d) { if(!d) return '—'; return new Date(d+'T00:00:00').toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long'}); }
+function initials(n) { return n.split(' ').filter((_,i,a)=>i===0||i===a.length-1).map(x=>x[0]).join('').toUpperCase(); }
+function calcAge(nasc) {
+  const d=new Date(nasc), t=new Date();
+  let a=t.getFullYear()-d.getFullYear();
+  if(t<new Date(t.getFullYear(),d.getMonth(),d.getDate())) a--;
+  return a;
+}
+function escalaoLabel(ep) {
+  if(!ep) return '—';
+  if(ep.escalao==='escolas') return 'Escolas'+(ep.subescalao?' / '+ep.subescalao.toUpperCase():'');
+  return ep.escalao.toUpperCase();
+}
+
+function tipoBadge(tipo) {
+  const t = COMUNICACOES_DB.getTemplate(tipo);
+  const colors = {aviso:'b-info',convocatoria:'b-teal',resultado:'b-ok',treino:'b-blue',pagamento:'b-danger',parabens:'b-danger',informacao:'b-gray'};
+  return `<span class="badge ${colors[tipo]||'b-gray'}">${t?.icone||''} ${t?.nome||tipo}</span>`;
+}
+
+function grupoPillClass(gid) {
+  const g = COMUNICACOES_DB.getGrupo(gid);
+  if(!g) return '';
+  if(g.escalao==='todos') return 'sel-todos';
+  if(g.escalao==='staff') return 'sel-staff';
+  if(g.escalao==='escolas'||g.escalao.startsWith('sub1')) return 'sel-escolas';
+  return 'sel-sub';
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function setTab(tab) {
+  TAB = tab;
+  ['nova','aniversarios','historico','rascunhos'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('content-'+t).style.display = t===tab ? 'block' : 'none';
+  });
+  if(tab==='nova') renderNova();
+  else if(tab==='aniversarios') renderAniversarios();
+  else if(tab==='historico') renderHistorico();
+  else if(tab==='rascunhos') renderRascunhos();
+}
+
+// ============================================================
+// NOVA MENSAGEM
+// ============================================================
+function renderNova() {
+  const tipos = Object.entries(COMUNICACOES_DB.templates);
+  const grupos = COMUNICACOES_DB.grupos;
+  const templ = COMUNICACOES_DB.getTemplate(TIPO_SEL);
+
+  // Texto inicial baseado no template
+  if(!EDITOR_TEXTO && templ) {
+    EDITOR_TEXTO = templ.template({
+      texto: 'Escreve aqui a tua mensagem...',
+      corrida:'Nome da corrida', data:'DD/MM/AAAA', local:'Local',
+      hora:'HH:MM', atletas:'• Nome atleta 1\n• Nome atleta 2', prazo:'DD/MM',
+      escalao:'Escalão', resultados:'🥇 1º Nome\n🥈 2º Nome',
+      atleta:'Nome do atleta', valor:'—€',
+      titulo:'Título', nome:'Nome',
+    });
+  }
+
+  document.getElementById('content-nova').innerHTML = `
+  <div class="layout">
+    <!-- COLUNA ESQUERDA: tipo + grupos -->
+    <div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem">Tipo de mensagem</div>
+      <div class="tipo-grid">
+        ${tipos.map(([id,t])=>`
+          <div class="tipo-btn${id===TIPO_SEL?' active':''}" onclick="selectTipo('${id}')">
+            <div class="tipo-ico">${t.icone}</div>
+            <div>
+              <div class="tipo-nome">${t.nome}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+
+      <div class="grupos-wrap">
+        <div class="grupos-title">Enviar para</div>
+        <div class="grupo-pills">
+          ${grupos.map(g=>`
+            <div class="grupo-pill${GRUPOS_SEL.has(g.id)?' active '+grupoPillClass(g.id):''}" onclick="toggleGrupo('${g.id}')">
+              ${g.icone} ${g.nome}
+            </div>`).join('')}
+        </div>
+        ${GRUPOS_SEL.size===0?'<div style="font-size:11px;color:var(--red);margin-top:.4rem">Seleciona pelo menos um grupo</div>':''}
+      </div>
+
+      <div class="info-box ib-blue">
+        💡 A mensagem será gerada com formatação WhatsApp (<strong>*negrito*</strong>, _itálico_). Um clique abre o WhatsApp com a mensagem pronta.
+      </div>
+    </div>
+
+    <!-- COLUNA DIREITA: editor + preview -->
+    <div>
+      <div class="editor-card">
+        <div class="editor-hd">
+          <span style="font-size:18px">${templ?.icone||'✉️'}</span>
+          <span style="font-size:13px;font-weight:600">${templ?.nome||'Mensagem'}</span>
+          <div style="flex:1"></div>
+          <button class="btn-sm btn-ghost" onclick="recarregarTemplate()">↺ Recarregar template</button>
+        </div>
+        <div class="editor-body">
+          <input type="text" class="editor-titulo" id="editor-titulo" placeholder="Título (para referência interna)..." value="${EDITOR_TITULO||''}" oninput="EDITOR_TITULO=this.value">
+          <textarea class="editor-textarea" id="editor-texto" oninput="updatePreview()">${EDITOR_TEXTO}</textarea>
+        </div>
+        <div class="editor-foot">
+          <button class="btn-ghost btn-sm" onclick="guardarRascunho()">💾 Guardar rascunho</button>
+          <div style="flex:1"></div>
+          <button class="btn-sm" onclick="copiarMensagem()">📋 Copiar</button>
+          <button class="btn-wa btn-wa-lg" onclick="enviarWA()" ${GRUPOS_SEL.size===0?'disabled style="opacity:.5"':''}>
+            📱 Enviar via WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <!-- PREVIEW WhatsApp -->
+      <div class="wa-preview" style="margin-top:1rem">
+        <div class="wa-preview-hd">
+          <span>📱</span>
+          <span>Pré-visualização WhatsApp</span>
+          <span style="margin-left:auto;font-size:11px;opacity:.7">${GRUPOS_SEL.size?[...GRUPOS_SEL].map(g=>COMUNICACOES_DB.getGrupo(g)?.nome).join(', '):'Nenhum grupo selecionado'}</span>
+        </div>
+        <div class="wa-bubble" id="wa-preview-text">${formatWAPreview(EDITOR_TEXTO)}</div>
+        <div class="wa-preview-foot">
+          <div style="font-size:11px;color:var(--muted)">A mensagem abrirá no WhatsApp pronta a enviar para os grupos selecionados</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // Sync textarea
+  setTimeout(()=>{
+    const ta = document.getElementById('editor-texto');
+    if(ta) ta.value = EDITOR_TEXTO;
+  },0);
+}
+
+function formatWAPreview(txt) {
+  if(!txt) return '';
+  return txt
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*([^*]+)\*/g,'<strong>$1</strong>')
+    .replace(/_([^_]+)_/g,'<em>$1</em>')
+    .replace(/\n/g,'<br>');
+}
+
+function updatePreview() {
+  EDITOR_TEXTO = document.getElementById('editor-texto').value;
+  const prev = document.getElementById('wa-preview-text');
+  if(prev) prev.innerHTML = formatWAPreview(EDITOR_TEXTO);
+}
+
+function selectTipo(tipo) {
+  TIPO_SEL = tipo;
+  EDITOR_TEXTO = '';
+  renderNova();
+}
+
+function recarregarTemplate() {
+  EDITOR_TEXTO = '';
+  renderNova();
+  toast('Template recarregado');
+}
+
+function toggleGrupo(gid) {
+  if(GRUPOS_SEL.has(gid)) GRUPOS_SEL.delete(gid);
+  else {
+    // Se selecionar "Todos", limpar os outros
+    if(gid==='g_todos') GRUPOS_SEL.clear();
+    else GRUPOS_SEL.delete('g_todos');
+    GRUPOS_SEL.add(gid);
+  }
+  renderNova();
+}
+
+function enviarWA() {
+  if(GRUPOS_SEL.size===0) { toast('Seleciona pelo menos um grupo','warn'); return; }
+  const texto = document.getElementById('editor-texto')?.value || EDITOR_TEXTO;
+  if(!texto.trim()) { toast('Escreve uma mensagem primeiro','warn'); return; }
+
+  // Guardar no histórico
+  const titulo = document.getElementById('editor-titulo')?.value || 'Sem título';
+  COMUNICACOES_DB.historico.unshift({
+    id:'h'+Date.now(), tipo:TIPO_SEL,
+    titulo: titulo || COMUNICACOES_DB.getTemplate(TIPO_SEL)?.nome || 'Mensagem',
+    grupos:[...GRUPOS_SEL],
+    data:new Date().toISOString().split('T')[0],
+    hora:new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}),
+    autor:'JP Serra', estado:'enviado', texto
+  });
+
+  // Abrir WhatsApp
+  const msg = encodeURIComponent(texto);
+  window.open('https://wa.me/?text='+msg,'_blank');
+
+  toast('Mensagem enviada e guardada no histórico!','ok');
+
+  // Limpar editor
+  EDITOR_TEXTO=''; EDITOR_TITULO=''; GRUPOS_SEL.clear();
+  setTimeout(()=>renderNova(), 500);
+}
+
+function copiarMensagem() {
+  const texto = document.getElementById('editor-texto')?.value || EDITOR_TEXTO;
+  if(navigator.clipboard) navigator.clipboard.writeText(texto).then(()=>toast('Mensagem copiada!','ok'));
+  else toast('Copia o texto manualmente');
+}
+
+function guardarRascunho() {
+  const texto = document.getElementById('editor-texto')?.value || EDITOR_TEXTO;
+  const titulo = document.getElementById('editor-titulo')?.value || 'Rascunho sem título';
+  COMUNICACOES_DB.rascunhos.unshift({
+    id:'r'+Date.now(), tipo:TIPO_SEL, titulo,
+    grupos:[...GRUPOS_SEL], data:new Date().toISOString().split('T')[0], texto
+  });
+  // Atualizar badge
+  document.querySelector('#tab-rascunhos .badge').textContent = COMUNICACOES_DB.rascunhos.length;
+  toast('Rascunho guardado!','ok');
+}
+
+// ============================================================
+// ANIVERSÁRIOS
+// ============================================================
+// ============================================================
+// MENSAGENS TIPO POR ESCALÃO (configuráveis)
+// ============================================================
+const MSG_BDAY = {
+  escolas: (nome, idade) =>
+    `🎂🚴 *PARABÉNS, ${nome.split(' ')[0].toUpperCase()}!* 🚴🎂
+
+Hoje é um dia muito especial — *${idade} aninhos*! 🎉🥳
+
+Continua sempre assim, com essa alegria e vontade de pedalar que nos enche o coração de orgulho! 🚲💛
+
+Um beijinho grande de toda a família da Escola de Ciclismo! 🎈
+
+_Escola de Ciclismo de Formação_ 🚲`,
+  sub17: (nome, idade) =>
+    `🎂🚴 *PARABÉNS, ${nome.split(' ')[0].toUpperCase()}!* 🚴🎂
+
+*${idade} anos* de energia, determinação e muito talento em cima da bicicleta! 💪
+
+Continua a dar tudo em cada treino — o futuro é teu! 🏆
+
+Votos de um dia incrível,
+_Escola de Ciclismo de Formação_ 🚲💛`,
+  sub19: (nome, idade) =>
+    `🎂🚴 *PARABÉNS, ${nome.split(' ')[0].toUpperCase()}!* 🚴🎂
+
+*${idade} anos* de garra, talento e muita quilometragem nas pernas! 🚵
+
+Que este ano seja de grandes resultados e conquistas! 🏅
+
+Com muito orgulho,
+_Escola de Ciclismo de Formação_ 🚲`,
+  sub23: (nome, idade) =>
+    `🎂🚴 *PARABÉNS, ${nome.split(' ')[0].toUpperCase()}!* 🚴🎂
+
+*${idade} anos* — e uma carreira que só vai crescer! 🌟
+
+Continua a honrar as cores da escola com a dedicação que te caracteriza. Que este dia seja memorável!
+
+Com muito carinho e orgulho,
+_Escola de Ciclismo de Formação_ 🚲💛`,
+  paraciclismo: (nome, idade) =>
+    `🎂🚴 *PARABÉNS, ${nome.split(' ')[0].toUpperCase()}!* 🚴🎂
+
+*${idade} anos* de superação, coragem e inspiração para todos nós! 💪❤️
+
+És um exemplo dentro e fora da bicicleta. Que este dia seja tão especial quanto és para nós!
+
+_Escola de Ciclismo de Formação_ 🚲💛`,
+  staff: (nome, idade) =>
+    `🎂 *Feliz Aniversário, ${nome.split(' ')[0]}!* 🎂
+
+*${idade} anos* de dedicação, competência e carinho — és um pilar fundamental da nossa escola! 🚴
+
+Muito obrigado por tudo o que fazes. Que este dia seja tão especial quanto és para nós!
+
+Com muita estima,
+_Escola de Ciclismo de Formação_ 🚲💛`,
+};
+
+// Rastrear quem já recebeu parabéns hoje (evitar duplicados)
+const BDAY_ENVIADOS = new Set();
+
+function getMsgBday(nome, idade, escalao) {
+  const fn = MSG_BDAY[escalao] || MSG_BDAY['sub17'];
+  return fn(nome, idade);
+}
+
+// ============================================================
+// ANIVERSÁRIOS
+// ============================================================
+function renderAniversarios() {
+  if(!DB) { document.getElementById('content-aniversarios').innerHTML='<div class="info-box ib-blue">Dados de atletas não disponíveis.</div>'; return; }
+
+  const hoje = new Date();
+  const atletas = DB.atletas;
+
+  const anivHoje = atletas.filter(a=>{
+    const d=new Date(a.nasc);
+    return d.getMonth()===hoje.getMonth()&&d.getDate()===hoje.getDate();
+  });
+
+  const anivSemana = atletas.filter(a=>{
+    const d=new Date(a.nasc);
+    const esteAno=new Date(hoje.getFullYear(),d.getMonth(),d.getDate());
+    const diff=(esteAno-hoje)/86400000;
+    return diff>0&&diff<=7;
+  });
+
+  const anivMes = atletas.filter(a=>{
+    const d=new Date(a.nasc);
+    const esteAno=new Date(hoje.getFullYear(),d.getMonth(),d.getDate());
+    const diff=(esteAno-hoje)/86400000;
+    return diff>7&&diff<=30;
+  });
+
+  // Staff
+  const STAFF_DB = [
+    {nome:'João Paulo Serra', cargo:'Treinador', nasc:'1975-06-20'},
+    {nome:'Manuel Costa', cargo:'Diretor', nasc:'1970-09-14'},
+    {nome:'Carlos Reis', cargo:'Mecânico', nasc:'1980-11-03'},
+  ];
+
+  const staffHoje = STAFF_DB.filter(s=>{const d=new Date(s.nasc);return d.getMonth()===hoje.getMonth()&&d.getDate()===hoje.getDate();});
+  const staffProximo = STAFF_DB.filter(s=>{const d=new Date(s.nasc);const e=new Date(hoje.getFullYear(),d.getMonth(),d.getDate());const diff=(e-hoje)/86400000;return diff>0&&diff<=30;});
+
+  const totalHoje = anivHoje.length + staffHoje.length;
+
+  document.getElementById('content-aniversarios').innerHTML = `
+
+  ${totalHoje > 0 ? `
+  <div style="background:var(--red-bg);border:.5px solid var(--red-bd);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:1rem">
+    <div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:.6rem">🎂 Hoje — ${totalHoje} aniversário(s) — Envio automático pendente</div>
+    ${[...anivHoje.map(a=>({tipo:'atleta',obj:a})),...staffHoje.map(s=>({tipo:'staff',obj:s}))].map(({tipo,obj})=>{
+      const ep = tipo==='atleta' ? obj.epocas[DB.epoca_atual] : null;
+      const escalao = ep?.escalao || 'sub17';
+      const idade = calcAge(obj.nasc) + (tipo==='atleta'?0:0);
+      const jaEnviado = BDAY_ENVIADOS.has(obj.nome);
+      const preview = getMsgBday(obj.nome, idade, tipo==='staff'?'staff':escalao);
+      return `<div style="background:var(--surface);border-radius:var(--rs);padding:.75rem;margin-bottom:6px;border:.5px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem">
+          <div class="bday-av bday-today">${initials(obj.nome)}</div>
+          <div style="flex:1">
+            <div style="font-weight:600">${obj.nome}</div>
+            <div style="font-size:11px;color:var(--muted)">${tipo==='staff'?obj.cargo:escalaoLabel(ep)} · ${idade} anos · ${tipo==='staff'?'Staff':'Atleta'}</div>
+          </div>
+          ${jaEnviado
+            ? '<span class="badge b-ok">✓ Enviado hoje</span>'
+            : `<button class="btn-wa" onclick="enviarBdayAuto('${obj.nome}',${idade},'${tipo==='staff'?'staff':escalao}','${obj.nome}')">${jaEnviado?'✓ Enviado':'🎂 Enviar parabéns'}</button>`}
+        </div>
+        <div style="font-size:11px;background:#DCF8C6;border-radius:var(--rs);padding:.5rem .7rem;white-space:pre-wrap;line-height:1.5;color:#1a1a1a;max-height:80px;overflow:hidden">${preview.slice(0,200)}${preview.length>200?'…':''}</div>
+      </div>`;
+    }).join('')}
+  </div>` : `<div class="info-box ib-green">✓ Nenhum aniversário hoje</div>`}
+
+  <!-- CONFIG mensagens tipo -->
+  <div style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:1rem">
+    <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between">
+      <span>⚙️ Mensagens tipo por escalão</span>
+      <button class="btn-sm" onclick="toggleConfigBday()">Editar</button>
+    </div>
+    <div id="config-bday" style="display:none">
+      ${Object.entries(MSG_BDAY).map(([esc,fn])=>{
+        const nome='Atleta'; const idade=15;
+        return `<div style="margin-bottom:.75rem">
+          <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:3px">${esc}</div>
+          <textarea class="editor-textarea" style="min-height:80px;font-size:11px" id="tmpl-${esc}">${fn(nome,idade)}</textarea>
+        </div>`;
+      }).join('')}
+      <button class="btn-sm btn-green" onclick="guardarTemplates()">✓ Guardar alterações</button>
+    </div>
+    <div id="config-bday-preview">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${Object.keys(MSG_BDAY).map(esc=>`<span class="badge b-info" style="cursor:pointer" onclick="previewTemplate('${esc}')">${esc}</span>`).join('')}
+      </div>
+      <div id="tmpl-preview" style="font-size:12px;background:var(--bg);border-radius:var(--rs);padding:.6rem;margin-top:.5rem;white-space:pre-wrap;line-height:1.5;display:none"></div>
+    </div>
+  </div>
+
+  <!-- Esta semana -->
+  ${anivSemana.length + staffProximo.filter(s=>{const d=new Date(s.nasc);const e=new Date(hoje.getFullYear(),d.getMonth(),d.getDate());return (e-hoje)/86400000<=7;}).length > 0 ? `
+  <div style="font-size:12px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem">📅 Esta semana</div>
+  ${[...anivSemana,...staffProximo.filter(s=>{const d=new Date(s.nasc);const e=new Date(hoje.getFullYear(),d.getMonth(),d.getDate());const diff=(e-hoje)/86400000;return diff>0&&diff<=7;}).map(s=>({...s,_staff:true}))].map(a=>{
+    const d=new Date(a.nasc);
+    const esteAno=new Date(hoje.getFullYear(),d.getMonth(),d.getDate());
+    const dias=Math.ceil((esteAno-hoje)/86400000);
+    const ep=a._staff?null:a.epocas?.[DB.epoca_atual];
+    const escalao=a._staff?'staff':ep?.escalao||'sub17';
+    const idade=calcAge(a.nasc)+1;
+    return renderBdayCard(a,dias,false,escalao,a._staff);
+  }).join('')}` : ''}
+
+  <!-- Este mês -->
+  ${anivMes.length > 0 ? `
+  <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:.85rem 0 .6rem">📆 Este mês</div>
+  ${anivMes.map(a=>{
+    const d=new Date(a.nasc);
+    const esteAno=new Date(hoje.getFullYear(),d.getMonth(),d.getDate());
+    const ep=a.epocas?.[DB.epoca_atual];
+    return renderBdayCard(a,Math.ceil((esteAno-hoje)/86400000),false,ep?.escalao||'sub17',false);
+  }).join('')}` : ''}
+
+  ${!totalHoje&&!anivSemana.length&&!anivMes.length ?
+    '<div class="info-box ib-blue">Sem aniversários nos próximos 30 dias.</div>' : ''}`;
+}
+
+function renderBdayCard(a, dias, isHoje, escalao, isStaff) {
+  const ep = isStaff ? null : a.epocas?.[DB.epoca_atual];
+  const idade = calcAge(a.nasc) + (isHoje?0:1);
+  const jaEnviado = BDAY_ENVIADOS.has(a.nome);
+  return `<div class="bday-card">
+    <div class="bday-av ${isHoje?'bday-today':'bday-week'}">${initials(a.nome)}</div>
+    <div style="flex:1">
+      <div style="font-weight:500">${a.nome}</div>
+      <div style="font-size:12px;color:var(--muted)">${isStaff?a.cargo:escalaoLabel(ep)} · ${isHoje?'Hoje':'Em '+dias+' dia'+(dias>1?'s':'')} · ${idade} anos</div>
+    </div>
+    ${jaEnviado
+      ? '<span class="badge b-ok">✓ Enviado</span>'
+      : `<button class="btn-wa btn-sm" onclick="enviarBdayAuto('${a.nome}',${idade},'${escalao}','${a.nome}')">🎂 Parabéns</button>`}
+  </div>`;
+}
+
+function enviarBdayAuto(nome, idade, escalao, key) {
+  const msg = getMsgBday(nome, idade, escalao);
+  const encoded = encodeURIComponent(msg);
+  window.open('https://wa.me/?text='+encoded,'_blank');
+  BDAY_ENVIADOS.add(key);
+  toast('Parabéns enviados para '+nome.split(' ')[0]+'!','ok');
+
+  COMUNICACOES_DB.historico.unshift({
+    id:'h'+Date.now(), tipo:'parabens',
+    titulo:'🎂 Parabéns — '+nome,
+    grupos:[escalao==='staff'?'g_staff':'g_todos'],
+    data:new Date().toISOString().split('T')[0],
+    hora:new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}),
+    autor:'Automático', estado:'enviado', texto:msg
+  });
+
+  renderAniversarios();
+}
+
+function toggleConfigBday() {
+  const el=document.getElementById('config-bday');
+  const el2=document.getElementById('config-bday-preview');
+  const isOpen=el.style.display!=='none';
+  el.style.display=isOpen?'none':'block';
+  if(el2) el2.style.display=isOpen?'block':'none';
+}
+
+function previewTemplate(esc) {
+  const fn=MSG_BDAY[esc];
+  const prev=document.getElementById('tmpl-preview');
+  if(!prev||!fn) return;
+  prev.style.display='block';
+  prev.textContent=fn('Nome Atleta',16);
+}
+
+function guardarTemplates() {
+  Object.keys(MSG_BDAY).forEach(esc=>{
+    const el=document.getElementById('tmpl-'+esc);
+    if(!el) return;
+    const txt=el.value;
+    MSG_BDAY[esc]=(nome,idade)=>txt.replace(/Nome Atleta/g,nome).replace(/16/g,idade);
+  });
+  toggleConfigBday();
+  toast('Mensagens tipo guardadas!','ok');
+}
+
+function enviarParabensAtleta(nome, idade, escalao) { enviarBdayAuto(nome, idade, escalao, nome); }
+function enviarParabensStaff(nome, idade) { enviarBdayAuto(nome, idade, 'staff', nome); }
+
+// ============================================================
+// HISTÓRICO
+// ============================================================
+function renderHistorico() {
+  const hist = COMUNICACOES_DB.historico;
+  const filtros = ['todos','aviso','convocatoria','resultado','pagamento','parabens'];
+
+  document.getElementById('content-historico').innerHTML = `
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem">
+    ${filtros.map(f=>`<div class="grupo-pill${f==='todos'?' active sel-todos':''}" onclick="filtrarHist('${f}',this)" data-filt="${f}">${f==='todos'?'Todos':COMUNICACOES_DB.getTemplate(f)?.icone+' '+COMUNICACOES_DB.getTemplate(f)?.nome||f}</div>`).join('')}
+  </div>
+  <div id="hist-lista">
+    ${renderHistLista(hist)}
+  </div>`;
+}
+
+function renderHistLista(lista) {
+  if(!lista.length) return '<div class="info-box ib-blue">Sem comunicações no histórico.</div>';
+  return lista.map(h=>{
+    const t=COMUNICACOES_DB.getTemplate(h.tipo);
+    return `<div class="hist-card" onclick="toggleHist('${h.id}')">
+      <div class="hist-hd">
+        <div class="hist-ico">${t?.icone||'✉️'}</div>
+        <div style="flex:1">
+          <div class="hist-title">${h.titulo}</div>
+          <div class="hist-meta">${h.data} às ${h.hora} · por ${h.autor}</div>
+        </div>
+        <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+          ${h.grupos.map(gid=>{const g=COMUNICACOES_DB.getGrupo(gid);return g?`<span class="badge b-info">${g.icone} ${g.nome}</span>`:''}).join('')}
+          <span class="badge b-ok">Enviado</span>
+        </div>
+      </div>
+      <div class="hist-body" id="hb-${h.id}">
+        <div class="hist-msg">${h.texto}</div>
+        <div style="display:flex;gap:6px;margin-top:.6rem">
+          <button class="btn-sm btn-wa" onclick="event.stopPropagation();reenviarHist('${h.id}')">📱 Reenviar</button>
+          <button class="btn-sm btn-ghost" onclick="event.stopPropagation();editarHist('${h.id}')">✏️ Editar e reenviar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleHist(id) {
+  const el = document.getElementById('hb-'+id);
+  if(!el) return;
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.hist-body').forEach(b=>b.classList.remove('open'));
+  if(!isOpen) el.classList.add('open');
+}
+
+function filtrarHist(tipo, el) {
+  document.querySelectorAll('[data-filt]').forEach(p=>p.classList.remove('active','sel-todos','sel-sub'));
+  el.classList.add('active','sel-todos');
+  const lista = tipo==='todos' ? COMUNICACOES_DB.historico : COMUNICACOES_DB.historico.filter(h=>h.tipo===tipo);
+  document.getElementById('hist-lista').innerHTML = renderHistLista(lista);
+}
+
+function reenviarHist(id) {
+  const h = COMUNICACOES_DB.historico.find(x=>x.id===id);
+  if(!h) return;
+  const msg = encodeURIComponent(h.texto);
+  window.open('https://wa.me/?text='+msg,'_blank');
+  toast('Mensagem pronta para reenviar!','ok');
+}
+
+function editarHist(id) {
+  const h = COMUNICACOES_DB.historico.find(x=>x.id===id);
+  if(!h) return;
+  TIPO_SEL=h.tipo; EDITOR_TEXTO=h.texto; EDITOR_TITULO=h.titulo;
+  GRUPOS_SEL=new Set(h.grupos);
+  setTab('nova');
+  toast('Mensagem carregada para edição');
+}
+
+// ============================================================
+// RASCUNHOS
+// ============================================================
+function renderRascunhos() {
+  const rasc = COMUNICACOES_DB.rascunhos;
+  document.getElementById('content-rascunhos').innerHTML = `
+  ${!rasc.length ? '<div class="info-box ib-blue">Sem rascunhos guardados.</div>' : ''}
+  ${rasc.map(r=>{
+    const t=COMUNICACOES_DB.getTemplate(r.tipo);
+    return `<div class="rasc-card">
+      <div style="font-size:18px">${t?.icone||'📝'}</div>
+      <div style="flex:1">
+        <div style="font-weight:500">${r.titulo}</div>
+        <div style="font-size:12px;color:var(--muted)">${r.data} · ${t?.nome||r.tipo}</div>
+      </div>
+      <button class="btn-sm btn-primary" onclick="carregarRascunho('${r.id}')">✏️ Editar</button>
+      <button class="btn-sm btn-ghost" onclick="removerRascunho('${r.id}')">✕</button>
+    </div>`;
+  }).join('')}`;
+}
+
+function carregarRascunho(id) {
+  const r = COMUNICACOES_DB.rascunhos.find(x=>x.id===id);
+  if(!r) return;
+  TIPO_SEL=r.tipo; EDITOR_TEXTO=r.texto; EDITOR_TITULO=r.titulo;
+  GRUPOS_SEL=new Set(r.grupos||[]);
+  setTab('nova');
+  toast('Rascunho carregado!','ok');
+}
+
+function removerRascunho(id) {
+  COMUNICACOES_DB.rascunhos = COMUNICACOES_DB.rascunhos.filter(r=>r.id!==id);
+  document.querySelector('#tab-rascunhos .badge').textContent = COMUNICACOES_DB.rascunhos.length||'';
+  renderRascunhos();
+  toast('Rascunho removido');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg,type=''){
+  const el=document.getElementById('toast-el');
+  el.textContent=msg;el.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderNova();
+</script>
+</body>
+</html>

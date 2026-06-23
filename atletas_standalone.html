@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atletas — Escola de Ciclismo</title>
+<style>
+:root {
+  --red:#CC0000; --red-bg:#FFF0F0; --red-border:rgba(204,0,0,.25);
+  --blue:#185FA5; --blue-bg:#E6F1FB; --blue-border:rgba(24,95,165,.25);
+  --teal:#0F6E56; --teal-bg:#E1F5EE; --teal-border:rgba(15,110,86,.25);
+  --amber:#854F0B; --amber-bg:#FAEEDA; --amber-border:rgba(133,79,11,.25);
+  --green:#3B6D11; --green-bg:#EAF3DE; --green-border:rgba(59,109,17,.25);
+  --purple:#534AB7; --purple-bg:#EEEDFE; --purple-border:rgba(83,74,183,.25);
+  --gray:#5F5E5A; --gray-bg:#F1EFE8; --gray-border:rgba(95,94,90,.25);
+  --bg:#F5F4F1; --surface:#FFFFFF; --border:rgba(0,0,0,.09); --border2:rgba(0,0,0,.16);
+  --text:#1A1A1A; --muted:#666660; --hint:#9A9A94;
+  --r:10px; --rs:6px;
+  --sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+
+/* ---- LAYOUT ---- */
+.app{display:flex;min-height:100vh}
+
+/* ---- SIDEBAR ---- */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sb-logo{padding:1.1rem 1rem .9rem;border-bottom:.5px solid var(--border)}
+.sb-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.sb-icon{width:32px;height:32px;background:var(--red);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0}
+.sb-name{font-size:13px;font-weight:600;line-height:1.2}
+.sb-season{font-size:11px;color:var(--hint);padding-left:40px}
+.sb-nav{padding:.6rem .5rem;flex:1;overflow-y:auto}
+.nav-sec{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;padding:.5rem .5rem .2rem;margin-top:.4rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.45rem .75rem;border-radius:var(--rs);cursor:pointer;color:var(--muted);font-size:13px;transition:background .1s,color .1s;text-decoration:none}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500}
+.nav-item .ico{font-size:15px;width:18px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--red-bg);color:var(--red);font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-foot{padding:.7rem 1rem;border-top:.5px solid var(--border);display:flex;align-items:center;gap:8px}
+.ua{width:28px;height:28px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+
+/* ---- MAIN ---- */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* ---- TOPBAR ---- */
+.topbar{background:var(--surface);border-bottom:.5px solid var(--border);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-title{font-size:16px;font-weight:600}
+.tb-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.tb-actions{display:flex;gap:8px}
+
+/* ---- CONTENT ---- */
+.content{padding:1.25rem 1.5rem;flex:1}
+
+/* ---- METRICS ---- */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.1rem}
+.metric{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem 1rem}
+.metric-l{font-size:11px;color:var(--muted);margin-bottom:3px}
+.metric-v{font-size:22px;font-weight:600;line-height:1}
+.metric-s{font-size:11px;color:var(--muted);margin-top:3px}
+.m-red{color:var(--red)}
+.m-amber{color:var(--amber)}
+
+/* ---- ALERTAS BOX ---- */
+.alertas-box{background:var(--surface);border:.5px solid var(--amber-border);border-radius:var(--r);padding:.9rem 1rem;margin-bottom:1.1rem;display:none}
+.alertas-box.visible{display:block}
+.alertas-title{font-size:12px;font-weight:600;color:var(--amber);margin-bottom:.6rem;display:flex;align-items:center;gap:6px}
+.alerta-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.alerta-row:last-child{border-bottom:none}
+.alerta-name{flex:1;color:var(--text)}
+.alerta-tipo{color:var(--muted)}
+
+/* ---- BDAYS ---- */
+.bday-box{background:var(--surface);border:.5px solid var(--red-border);border-radius:var(--r);padding:.9rem 1rem;margin-bottom:1.1rem;display:none}
+.bday-box.visible{display:block}
+.bday-title{font-size:12px;font-weight:600;color:var(--red);margin-bottom:.6rem;display:flex;align-items:center;gap:6px}
+.bday-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;border-bottom:.5px solid var(--border)}
+.bday-row:last-child{border-bottom:none}
+.bday-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.bday-today{background:var(--red-bg);color:var(--red)}
+.bday-week{background:var(--blue-bg);color:var(--blue)}
+
+/* ---- FILTROS ---- */
+.filter-bar{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:.9rem}
+.filter-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.filter-row+.filter-row{margin-top:.6rem}
+.filter-lbl{font-size:11px;color:var(--muted);font-weight:500;min-width:72px}
+.pill{font-size:12px;padding:3px 11px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .11s;white-space:nowrap}
+.pill:hover{border-color:var(--border2);color:var(--text)}
+.pill.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border);font-weight:500}
+.pill.active-esc{background:var(--teal-bg);color:var(--teal);border-color:var(--teal-border);font-weight:500}
+.sub-esc-block{background:var(--bg);border-radius:var(--rs);padding:.55rem .8rem;margin-top:.55rem;display:none}
+.sub-esc-block.vis{display:block}
+.fdiv{border:none;border-top:.5px solid var(--border);margin:.7rem 0}
+.search-row{display:flex;gap:8px;margin-bottom:.7rem}
+.search-wrap{flex:1;position:relative}
+.search-wrap input{width:100%;padding:6px 10px 6px 30px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--bg);color:var(--text);outline:none;transition:border-color .14s}
+.search-wrap input:focus{border-color:var(--blue);background:var(--surface)}
+.s-ico{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--hint);font-size:14px;pointer-events:none}
+select{padding:6px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--bg);color:var(--text);outline:none;cursor:pointer;font-family:inherit}
+select:focus{border-color:var(--blue)}
+
+/* ---- TABELA ---- */
+.tbl-wrap{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{font-size:11px;font-weight:600;color:var(--muted);text-align:left;padding:7px 11px;border-bottom:.5px solid var(--border);background:var(--bg);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none}
+thead th:hover{color:var(--text)}
+thead th.sorted{color:var(--blue)}
+tbody tr{cursor:pointer;transition:background .09s;border-bottom:.5px solid var(--border)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg)}
+td{padding:9px 11px;vertical-align:middle;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cell-name{display:flex;align-items:center;gap:8px}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.av-blue{background:var(--blue-bg);color:var(--blue)}
+.av-teal{background:var(--teal-bg);color:var(--teal)}
+.av-purple{background:var(--purple-bg);color:var(--purple)}
+.av-amber{background:var(--amber-bg);color:var(--amber)}
+.av-gray{background:var(--gray-bg);color:var(--gray)}
+.aname{font-size:13px;font-weight:500}
+.asub{font-size:11px;color:var(--muted)}
+.tbl-foot{padding:7px 11px;font-size:11px;color:var(--muted);border-top:.5px solid var(--border);text-align:right}
+
+/* ---- BADGES ---- */
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+.b-ok{background:var(--green-bg);color:var(--green)}
+.b-warn{background:var(--amber-bg);color:var(--amber)}
+.b-danger{background:var(--red-bg);color:var(--red)}
+.b-info{background:var(--blue-bg);color:var(--blue)}
+.b-gray{background:var(--gray-bg);color:var(--gray)}
+.b-purple{background:var(--purple-bg);color:var(--purple)}
+.b-teal{background:var(--teal-bg);color:var(--teal)}
+
+/* ---- BUTTONS ---- */
+button,.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rs);border:.5px solid var(--border2);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;transition:background .11s;font-family:inherit;white-space:nowrap}
+button:hover,.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn-primary:hover{background:#AA0000}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-danger{color:var(--red);border-color:var(--red-border)}
+.btn-danger:hover{background:var(--red-bg)}
+.btn-teal{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn-teal:hover{background:#0a5040}
+
+/* ---- PAINEL FICHA ---- */
+.ficha-panel{position:fixed;top:0;right:0;bottom:0;width:500px;background:var(--surface);border-left:.5px solid var(--border);z-index:200;display:none;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
+.ficha-panel.open{display:flex}
+.fp-top{padding:.9rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.fp-tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--rs);padding:3px}
+.fp-tab{padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .11s}
+.fp-tab.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.fp-body{flex:1;overflow-y:auto;padding:1.1rem}
+.fp-foot{padding:.8rem 1.1rem;border-top:.5px solid var(--border);display:flex;gap:7px;flex-shrink:0}
+.fp-hd{display:flex;align-items:flex-start;gap:11px;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:.5px solid var(--border)}
+.av-lg{width:50px;height:50px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;flex-shrink:0}
+.fp-name{font-size:16px;font-weight:600;margin-bottom:2px}
+.fp-sub{font-size:12px;color:var(--muted)}
+.fp-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+.epoca-sel{display:flex;gap:4px;margin-bottom:.9rem;flex-wrap:wrap}
+.ep-btn{font-size:12px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .11s}
+.ep-btn.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border);font-weight:500}
+.ep-card{background:var(--bg);border-radius:var(--rs);padding:.8rem .9rem;margin-bottom:.9rem}
+.ep-card-t{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.55rem}
+.ep-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}
+.secao{margin-bottom:1.1rem}
+.sec-t{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.55rem;padding-bottom:4px;border-bottom:.5px solid var(--border)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px}
+.fl{font-size:11px;color:var(--muted);margin-bottom:1px}
+.fv{font-size:13px;color:var(--text);white-space:normal}
+.docs-row{display:flex;gap:6px;flex-wrap:wrap}
+.doc-item{display:flex;align-items:center;gap:5px;padding:4px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;color:var(--muted)}
+
+/* ---- HISTÓRICO (tab) ---- */
+.hist-empty{text-align:center;padding:2rem;color:var(--muted);font-size:13px}
+.hist-row{display:flex;align-items:center;gap:10px;padding:.6rem 0;border-bottom:.5px solid var(--border)}
+.hist-row:last-child{border-bottom:none}
+.hist-date{font-size:11px;color:var(--muted);min-width:60px}
+.hist-name{flex:1;font-size:13px}
+
+/* ---- FORMULÁRIO NOVO ATLETA ---- */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:520px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;margin:1rem}
+.modal-hd{padding:.9rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:15px;font-weight:600}
+.modal-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.modal-body{flex:1;overflow-y:auto;padding:1.1rem}
+.modal-foot{padding:.8rem 1.1rem;border-top:.5px solid var(--border);display:flex;gap:7px;justify-content:space-between;flex-shrink:0}
+.progress-bar{display:flex;gap:3px;margin-bottom:.85rem}
+.pb-step{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background .18s}
+.pb-step.done{background:var(--green)}
+.pb-step.active{background:var(--blue)}
+.pb-lbl{font-size:11px;color:var(--muted);margin-bottom:.85rem;text-align:center}
+.fg{margin-bottom:.8rem}
+.fl2{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:3px}
+.freq{color:var(--red);font-size:10px}
+.fi{width:100%;padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .14s;font-family:inherit}
+.fi:focus{border-color:var(--blue)}
+.fi.ok{border-color:var(--green)}
+.fi.err{border-color:var(--red)}
+textarea.fi{resize:vertical;min-height:80px}
+.fhint{font-size:11px;margin-top:2px}
+.fhint.ok{color:var(--green)}
+.fhint.err{color:var(--red)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info-box{padding:.7rem .85rem;border-radius:var(--rs);font-size:12px;margin-bottom:.9rem}
+.info-blue{background:var(--blue-bg);color:var(--blue)}
+.info-green{background:var(--green-bg);color:var(--green)}
+.info-amber{background:var(--amber-bg);color:var(--amber)}
+.sec-form{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:.9rem 0 .6rem;padding-bottom:4px;border-bottom:.5px solid var(--border)}
+.hdiv{border:none;border-top:.5px solid var(--border);margin:.85rem 0}
+
+/* ---- NOVA ÉPOCA ---- */
+.ep-row{display:flex;align-items:center;gap:9px;padding:.65rem 0;border-bottom:.5px solid var(--border)}
+.ep-row:last-child{border-bottom:none}
+.ep-btns{display:flex;gap:4px;margin-left:auto}
+.ep-btn-sm{font-size:11px;padding:3px 9px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .11s}
+.ep-btn-sm:hover{border-color:var(--border2);color:var(--text)}
+.ep-sel-renova{background:var(--green-bg)!important;color:var(--green)!important;border-color:var(--green-border)!important}
+.ep-sel-sai{background:var(--amber-bg)!important;color:var(--amber)!important;border-color:var(--amber-border)!important}
+.ep-sel-inativo{background:var(--gray-bg)!important;color:var(--gray)!important;border-color:var(--gray-border)!important}
+.ep-progress{font-size:12px;color:var(--muted)}
+
+/* ---- EDIT MODE ---- */
+.edit-mode .fv{display:none}
+.edit-mode .fv-input{display:block!important}
+.fv-input{display:none;width:100%;padding:4px 7px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:inherit;outline:none}
+.fv-input:focus{border-color:var(--blue)}
+
+/* ---- WHATSAPP BTN ---- */
+.wa-btn{background:#25D366;border-color:#25D366;color:#fff}
+.wa-btn:hover{background:#1aad53}
+
+/* ---- TOAST ---- */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:.55rem .95rem;border-radius:var(--rs);font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .18s;pointer-events:none;max-width:320px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--green)}
+.toast.warn{background:var(--amber)}
+
+/* ---- EMPTY STATE ---- */
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-ico{font-size:36px;margin-bottom:.75rem;opacity:.4}
+.empty-t{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.empty-s{font-size:13px}
+
+/* ---- PENDENTES ---- */
+.pendentes-box{background:var(--surface);border:.5px solid var(--amber-border);border-radius:var(--r);padding:.9rem 1rem;margin-bottom:1.1rem;display:none}
+.pendentes-box.visible{display:block}
+
+/* ---- RESPONSIVE ---- */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform .2s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .ficha-panel{width:100%}
+  .fields{grid-template-columns:1fr}
+  .ep-grid{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  table th:nth-child(4),table td:nth-child(4),
+  table th:nth-child(5),table td:nth-child(5){display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-icon">🚴</div>
+      <div class="sb-name">Escola de<br>Ciclismo</div>
+    </div>
+    <div class="sb-season">Época 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Principal</div>
+    <a class="nav-item" href="#" onclick="toast('Em construção')"><span class="ico">⬡</span> Cockpit</a>
+    <div class="nav-sec">Equipa</div>
+    <a class="nav-item active" href="#"><span class="ico">👥</span> Atletas</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')"><span class="ico">🪪</span> Staff</a>
+    <div class="nav-sec">Desportivo</div>
+    <a class="nav-item" href="#" onclick="toast('Em construção')"><span class="ico">📅</span> Calendário</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')"><span class="ico">🏆</span> Resultados</a>
+    <div class="nav-sec">Gestão</div>
+    <a class="nav-item" href="#" onclick="toast('Em construção')"><span class="ico">🚐</span> Logística</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')"><span class="ico">💰</span> Financeira <span class="nav-badge">6</span></a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')"><span class="ico">🤝</span> Patrocinadores</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')"><span class="ico">📢</span> Comunicações</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="ua">JP</div>
+    <div><div style="font-size:12px;font-weight:500">João Paulo Serra</div><div style="font-size:11px;color:var(--muted)">Treinador</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+<div class="topbar">
+  <div>
+    <div class="tb-title">Atletas</div>
+    <div class="tb-sub" id="tb-sub">Época 2026</div>
+  </div>
+  <div class="tb-actions">
+    <button onclick="openEpoca()">🔄 Nova época</button>
+    <button onclick="openForm()">🔗 Gerar link inscrição</button>
+    <button class="btn-primary" onclick="openForm()">+ Novo atleta</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ANIVERSÁRIOS -->
+  <div class="bday-box" id="bday-box">
+    <div class="bday-title">🎂 Aniversários</div>
+    <div id="bday-list"></div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="alertas-box" id="alertas-box">
+    <div class="alertas-title">⚠️ Requerem atenção</div>
+    <div id="alertas-list"></div>
+  </div>
+
+  <!-- PENDENTES -->
+  <div class="pendentes-box" id="pendentes-box">
+    <div class="alertas-title" style="color:var(--blue)">⏳ Inscrições pendentes de ativação</div>
+    <div id="pendentes-list"></div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric"><div class="metric-l">Ativos</div><div class="metric-v" id="m-ativos">—</div><div class="metric-s">época 2026</div></div>
+    <div class="metric"><div class="metric-l">Cedidos</div><div class="metric-v" id="m-cedidos">—</div><div class="metric-s">outros clubes</div></div>
+    <div class="metric"><div class="metric-l">Inativos</div><div class="metric-v" id="m-inativos">—</div><div class="metric-s">saíram em 2026</div></div>
+    <div class="metric"><div class="metric-l">Pag. em atraso</div><div class="metric-v m-red" id="m-atraso">—</div><div class="metric-s">requerem atenção</div></div>
+    <div class="metric"><div class="metric-l">Docs em falta</div><div class="metric-v m-amber" id="m-docs">—</div><div class="metric-s">seguro / médico</div></div>
+    <div class="metric"><div class="metric-l">Licenças</div><div class="metric-v m-amber" id="m-lic">—</div><div class="metric-s">a renovar / em falta</div></div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filter-bar">
+    <div class="search-row">
+      <div class="search-wrap">
+        <span class="s-ico">🔍</span>
+        <input type="text" placeholder="Pesquisar atleta..." id="search" oninput="applyFilters()">
+      </div>
+      <select id="f-estado" onchange="applyFilters()">
+        <option value="">Todos os estados</option>
+        <option value="proprio">Próprio</option>
+        <option value="cedido">Cedido</option>
+        <option value="inativo">Inativo</option>
+      </select>
+      <select id="f-pag" onchange="applyFilters()">
+        <option value="">Todos os pagamentos</option>
+        <option value="pago">Em dia</option>
+        <option value="atraso">Em atraso</option>
+        <option value="isento">Isento</option>
+        <option value="definir">A definir</option>
+      </select>
+    </div>
+    <hr class="fdiv">
+    <div class="filter-row">
+      <span class="filter-lbl">Escalão</span>
+      <div class="pill active" onclick="setEsc(this,'todos')" data-esc="todos">Todos</div>
+      <div class="pill" onclick="setEsc(this,'escolas')" data-esc="escolas">Escolas</div>
+      <div class="pill" onclick="setEsc(this,'sub17')" data-esc="sub17">SUB17</div>
+      <div class="pill" onclick="setEsc(this,'sub19')" data-esc="sub19">SUB19</div>
+      <div class="pill" onclick="setEsc(this,'sub23')" data-esc="sub23">SUB23</div>
+      <div class="pill" onclick="setEsc(this,'paraciclismo')" data-esc="paraciclismo">Paraciclismo</div>
+    </div>
+    <div class="sub-esc-block" id="sub-esc-block">
+      <div class="filter-row">
+        <span class="filter-lbl" style="font-size:11px">Sub-escalão</span>
+        <div class="pill active-esc" onclick="setSub(this,'todos')" data-sub="todos">Todos</div>
+        <div class="pill" onclick="setSub(this,'sub7')" data-sub="sub7">SUB7</div>
+        <div class="pill" onclick="setSub(this,'sub9')" data-sub="sub9">SUB9</div>
+        <div class="pill" onclick="setSub(this,'sub11')" data-sub="sub11">SUB11</div>
+        <div class="pill" onclick="setSub(this,'sub13')" data-sub="sub13">SUB13</div>
+        <div class="pill" onclick="setSub(this,'sub15')" data-sub="sub15">SUB15</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABELA -->
+  <div class="tbl-wrap">
+    <table>
+      <colgroup>
+        <col style="width:28%"><col style="width:13%"><col style="width:11%">
+        <col style="width:12%"><col style="width:13%"><col style="width:13%"><col style="width:10%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th onclick="sortBy('nome')">Atleta <span id="sort-nome"></span></th>
+          <th onclick="sortBy('escalao')">Escalão</th>
+          <th>Tipo</th>
+          <th onclick="sortBy('licenca')">Licença</th>
+          <th onclick="sortBy('mensalidade')">Mensalidade</th>
+          <th>Docs</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="tbl-foot" id="tbl-foot">A carregar...</div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ============================================================
+     PAINEL FICHA
+============================================================ -->
+<div class="ficha-panel" id="ficha-panel">
+  <div class="fp-top">
+    <button class="btn-ghost btn-sm" onclick="closeFicha()">← Voltar</button>
+    <div style="flex:1"></div>
+    <div class="fp-tabs">
+      <div class="fp-tab active" onclick="setTab(this,'ficha')">Ficha</div>
+      <div class="fp-tab" onclick="setTab(this,'hist')">Histórico</div>
+      <div class="fp-tab" onclick="setTab(this,'pag')">Pagamentos</div>
+    </div>
+    <button class="btn-sm wa-btn" id="btn-wa" onclick="sendWhatsApp()">📱 WA</button>
+  </div>
+  <div class="fp-body" id="fp-body"></div>
+  <div class="fp-foot">
+    <button class="btn-sm" id="btn-edit" onclick="toggleEdit()">✏️ Editar</button>
+    <button class="btn-sm btn-teal" id="btn-save" onclick="saveEdit()" style="display:none">✓ Guardar</button>
+    <button class="btn-sm btn-ghost" id="btn-cancel" onclick="cancelEdit()" style="display:none">Cancelar</button>
+    <div style="flex:1"></div>
+    <button class="btn-sm" onclick="toast('Corridas do atleta em breve')">🏁 Corridas</button>
+    <button class="btn-sm btn-danger" onclick="toast('Confirmar antes de inativar')">Inativar</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL NOVO ATLETA
+============================================================ -->
+<div class="modal-overlay" id="form-overlay" onclick="if(event.target===this)closeForm()">
+  <div class="modal">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title">Novo atleta</div>
+        <div class="modal-sub" id="form-sub">Passo 1 de 4 — Dados desportivos</div>
+      </div>
+      <button class="btn-ghost btn-sm" onclick="closeForm()">✕</button>
+    </div>
+    <div class="modal-body" id="form-body">
+      <div class="progress-bar">
+        <div class="pb-step active" id="pb1"></div>
+        <div class="pb-step" id="pb2"></div>
+        <div class="pb-step" id="pb3"></div>
+        <div class="pb-step" id="pb4"></div>
+      </div>
+
+      <!-- PASSO 1 -->
+      <div id="fs1">
+        <div class="fg">
+          <div class="fl2">Tipo de atleta <span class="freq">*</span></div>
+          <select class="fi" id="f-tipo" onchange="onTipoChange()">
+            <option value="">Selecionar...</option>
+            <option value="proprio">Atleta próprio — novo sem licença FPC</option>
+            <option value="proprio-lic">Atleta próprio — com licença FPC existente</option>
+            <option value="cedido">Atleta cedido de outro clube</option>
+          </select>
+        </div>
+        <div class="fg" id="fg-clube" style="display:none">
+          <div class="fl2">Clube de origem <span class="freq">*</span></div>
+          <input type="text" class="fi" id="f-clube" placeholder="Ex: Grupo Desportivo XYZ">
+        </div>
+        <div class="fg" id="fg-lic-fpc" style="display:none">
+          <div class="fl2">Nº Licença FPC existente <span class="freq">*</span></div>
+          <input type="text" class="fi" id="f-lic-fpc" placeholder="Ex: 2026-00847">
+        </div>
+        <div class="fg">
+          <div class="fl2">Data de nascimento <span class="freq">*</span></div>
+          <input type="date" class="fi" id="f-nasc-p1" onchange="calcEscalao()">
+        </div>
+        <div class="fg" id="fg-escalao-result" style="display:none">
+          <div class="fl2">Escalão calculado automaticamente</div>
+          <div id="escalao-result-box" style="padding:10px 12px;border-radius:var(--rs);background:var(--green-bg);border:.5px solid var(--green-border);display:flex;align-items:center;gap:10px">
+            <span style="font-size:20px">🚴</span>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--green)" id="escalao-result-label">—</div>
+              <div style="font-size:11px;color:var(--teal)" id="escalao-result-sub">—</div>
+            </div>
+            <span style="margin-left:auto;font-size:11px;color:var(--muted);cursor:pointer" onclick="toggleOverride()">⚙️ Corrigir</span>
+          </div>
+          <input type="hidden" id="f-esc" value="">
+          <input type="hidden" id="f-subesc" value="">
+          <div id="override-block" style="display:none;margin-top:8px">
+            <select class="fi" id="f-esc-manual" onchange="onEscManualChange()">
+              <option value="">Escalão principal...</option>
+              <option value="escolas">Escolas</option>
+              <option value="sub17">SUB17</option>
+              <option value="sub19">SUB19</option>
+              <option value="sub23">SUB23</option>
+              <option value="paraciclismo">Paraciclismo</option>
+            </select>
+            <select class="fi" id="f-subesc-manual" style="display:none;margin-top:6px">
+              <option value="">Sub-escalão...</option>
+              <option value="sub7">SUB7</option>
+              <option value="sub9">SUB9</option>
+              <option value="sub11">SUB11</option>
+              <option value="sub13">SUB13</option>
+              <option value="sub15">SUB15</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl2">Mensalidade</div>
+          <select class="fi" id="f-mens">
+            <option value="pago">Paga normalmente</option>
+            <option value="isento">Isento</option>
+            <option value="definir">A definir (cedido)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PASSO 2 -->
+      <div id="fs2" style="display:none">
+        <div class="f2">
+          <div class="fg">
+            <div class="fl2">Nome próprio <span class="freq">*</span></div>
+            <input type="text" class="fi" id="f-nome" oninput="vNome()">
+            <div class="fhint" id="h-nome"></div>
+          </div>
+          <div class="fg">
+            <div class="fl2">Apelidos <span class="freq">*</span></div>
+            <input type="text" class="fi" id="f-apel">
+          </div>
+        </div>
+        <div class="f2">
+          <div class="fg">
+            <div class="fl2">Data de nascimento <span class="freq">*</span></div>
+            <input type="date" class="fi" id="f-nasc">
+          </div>
+          <div class="fg">
+            <div class="fl2">Género <span class="freq">*</span></div>
+            <select class="fi" id="f-gen">
+              <option value="">Selecionar...</option>
+              <option>Masculino</option><option>Feminino</option>
+            </select>
+          </div>
+        </div>
+        <div class="f2">
+          <div class="fg">
+            <div class="fl2">Nº Cartão Cidadão <span class="freq">*</span></div>
+            <input type="text" class="fi" id="f-cc" placeholder="12345678 9 ZZ4" oninput="vCC()">
+            <div class="fhint" id="h-cc"></div>
+          </div>
+          <div class="fg">
+            <div class="fl2">Data validade CC <span class="freq">*</span></div>
+            <input type="date" class="fi" id="f-cc-val">
+          </div>
+        </div>
+        <div class="f2">
+          <div class="fg">
+            <div class="fl2">Nº Contribuinte <span class="freq">*</span></div>
+            <input type="text" class="fi" id="f-nif" placeholder="123456789" oninput="vNIF()">
+            <div class="fhint" id="h-nif"></div>
+          </div>
+          <div class="fg">
+            <div class="fl2">Email pessoal</div>
+            <input type="email" class="fi" id="f-email" placeholder="opcional">
+          </div>
+        </div>
+        <div class="f2">
+          <div class="fg">
+            <div class="fl2">Telemóvel <span class="freq">*</span></div>
+            <input type="tel" class="fi" id="f-tel" placeholder="9XX XXX XXX">
+          </div>
+          <div class="fg">
+            <div class="fl2">Telefone</div>
+            <input type="tel" class="fi" id="f-tel2" placeholder="opcional">
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl2">Morada <span class="freq">*</span></div>
+          <input type="text" class="fi" id="f-morada" placeholder="Rua, número, andar">
+        </div>
+        <div class="f2">
+          <div class="fg">
+            <div class="fl2">Localidade <span class="freq">*</span></div>
+            <input type="text" class="fi" id="f-local">
+          </div>
+          <div class="fg">
+            <div class="fl2">Código postal <span class="freq">*</span></div>
+            <input type="text" class="fi" id="f-cp" placeholder="XXXX-XXX">
+          </div>
+        </div>
+        <div class="f2">
+          <div class="fg">
+            <div class="fl2">Distrito</div>
+            <input type="text" class="fi" id="f-dist" placeholder="Ex: Lisboa">
+          </div>
+          <div class="fg">
+            <div class="fl2">Concelho</div>
+            <input type="text" class="fi" id="f-conc">
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSO 3 -->
+      <div id="fs3" style="display:none">
+        <div class="info-box info-blue">ℹ️ Preenche os contactos de ambos os pais — importante em caso de separação. O encarregado de educação é quem recebe comunicações formais.</div>
+        <div class="sec-form">Pai</div>
+        <div class="f2">
+          <div class="fg"><div class="fl2">Nome completo</div><input type="text" class="fi" id="f-pai-n"></div>
+          <div class="fg"><div class="fl2">Telemóvel <span class="freq">*</span></div><input type="tel" class="fi" id="f-pai-t"></div>
+        </div>
+        <div class="f2">
+          <div class="fg"><div class="fl2">Email</div><input type="email" class="fi" id="f-pai-e"></div>
+          <div class="fg">
+            <div class="fl2">Encarregado de educação?</div>
+            <select class="fi" id="f-pai-enc"><option value="sim">Sim</option><option value="nao">Não</option></select>
+          </div>
+        </div>
+        <div class="hdiv"></div>
+        <div class="sec-form">Mãe</div>
+        <div class="f2">
+          <div class="fg"><div class="fl2">Nome completo</div><input type="text" class="fi" id="f-mae-n"></div>
+          <div class="fg"><div class="fl2">Telemóvel</div><input type="tel" class="fi" id="f-mae-t"></div>
+        </div>
+        <div class="f2">
+          <div class="fg"><div class="fl2">Email</div><input type="email" class="fi" id="f-mae-e"></div>
+          <div class="fg">
+            <div class="fl2">Encarregada de educação?</div>
+            <select class="fi" id="f-mae-enc"><option value="nao">Não</option><option value="sim">Sim</option></select>
+          </div>
+        </div>
+        <div class="hdiv"></div>
+        <div class="sec-form">Tutor legal (se diferente dos pais)</div>
+        <div class="f2">
+          <div class="fg"><div class="fl2">Nome</div><input type="text" class="fi" id="f-tut-n" placeholder="opcional"></div>
+          <div class="fg"><div class="fl2">Telefone</div><input type="tel" class="fi" id="f-tut-t" placeholder="opcional"></div>
+        </div>
+        <div class="f2">
+          <div class="fg"><div class="fl2">Email</div><input type="email" class="fi" id="f-tut-e" placeholder="opcional"></div>
+          <div class="fg"><div class="fl2">Cartão Cidadão</div><input type="text" class="fi" id="f-tut-cc" placeholder="opcional"></div>
+        </div>
+        <div class="hdiv"></div>
+        <div class="sec-form">Contacto de emergência</div>
+        <div class="f2">
+          <div class="fg"><div class="fl2">Nome <span class="freq">*</span></div><input type="text" class="fi" id="f-em-n"></div>
+          <div class="fg"><div class="fl2">Telemóvel <span class="freq">*</span></div><input type="tel" class="fi" id="f-em-t"></div>
+        </div>
+      </div>
+
+      <!-- PASSO 4 -->
+      <div id="fs4" style="display:none">
+        <div class="sec-form">Dados escolares</div>
+        <div class="fg">
+          <div class="fl2">Estabelecimento de ensino</div>
+          <input type="text" class="fi" id="f-escola" placeholder="opcional — apenas estudantes ativos">
+        </div>
+        <div class="fg">
+          <div class="fl2">Ano / Curso</div>
+          <input type="text" class="fi" id="f-curso" placeholder="Ex: 9º ano">
+        </div>
+        <div class="hdiv"></div>
+        <div class="sec-form">Autorizações</div>
+        <div class="fg">
+          <div class="fl2">Autorização de imagem</div>
+          <select class="fi" id="f-img">
+            <option value="true">Autorizo a utilização de imagem</option>
+            <option value="false">Não autorizo</option>
+          </select>
+        </div>
+        <div class="fg">
+          <div class="fl2">Observações internas</div>
+          <textarea class="fi" id="f-obs" rows="3" placeholder="Notas para uso interno da escola..."></textarea>
+        </div>
+        <div class="info-box info-green">✅ Após guardar, o atleta fica como <strong>pendente de ativação</strong>. O admin revê e ativa. Será enviada confirmação por WhatsApp ao encarregado de educação.</div>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" id="btn-ant" onclick="formAnt()" style="display:none">← Anterior</button>
+      <div style="flex:1"></div>
+      <button id="btn-seg" onclick="formSeg()">Seguinte →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL NOVA ÉPOCA
+============================================================ -->
+<div class="modal-overlay" id="epoca-overlay" onclick="if(event.target===this)closeEpoca()">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title">Preparar época 2027</div>
+        <div class="modal-sub">Classifica cada atleta para a nova época — processo de Dezembro</div>
+      </div>
+      <button class="btn-ghost btn-sm" onclick="closeEpoca()">✕</button>
+    </div>
+    <div class="info-box info-amber" style="margin:.9rem 1.1rem 0;border-radius:var(--rs)">
+      📅 Este processo é feito em <strong>Dezembro</strong> para a época entrar em vigor a <strong>1 de Janeiro de 2027</strong>. O histórico de 2026 fica sempre preservado.
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:0 1.1rem 1.1rem" id="epoca-list"></div>
+    <div class="modal-foot">
+      <div class="ep-progress" id="ep-prog">0 classificados</div>
+      <div style="flex:1"></div>
+      <button class="btn-ghost" onclick="closeEpoca()">Cancelar</button>
+      <button class="btn-primary" onclick="confirmarEpoca()">✓ Confirmar época 2027</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast-el"></div>
+
+<script>
+// ============================================================
+// DATA.JS — Base de dados de atletas (mock)
+// ============================================================
+
+const DB = {
+  epoca_atual: 2026,
+
+  atletas: [
+    {
+      id: 1,
+      // Dados permanentes
+      nome: 'Afonso Ferreira',
+      apelidos: 'Ferreira Costa',
+      nasc: '2009-06-12',
+      genero: 'Masculino',
+      cc: '12345678 9 ZZ4',
+      cc_validade: '2028-06-12',
+      nif: '234567890',
+      email: 'afonso@email.com',
+      tel: '912 345 678',
+      tel2: '',
+      morada: 'R. das Flores, 12, 2º Dt.',
+      local: 'Cascais',
+      cp: '2750-123',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      // Filiação
+      pai_nome: 'Carlos Ferreira',
+      pai_tel: '913 456 789',
+      pai_email: 'carlos.f@email.com',
+      pai_enc: true,
+      mae_nome: 'Ana Ferreira',
+      mae_tel: '914 567 890',
+      mae_email: 'ana.f@email.com',
+      mae_enc: false,
+      // Tutor
+      tutor_nome: '',
+      tutor_cc: '',
+      tutor_email: '',
+      tutor_tel: '',
+      // Emergência
+      emerg_nome: 'Carlos Ferreira',
+      emerg_tel: '913 456 789',
+      // Escolar
+      escola: 'EB 2,3 de Cascais',
+      curso: '9º ano',
+      // Documentos
+      doc_imagem: true,
+      doc_seguro: true,
+      doc_medico: false,
+      // Épocas
+      epocas: {
+        2025: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2025-00412', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom resultado na volta a Cascais.' },
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00847', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom atleta, muito dedicado.' }
+      }
+    },
+    {
+      id: 2,
+      nome: 'Maria Santos',
+      apelidos: 'Santos Rodrigues',
+      nasc: '2011-03-22',
+      genero: 'Feminino',
+      cc: '23456789 1 AB2',
+      cc_validade: '2029-03-22',
+      nif: '345678901',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'Av. Central, 45',
+      local: 'Sintra',
+      cp: '2710-001',
+      distrito: 'Lisboa',
+      concelho: 'Sintra',
+      pai_nome: 'Rui Santos',
+      pai_tel: '915 234 567',
+      pai_email: 'rui.s@email.com',
+      pai_enc: true,
+      mae_nome: 'Sofia Santos',
+      mae_tel: '916 345 678',
+      mae_email: 'sofia.s@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Rui Santos',
+      emerg_tel: '915 234 567',
+      escola: 'EB1 de Sintra',
+      curso: '6º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2026-00312', mensalidade:'atraso', equipamento:'Jersey S · Calções S · Meias 36', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 3,
+      nome: 'Rui Fonseca',
+      apelidos: 'Fonseca Matos',
+      nasc: '2007-09-05',
+      genero: 'Masculino',
+      cc: '98765432 1 ZZ2',
+      cc_validade: '2027-09-05',
+      nif: '456789012',
+      email: 'rui.f@email.com',
+      tel: '918 567 890',
+      tel2: '',
+      morada: 'R. Nova, 8',
+      local: 'Oeiras',
+      cp: '2780-010',
+      distrito: 'Lisboa',
+      concelho: 'Oeiras',
+      pai_nome: 'António Fonseca',
+      pai_tel: '917 456 789',
+      pai_email: 'ant.f@email.com',
+      pai_enc: true,
+      mae_nome: '',
+      mae_tel: '',
+      mae_email: '',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'António Fonseca',
+      emerg_tel: '917 456 789',
+      escola: '', curso: '',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'cedido', escalao:'sub19', subescalao:'', clube_origem:'GD Oeiras', licenca:'2026-GD-089', mensalidade:'definir', equipamento:'Jersey M · Calções M', estado:'ativo', obs:'Cedido para 3 corridas em 2026.' }
+      }
+    },
+    {
+      id: 4,
+      nome: 'João Silva',
+      apelidos: 'Silva Pereira',
+      nasc: '2010-11-18',
+      genero: 'Masculino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'R. do Pinheiro, 3',
+      local: 'Cascais',
+      cp: '2750-456',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Manuel Silva',
+      pai_tel: '919 678 901',
+      pai_email: 'man.s@email.com',
+      pai_enc: true,
+      mae_nome: 'Lúcia Silva',
+      mae_tel: '910 789 012',
+      mae_email: 'lucia.s@email.com',
+      mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Manuel Silva',
+      emerg_tel: '919 678 901',
+      escola: 'Colégio São José', curso: '7º ano',
+      doc_imagem: true, doc_seguro: false, doc_medico: false,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'', mensalidade:'atraso', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'Licença a renovar com urgência. Seguro em falta.' }
+      }
+    },
+    {
+      id: 5,
+      nome: 'Dinis Dias',
+      apelidos: 'Dias Cunha',
+      nasc: '2016-06-13',
+      genero: 'Masculino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'Tv. das Rosas, 2',
+      local: 'Matos Cheirinhos',
+      cp: '2775-001',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Pedro Dias',
+      pai_tel: '911 890 123',
+      pai_email: 'pedro.d@email.com',
+      pai_enc: true,
+      mae_nome: 'Carla Dias',
+      mae_tel: '912 901 234',
+      mae_email: 'carla.d@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Pedro Dias',
+      emerg_tel: '911 890 123',
+      escola: 'EB1 de Matos Cheirinhos', curso: '4º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub11', clube_origem:'', licenca:'2026-00123', mensalidade:'pago', equipamento:'Jersey XS · Calções XS · Meias 32', estado:'ativo', obs:'Aniversário hoje! 🎂' }
+      }
+    },
+    {
+      id: 6,
+      nome: 'Ana Costa',
+      apelidos: 'Costa Mendes',
+      nasc: '2010-06-15',
+      genero: 'Feminino',
+      cc: '11223344 5 AB6',
+      cc_validade: '2028-06-15',
+      nif: '567890123',
+      email: 'ana.c@email.com',
+      tel: '915 234 567',
+      tel2: '',
+      morada: 'Av. das Flores, 22',
+      local: 'Cascais',
+      cp: '2750-200',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Jorge Costa',
+      pai_tel: '913 012 345',
+      pai_email: 'jorge.c@email.com',
+      pai_enc: false,
+      mae_nome: 'Beatriz Costa',
+      mae_tel: '914 123 456',
+      mae_email: 'bea.c@email.com',
+      mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Beatriz Costa',
+      emerg_tel: '914 123 456',
+      escola: 'ES de Cascais', curso: '7º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2025: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2025-00211', mensalidade:'pago', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'' },
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00634', mensalidade:'pago', equipamento:'Jersey S · Calções S · Meias 37', estado:'ativo', obs:'Subiu de escalão em 2026.' }
+      }
+    },
+    {
+      id: 7,
+      nome: 'Marco Silva',
+      apelidos: 'Silva Rodrigues',
+      nasc: '2005-06-14',
+      genero: 'Masculino',
+      cc: '22334455 6 CD7',
+      cc_validade: '2027-06-14',
+      nif: '678901234',
+      email: 'marco.s@email.com',
+      tel: '917 456 789',
+      tel2: '',
+      morada: 'R. do Lago, 7',
+      local: 'Sintra',
+      cp: '2710-100',
+      distrito: 'Lisboa',
+      concelho: 'Sintra',
+      pai_nome: '', pai_tel: '', pai_email: '', pai_enc: false,
+      mae_nome: '', mae_tel: '', mae_email: '', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Clara Silva',
+      emerg_tel: '916 345 678',
+      escola: '', curso: '',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub23', subescalao:'', clube_origem:'', licenca:'2026-00789', mensalidade:'pago', equipamento:'Jersey L · Calções L · Meias 42', estado:'ativo', obs:'Maior de 18 anos.' }
+      }
+    },
+    {
+      id: 8,
+      nome: 'Sofia Lopes',
+      apelidos: 'Lopes Ferreira',
+      nasc: '2012-08-30',
+      genero: 'Feminino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'R. das Acácias, 15',
+      local: 'Cascais',
+      cp: '2750-300',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Nuno Lopes',
+      pai_tel: '918 567 890',
+      pai_email: 'nuno.l@email.com',
+      pai_enc: true,
+      mae_nome: 'Rita Lopes',
+      mae_tel: '919 678 901',
+      mae_email: 'rita.l@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Nuno Lopes',
+      emerg_tel: '918 567 890',
+      escola: 'EB 2,3 de Alcabideche', curso: '5º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: false,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub13', clube_origem:'', licenca:'2026-00456', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 9,
+      nome: 'Tomás Oliveira',
+      apelidos: 'Oliveira Santos',
+      nasc: '2014-01-20',
+      genero: 'Masculino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'R. do Mar, 5', local: 'Cascais', cp: '2750-500',
+      distrito: 'Lisboa', concelho: 'Cascais',
+      pai_nome: 'Carlos Oliveira', pai_tel: '920 123 456', pai_email: 'c.oli@email.com', pai_enc: true,
+      mae_nome: 'Marta Oliveira', mae_tel: '921 234 567', mae_email: 'm.oli@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Carlos Oliveira', emerg_tel: '920 123 456',
+      escola: 'EB1 de Cascais', curso: '3º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00234', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 10,
+      nome: 'Inês Martins',
+      apelidos: 'Martins Faria',
+      nasc: '2015-05-10',
+      genero: 'Feminino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'Av. Nova, 33', local: 'Sintra', cp: '2710-200',
+      distrito: 'Lisboa', concelho: 'Sintra',
+      pai_nome: 'Luís Martins', pai_tel: '922 345 678', pai_email: 'l.mar@email.com', pai_enc: false,
+      mae_nome: 'Vera Martins', mae_tel: '923 456 789', mae_email: 'v.mar@email.com', mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Vera Martins', emerg_tel: '923 456 789',
+      escola: 'EB1 de Sintra', curso: '2º ano',
+      doc_imagem: false, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00567', mensalidade:'isento', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'Autorização de imagem pendente.' }
+      }
+    },
+    {
+      id: 11,
+      nome: 'Rodrigo Pinto',
+      apelidos: 'Pinto Alves',
+      nasc: '2008-04-03',
+      genero: 'Masculino',
+      cc: '33445566 7 EF8', cc_validade: '2026-04-03', nif: '789012345',
+      email: 'r.pinto@email.com', tel: '924 567 890', tel2: '',
+      morada: 'R. das Palmeiras, 18', local: 'Oeiras', cp: '2780-100',
+      distrito: 'Lisboa', concelho: 'Oeiras',
+      pai_nome: 'Fernando Pinto', pai_tel: '925 678 901', pai_email: 'f.pin@email.com', pai_enc: true,
+      mae_nome: 'Helena Pinto', mae_tel: '926 789 012', mae_email: 'h.pin@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Fernando Pinto', emerg_tel: '925 678 901',
+      escola: 'ES de Oeiras', curso: '8º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub19', subescalao:'', clube_origem:'', licenca:'2026-00901', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 40', estado:'ativo', obs:'CC a renovar — expirou em Abril.' }
+      }
+    },
+    {
+      id: 12,
+      nome: 'Beatriz Ferreira',
+      apelidos: 'Ferreira Nunes',
+      nasc: '2017-11-25',
+      genero: 'Feminino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'R. dos Pinheiros, 9', local: 'Cascais', cp: '2750-600',
+      distrito: 'Lisboa', concelho: 'Cascais',
+      pai_nome: 'Ricardo Ferreira', pai_tel: '927 890 123', pai_email: 'r.fer@email.com', pai_enc: true,
+      mae_nome: 'Sandra Ferreira', mae_tel: '928 901 234', mae_email: 's.fer@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Ricardo Ferreira', emerg_tel: '927 890 123',
+      escola: 'EB1 de Cascais', curso: '2º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub7', clube_origem:'', licenca:'2026-00678', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    }
+  ],
+
+  // Atletas inativos
+  atletas_inativos: [
+    { id:101, nome:'Pedro Carvalho', nasc:'2008-07-14', escalao:'sub19', tipo:'proprio', estado:'inativo', motivo:'Mudou de clube', epoca_saida: 2025 },
+    { id:102, nome:'Clara Mendes', nasc:'2012-02-28', escalao:'escolas', tipo:'proprio', estado:'inativo', motivo:'Deixou o ciclismo', epoca_saida: 2025 }
+  ],
+
+  getAtletasAtivos() {
+    return this.atletas.filter(a => {
+      const ep = a.epocas[this.epoca_atual];
+      return ep && ep.estado === 'ativo';
+    });
+  },
+
+  getEpocaAtleta(id) {
+    const a = this.atletas.find(x => x.id === id);
+    return a ? (a.epocas[this.epoca_atual] || null) : null;
+  },
+
+  getAniversariosHoje() {
+    const hoje = new Date();
+    return this.atletas.filter(a => {
+      const d = new Date(a.nasc);
+      return d.getMonth() === hoje.getMonth() && d.getDate() === hoje.getDate();
+    });
+  },
+
+  getAniversariosSemana() {
+    const hoje = new Date();
+    const semana = new Date(hoje); semana.setDate(hoje.getDate() + 7);
+    return this.atletas.filter(a => {
+      const d = new Date(a.nasc);
+      const esteAno = new Date(hoje.getFullYear(), d.getMonth(), d.getDate());
+      return esteAno > hoje && esteAno <= semana;
+    });
+  },
+
+  getAlertas() {
+    return this.atletas.filter(a => {
+      const ep = a.epocas[this.epoca_atual];
+      if (!ep || ep.estado !== 'ativo') return false;
+      return ep.mensalidade === 'atraso' || !a.doc_seguro || !a.doc_medico || ep.licenca === '' || ep.licenca === 'renovar';
+    });
+  }
+};
+
+</script>
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let filtEsc = 'todos', filtSub = 'todos', sortCol = 'nome', sortDir = 1;
+let fichaId = null, fichaTab = 'ficha', editMode = false;
+let formStep = 1;
+let epocaEstados = {};
+let pendentes = []; // atletas pendentes de ativação
+
+// ============================================================
+// UTILS
+// ============================================================
+function initials(nome) {
+  return nome.split(' ').filter((_,i,a)=>i===0||i===a.length-1).map(n=>n[0]).join('').toUpperCase();
+}
+function calcAge(nasc) {
+  const d=new Date(nasc), t=new Date();
+  let a=t.getFullYear()-d.getFullYear();
+  if(t<new Date(t.getFullYear(),d.getMonth(),d.getDate())) a--;
+  return a;
+}
+function fmtDate(d) {
+  if(!d) return '—';
+  return new Date(d+'T00:00:00').toLocaleDateString('pt-PT',{day:'2-digit',month:'long',year:'numeric'});
+}
+function fmtDateShort(d) {
+  if(!d) return '—';
+  return new Date(d+'T00:00:00').toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function avColor(a) {
+  const ep = a.epocas[DB.epoca_atual];
+  if (!ep) return 'gray';
+  if (ep.tipo==='cedido') return 'purple';
+  if (ep.escalao==='sub23'||ep.escalao==='paraciclismo') return 'amber';
+  if (ep.escalao==='sub17'||ep.escalao==='sub19') return 'blue';
+  return 'teal';
+}
+function escalaoLabel(ep) {
+  if (!ep) return '—';
+  if (ep.escalao==='escolas') return ep.subescalao ? ep.subescalao.toUpperCase() : 'Escolas';
+  return ep.escalao.toUpperCase();
+}
+function escalaoFull(ep) {
+  if (!ep) return '—';
+  if (ep.escalao==='escolas') return 'Escolas' + (ep.subescalao ? ' / '+ep.subescalao.toUpperCase() : '');
+  return ep.escalao.toUpperCase();
+}
+
+// ============================================================
+// BADGES
+// ============================================================
+function bTipo(tipo) {
+  if(tipo==='proprio') return '<span class="badge b-teal">Próprio</span>';
+  if(tipo==='cedido') return '<span class="badge b-purple">Cedido</span>';
+  return '<span class="badge b-gray">—</span>';
+}
+function bLic(ep) {
+  if(!ep) return '<span class="badge b-gray">—</span>';
+  if(!ep.licenca) return '<span class="badge b-danger">Em falta</span>';
+  return '<span class="badge b-ok">Válida</span>';
+}
+function bMens(m) {
+  const map={pago:'<span class="badge b-ok">Pago</span>',atraso:'<span class="badge b-danger">Em atraso</span>',isento:'<span class="badge b-gray">Isento</span>',definir:'<span class="badge b-warn">A definir</span>'};
+  return map[m]||'<span class="badge b-gray">—</span>';
+}
+function bDoc(a) {
+  const ok = a.doc_seguro && a.doc_medico;
+  if(ok) return '<span class="badge b-ok">OK</span>';
+  const missing=[];
+  if(!a.doc_seguro) missing.push('Seguro');
+  if(!a.doc_medico) missing.push('Médico');
+  if(!a.doc_imagem) missing.push('Imagem');
+  return `<span class="badge b-warn" title="${missing.join(', ')} em falta">⚠️ ${missing.length}</span>`;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  renderMetrics();
+  renderBdays();
+  renderAlertas();
+  renderPendentes();
+  applyFilters();
+}
+
+// ============================================================
+// METRICS
+// ============================================================
+function renderMetrics() {
+  const ativos = DB.atletas.filter(a=>{const e=a.epocas[DB.epoca_atual];return e&&e.estado==='ativo'});
+  const cedidos = ativos.filter(a=>a.epocas[DB.epoca_atual].tipo==='cedido');
+  const inativos = DB.atletas_inativos.length;
+  const atraso = ativos.filter(a=>a.epocas[DB.epoca_atual].mensalidade==='atraso');
+  const docs = DB.atletas.filter(a=>!a.doc_seguro||!a.doc_medico||!a.doc_imagem);
+  const lic = ativos.filter(a=>!a.epocas[DB.epoca_atual].licenca);
+  document.getElementById('m-ativos').textContent = ativos.length;
+  document.getElementById('m-cedidos').textContent = cedidos.length;
+  document.getElementById('m-inativos').textContent = inativos;
+  document.getElementById('m-atraso').textContent = atraso.length;
+  document.getElementById('m-docs').textContent = docs.length;
+  document.getElementById('m-lic').textContent = lic.length;
+  document.getElementById('tb-sub').textContent = `Época ${DB.epoca_atual} · ${ativos.length} atletas ativos`;
+}
+
+// ============================================================
+// ANIVERSÁRIOS
+// ============================================================
+function renderBdays() {
+  const hoje = DB.getAniversariosHoje();
+  const semana = DB.getAniversariosSemana();
+  if(!hoje.length && !semana.length) return;
+  const box = document.getElementById('bday-box');
+  box.classList.add('visible');
+  const list = document.getElementById('bday-list');
+  let html = '';
+  hoje.forEach(a => {
+    const age = calcAge(a.nasc);
+    html += `<div class="bday-row">
+      <div class="bday-av bday-today">${initials(a.nome)}</div>
+      <span style="font-weight:500">${a.nome}</span>
+      <span style="color:var(--muted);font-size:12px">Hoje · ${age} anos</span>
+      <button class="btn-sm wa-btn" style="margin-left:auto" onclick="sendBdayWA('${a.nome}',${age})">🎂 Enviar parabéns</button>
+    </div>`;
+  });
+  semana.forEach(a => {
+    const age = calcAge(a.nasc)+1;
+    const d = new Date(a.nasc);
+    const esteAno = new Date(new Date().getFullYear(), d.getMonth(), d.getDate());
+    const dias = Math.ceil((esteAno - new Date()) / 86400000);
+    html += `<div class="bday-row">
+      <div class="bday-av bday-week">${initials(a.nome)}</div>
+      <span style="font-weight:500">${a.nome}</span>
+      <span style="color:var(--muted);font-size:12px">Em ${dias} dia${dias>1?'s':''} · ${age} anos</span>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function sendBdayWA(nome, age) {
+  const msg = encodeURIComponent(`🎂🚴 PARABÉNS, ${nome.split(' ')[0].toUpperCase()}! 🚴🎂\n\nHoje é um dia muito especial — ${age} anos de pedalada e muitos sorrisos! 🎉\n\nVotos de um dia incrível, cheio de alegria e de tudo o que te faz feliz!\n\nCom muito carinho,\nEscola de Ciclismo de Formação 🚲💛`);
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+  toast('Mensagem de parabéns pronta para enviar!', 'ok');
+}
+
+// ============================================================
+// ALERTAS
+// ============================================================
+function renderAlertas() {
+  const alertas = DB.getAlertas();
+  if(!alertas.length) return;
+  const box = document.getElementById('alertas-box');
+  box.classList.add('visible');
+  const list = document.getElementById('alertas-list');
+  list.innerHTML = alertas.map(a => {
+    const ep = a.epocas[DB.epoca_atual];
+    const issues = [];
+    if(ep.mensalidade==='atraso') issues.push('<span class="badge b-danger">Mensalidade em atraso</span>');
+    if(!a.doc_seguro) issues.push('<span class="badge b-warn">Seguro em falta</span>');
+    if(!a.doc_medico) issues.push('<span class="badge b-warn">Declaração médica em falta</span>');
+    if(!ep.licenca) issues.push('<span class="badge b-danger">Licença em falta</span>');
+    return `<div class="alerta-row">
+      <div class="av av-${avColor(a)}" style="width:26px;height:26px;font-size:10px;flex-shrink:0">${initials(a.nome)}</div>
+      <span class="alerta-name" style="cursor:pointer;font-weight:500" onclick="openFicha(${a.id})">${a.nome}</span>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">${issues.join('')}</div>
+      <button class="btn-sm wa-btn" style="margin-left:auto;flex-shrink:0" onclick="alertaWA('${a.nome}','${ep.mensalidade}')">📱 Alertar</button>
+    </div>`;
+  }).join('');
+}
+
+function alertaWA(nome, mens) {
+  const msg = encodeURIComponent(`Caro Encarregado de Educação,\n\nInformamos que existem pendências em relação ao atleta ${nome} na Escola de Ciclismo de Formação.\n\nPor favor, entre em contacto connosco para regularizar a situação.\n\nCom os melhores cumprimentos,\nEscola de Ciclismo de Formação`);
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+  toast('Mensagem de alerta pronta para enviar!', 'warn');
+}
+
+// ============================================================
+// PENDENTES
+// ============================================================
+function renderPendentes() {
+  if(!pendentes.length) return;
+  document.getElementById('pendentes-box').classList.add('visible');
+  document.getElementById('pendentes-list').innerHTML = pendentes.map((p,i)=>`
+    <div class="alerta-row">
+      <span class="alerta-name">${p.nome} — ${p.escalao}</span>
+      <span class="badge b-warn">Pendente</span>
+      <span style="font-size:11px;color:var(--muted)">${p.data}</span>
+      <button class="btn-sm btn-teal" style="margin-left:auto" onclick="ativarPendente(${i})">✓ Ativar</button>
+    </div>`).join('');
+}
+
+function ativarPendente(i) {
+  const p = pendentes.splice(i,1)[0];
+  toast(`${p.nome} ativado na época ${DB.epoca_atual}!`, 'ok');
+  renderPendentes();
+  if(!pendentes.length) document.getElementById('pendentes-box').classList.remove('visible');
+}
+
+// ============================================================
+// FILTROS E TABELA
+// ============================================================
+function setEsc(el, val) {
+  document.querySelectorAll('[data-esc]').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  filtEsc = val; filtSub = 'todos';
+  document.querySelectorAll('[data-sub]').forEach(p=>p.classList.remove('active','active-esc'));
+  document.querySelector('[data-sub="todos"]').classList.add('active-esc');
+  document.getElementById('sub-esc-block').classList.toggle('vis', val==='escolas');
+  applyFilters();
+}
+
+function setSub(el, val) {
+  document.querySelectorAll('[data-sub]').forEach(p=>p.classList.remove('active','active-esc'));
+  el.classList.add(val==='todos'?'active-esc':'active');
+  filtSub = val;
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const fe = document.getElementById('f-estado').value;
+  const fp = document.getElementById('f-pag').value;
+
+  let data = DB.atletas.filter(a => {
+    const ep = a.epocas[DB.epoca_atual];
+    if(!ep) return false;
+    if(q && !a.nome.toLowerCase().includes(q)) return false;
+    if(fe && ep.tipo !== fe) return false;
+    if(fp && ep.mensalidade !== fp) return false;
+    if(filtEsc!=='todos' && ep.escalao!==filtEsc) return false;
+    if(filtEsc==='escolas' && filtSub!=='todos' && ep.subescalao!==filtSub) return false;
+    return true;
+  });
+
+  // sort
+  data.sort((a,b)=>{
+    const ea=a.epocas[DB.epoca_atual], eb=b.epocas[DB.epoca_atual];
+    if(sortCol==='nome') return a.nome.localeCompare(b.nome)*sortDir;
+    if(sortCol==='escalao') return escalaoLabel(ea).localeCompare(escalaoLabel(eb))*sortDir;
+    if(sortCol==='mensalidade') return (ea?.mensalidade||'').localeCompare(eb?.mensalidade||'')*sortDir;
+    if(sortCol==='licenca') return ((ea?.licenca||'')?1:0-((eb?.licenca||'')?1:0))*sortDir;
+    return 0;
+  });
+
+  renderTable(data);
+}
+
+function sortBy(col) {
+  if(sortCol===col) sortDir*=-1; else {sortCol=col;sortDir=1;}
+  document.querySelectorAll('thead th').forEach(th=>th.classList.remove('sorted'));
+  applyFilters();
+}
+
+function renderTable(data) {
+  if(!data.length) {
+    document.getElementById('tbody').innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Nenhum atleta encontrado</div><div class="empty-s">Tenta ajustar os filtros</div></div></td></tr>`;
+    document.getElementById('tbl-foot').textContent = 'Sem resultados';
+    return;
+  }
+  document.getElementById('tbody').innerHTML = data.map(a => {
+    const ep = a.epocas[DB.epoca_atual];
+    return `<tr onclick="openFicha(${a.id})">
+      <td><div class="cell-name">
+        <div class="av av-${avColor(a)}">${initials(a.nome)}</div>
+        <div><div class="aname">${a.nome}</div><div class="asub">${calcAge(a.nasc)} anos · ${escalaoFull(ep)}</div></div>
+      </div></td>
+      <td>${escalaoLabel(ep)}</td>
+      <td>${bTipo(ep.tipo)}</td>
+      <td>${bLic(ep)}</td>
+      <td>${bMens(ep.mensalidade)}</td>
+      <td>${bDoc(a)}</td>
+      <td style="text-align:right;color:var(--hint);font-size:16px">›</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tbl-foot').textContent = `A mostrar ${data.length} de ${DB.atletas.length} atletas`;
+}
+
+// ============================================================
+// FICHA
+// ============================================================
+function openFicha(id) {
+  fichaId = id; fichaTab = 'ficha'; editMode = false;
+  renderFicha();
+  document.getElementById('ficha-panel').classList.add('open');
+  document.getElementById('btn-edit').style.display='';
+  document.getElementById('btn-save').style.display='none';
+  document.getElementById('btn-cancel').style.display='none';
+}
+function closeFicha() {
+  document.getElementById('ficha-panel').classList.remove('open');
+  fichaId=null;
+}
+function setTab(el, tab) {
+  document.querySelectorAll('.fp-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); fichaTab=tab;
+  renderFicha();
+}
+
+function renderFicha() {
+  const a = DB.atletas.find(x=>x.id===fichaId);
+  if(!a) return;
+  const ep = a.epocas[DB.epoca_atual];
+  const body = document.getElementById('fp-body');
+
+  if(fichaTab==='ficha') {
+    const epocasKeys = Object.keys(a.epocas).sort((x,y)=>y-x);
+
+    body.innerHTML = `
+    <div class="fp-hd">
+      <div class="av-lg">${initials(a.nome)}</div>
+      <div style="flex:1">
+        <div class="fp-name">${a.nome}</div>
+        <div class="fp-sub">Nascido a ${fmtDate(a.nasc)} · ${calcAge(a.nasc)} anos</div>
+        <div class="fp-badges">
+          ${bTipo(ep?.tipo||'')}
+          <span class="badge b-info">${escalaoFull(ep)}</span>
+          ${ep?.estado==='ativo'?'<span class="badge b-ok">Ativo '+DB.epoca_atual+'</span>':''}
+          ${bLic(ep)}
+          ${ep?.tipo==='cedido'?`<span class="badge b-purple">Clube: ${ep.clube_origem}</span>`:''}
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:11px;color:var(--muted);margin-bottom:.4rem;font-weight:500">Época</div>
+    <div class="epoca-sel">
+      ${epocasKeys.map(y=>`<div class="ep-btn${y==DB.epoca_atual?' active':''}" onclick="changeEpoca(this,${y})">${y}</div>`).join('')}
+    </div>
+
+    <div class="ep-card" id="ep-card-${DB.epoca_atual}">
+      <div class="ep-card-t">Dados época ${DB.epoca_atual}</div>
+      <div class="ep-grid">
+        <div><div class="fl">Tipo</div><div class="fv">${ep?.tipo==='cedido'?'Cedido — '+ep.clube_origem:'Atleta próprio'}</div></div>
+        <div><div class="fl">Escalão</div><div class="fv">${escalaoFull(ep)}</div></div>
+        <div><div class="fl">Licença FPC</div><div class="fv">${ep?.licenca||'<span class="badge b-danger">Em falta</span>'}</div></div>
+        <div><div class="fl">Mensalidade</div><div class="fv">${bMens(ep?.mensalidade)}</div></div>
+        <div style="grid-column:span 2"><div class="fl">Equipamento</div><div class="fv">${ep?.equipamento||'—'}</div></div>
+        ${ep?.obs?`<div style="grid-column:span 2"><div class="fl">Observações</div><div class="fv" style="font-style:italic;color:var(--muted)">${ep.obs}</div></div>`:''}
+      </div>
+    </div>
+
+    <div class="secao">
+      <div class="sec-t">Dados pessoais</div>
+      <div class="fields">
+        <div><div class="fl">Nome completo</div><div class="fv">${a.nome}</div></div>
+        <div><div class="fl">Data de nascimento</div><div class="fv">${fmtDate(a.nasc)}</div></div>
+        ${a.cc?`<div><div class="fl">Cartão Cidadão</div><div class="fv">${a.cc}</div></div>`:''}
+        ${a.cc_validade?`<div><div class="fl">Validade CC</div><div class="fv">${fmtDateShort(a.cc_validade)}</div></div>`:''}
+        ${a.nif?`<div><div class="fl">Nº Contribuinte</div><div class="fv">${a.nif}</div></div>`:''}
+        ${a.email?`<div><div class="fl">Email</div><div class="fv">${a.email}</div></div>`:''}
+        ${a.tel?`<div><div class="fl">Telemóvel</div><div class="fv">${a.tel}</div></div>`:''}
+        ${a.morada?`<div style="grid-column:span 2"><div class="fl">Morada</div><div class="fv">${a.morada}, ${a.local} · ${a.cp}</div></div>`:''}
+      </div>
+    </div>
+
+    <div class="secao">
+      <div class="sec-t">Filiação e contactos</div>
+      <div class="fields">
+        ${a.pai_nome?`<div><div class="fl">Pai — nome</div><div class="fv">${a.pai_nome} ${a.pai_enc?'<span class="badge b-info" style="font-size:10px">Enc.</span>':''}</div></div>`:''}
+        ${a.pai_tel?`<div><div class="fl">Pai — telemóvel</div><div class="fv">${a.pai_tel}</div></div>`:''}
+        ${a.pai_email?`<div><div class="fl">Pai — email</div><div class="fv">${a.pai_email}</div></div>`:''}
+        ${a.mae_nome?`<div><div class="fl">Mãe — nome</div><div class="fv">${a.mae_nome} ${a.mae_enc?'<span class="badge b-info" style="font-size:10px">Enc.</span>':''}</div></div>`:''}
+        ${a.mae_tel?`<div><div class="fl">Mãe — telemóvel</div><div class="fv">${a.mae_tel}</div></div>`:''}
+        ${a.mae_email?`<div><div class="fl">Mãe — email</div><div class="fv">${a.mae_email}</div></div>`:''}
+        ${a.tutor_nome?`<div><div class="fl">Tutor legal</div><div class="fv">${a.tutor_nome}</div></div>`:''}
+        ${a.tutor_tel?`<div><div class="fl">Tutor — tel.</div><div class="fv">${a.tutor_tel}</div></div>`:''}
+        <div><div class="fl">Emergência</div><div class="fv">${a.emerg_nome} · ${a.emerg_tel}</div></div>
+      </div>
+    </div>
+
+    ${a.escola?`<div class="secao"><div class="sec-t">Dados escolares</div><div class="fields">
+      <div><div class="fl">Estabelecimento</div><div class="fv">${a.escola}</div></div>
+      <div><div class="fl">Ano / Curso</div><div class="fv">${a.curso}</div></div>
+    </div></div>`:''}
+
+    <div class="secao">
+      <div class="sec-t">Documentos</div>
+      <div class="docs-row">
+        <div class="doc-item">🖼️ Imagem ${a.doc_imagem?'<span class="badge b-ok">OK</span>':'<span class="badge b-danger">Em falta</span>'}</div>
+        <div class="doc-item">🛡️ Seguro ${a.doc_seguro?'<span class="badge b-ok">OK</span>':'<span class="badge b-danger">Em falta</span>'}</div>
+        <div class="doc-item">🏥 Declaração médica ${a.doc_medico?'<span class="badge b-ok">OK</span>':'<span class="badge b-warn">Em falta</span>'}</div>
+      </div>
+    </div>`;
+
+  } else if(fichaTab==='hist') {
+    const epocasKeys = Object.keys(a.epocas).sort((x,y)=>y-x);
+    body.innerHTML = `
+    <div class="fp-hd">
+      <div class="av-lg">${initials(a.nome)}</div>
+      <div><div class="fp-name">${a.nome}</div><div class="fp-sub">Histórico de épocas</div></div>
+    </div>
+    ${epocasKeys.map(y=>{
+      const ep=a.epocas[y];
+      return `<div class="ep-card">
+        <div class="ep-card-t">Época ${y}</div>
+        <div class="ep-grid">
+          <div><div class="fl">Escalão</div><div class="fv">${escalaoFull(ep)}</div></div>
+          <div><div class="fl">Tipo</div><div class="fv">${ep.tipo==='cedido'?'Cedido — '+ep.clube_origem:'Próprio'}</div></div>
+          <div><div class="fl">Licença</div><div class="fv">${ep.licenca||'—'}</div></div>
+          <div><div class="fl">Mensalidade</div><div class="fv">${bMens(ep.mensalidade)}</div></div>
+          <div style="grid-column:span 2"><div class="fl">Equipamento</div><div class="fv">${ep.equipamento||'—'}</div></div>
+          ${ep.obs?`<div style="grid-column:span 2"><div class="fl">Observações</div><div class="fv" style="font-style:italic;color:var(--muted)">${ep.obs}</div></div>`:''}
+        </div>
+      </div>`;
+    }).join('')}`;
+
+  } else if(fichaTab==='pag') {
+    const ep = a.epocas[DB.epoca_atual];
+    const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const mesAtual = new Date().getMonth();
+    body.innerHTML = `
+    <div class="fp-hd">
+      <div class="av-lg">${initials(a.nome)}</div>
+      <div><div class="fp-name">${a.nome}</div><div class="fp-sub">Pagamentos época ${DB.epoca_atual}</div></div>
+    </div>
+    <div class="ep-card">
+      <div class="ep-card-t">Estado atual</div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="font-size:24px;font-weight:600">${bMens(ep?.mensalidade)}</div>
+        <div style="font-size:12px;color:var(--muted)">${ep?.mensalidade==='atraso'?'Mensalidade em atraso — contactar encarregado':ep?.mensalidade==='isento'?'Atleta isento de mensalidade':ep?.mensalidade==='definir'?'Valor a definir (atleta cedido)':'Pagamentos em dia'}</div>
+      </div>
+    </div>
+    <div class="sec-t" style="margin-bottom:.7rem">Mensalidades ${DB.epoca_atual}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+      ${meses.map((m,i)=>{
+        const passado = i <= mesAtual;
+        const pago = ep?.mensalidade==='pago'||ep?.mensalidade==='isento';
+        const isento = ep?.mensalidade==='isento';
+        const emAtraso = ep?.mensalidade==='atraso' && passado;
+        let bg='var(--bg)', border='var(--border)', txt='var(--muted)', ico='—';
+        if(isento){bg='var(--gray-bg)';txt='var(--gray)';ico='I'}
+        else if(pago&&passado){bg='var(--green-bg)';border='var(--green-border)';txt='var(--green)';ico='✓'}
+        else if(emAtraso){bg='var(--red-bg)';border='var(--red-border)';txt='var(--red)';ico='!'}
+        else if(i===mesAtual&&!pago){bg='var(--amber-bg)';border='var(--amber-border)';txt='var(--amber)';ico='?'}
+        return `<div style="text-align:center;padding:.5rem;border-radius:var(--rs);background:${bg};border:.5px solid ${border}">
+          <div style="font-size:10px;color:${txt};font-weight:600">${m}</div>
+          <div style="font-size:14px;font-weight:600;color:${txt}">${ico}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="margin-top:1rem">
+      <div class="sec-t" style="margin-bottom:.6rem">Equipamento ${DB.epoca_atual}</div>
+      <div style="font-size:13px;color:var(--text)">${ep?.equipamento||'Sem registo'}</div>
+    </div>`;
+  }
+}
+
+function changeEpoca(el, year) {
+  document.querySelectorAll('.ep-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const a = DB.atletas.find(x=>x.id===fichaId);
+  if(!a) return;
+  const ep = a.epocas[year];
+  if(!ep) return;
+  const card = document.getElementById(`ep-card-${DB.epoca_atual}`);
+  if(!card) return;
+  card.id = `ep-card-${year}`;
+  card.querySelector('.ep-card-t').textContent = `Dados época ${year}`;
+  card.querySelector('.ep-grid').innerHTML = `
+    <div><div class="fl">Tipo</div><div class="fv">${ep.tipo==='cedido'?'Cedido — '+ep.clube_origem:'Atleta próprio'}</div></div>
+    <div><div class="fl">Escalão</div><div class="fv">${escalaoFull(ep)}</div></div>
+    <div><div class="fl">Licença FPC</div><div class="fv">${ep.licenca||'<span class="badge b-danger">Em falta</span>'}</div></div>
+    <div><div class="fl">Mensalidade</div><div class="fv">${bMens(ep.mensalidade)}</div></div>
+    <div style="grid-column:span 2"><div class="fl">Equipamento</div><div class="fv">${ep.equipamento||'—'}</div></div>
+    ${ep.obs?`<div style="grid-column:span 2"><div class="fl">Observações</div><div class="fv" style="font-style:italic;color:var(--muted)">${ep.obs}</div></div>`:''}`;
+}
+
+// ============================================================
+// EDIT MODE
+// ============================================================
+function toggleEdit() {
+  editMode = true;
+  document.getElementById('btn-edit').style.display='none';
+  document.getElementById('btn-save').style.display='';
+  document.getElementById('btn-cancel').style.display='';
+  toast('Modo de edição ativo — altera os campos e guarda');
+}
+function saveEdit() {
+  editMode = false;
+  document.getElementById('btn-edit').style.display='';
+  document.getElementById('btn-save').style.display='none';
+  document.getElementById('btn-cancel').style.display='none';
+  toast('Dados guardados com sucesso!', 'ok');
+  renderFicha();
+}
+function cancelEdit() {
+  editMode = false;
+  document.getElementById('btn-edit').style.display='';
+  document.getElementById('btn-save').style.display='none';
+  document.getElementById('btn-cancel').style.display='none';
+  renderFicha();
+}
+
+// ============================================================
+// WHATSAPP
+// ============================================================
+function sendWhatsApp() {
+  const a = DB.atletas.find(x=>x.id===fichaId);
+  if(!a) return;
+  const enc = a.pai_enc ? a.pai_nome : (a.mae_enc ? a.mae_nome : 'Encarregado');
+  const msg = encodeURIComponent(`Caro(a) ${enc},\n\nContacto da Escola de Ciclismo de Formação relativamente ao atleta ${a.nome}.\n\nPor favor responda a esta mensagem.\n\nCom os melhores cumprimentos,\nEscola de Ciclismo de Formação`);
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+  toast('Mensagem pronta para enviar!', 'ok');
+}
+
+// ============================================================
+// FORMULÁRIO NOVO ATLETA
+// ============================================================
+function openForm() { formStep=1; updateForm(); document.getElementById('form-overlay').classList.add('open'); }
+function closeForm() { document.getElementById('form-overlay').classList.remove('open'); }
+
+function updateForm() {
+  for(let i=1;i<=4;i++) {
+    document.getElementById(`fs${i}`).style.display = i===formStep?'block':'none';
+    const pb = document.getElementById(`pb${i}`);
+    pb.className = 'pb-step' + (i<formStep?' done':i===formStep?' active':'');
+  }
+  const labels = ['Dados desportivos','Dados pessoais','Filiação e contactos','Escola e documentos'];
+  document.getElementById('form-sub').textContent = `Passo ${formStep} de 4 — ${labels[formStep-1]}`;
+  document.getElementById('btn-ant').style.display = formStep>1?'':'none';
+  document.getElementById('btn-seg').textContent = formStep===4?'✓ Guardar atleta':'Seguinte →';
+}
+
+function formSeg() {
+  if(formStep===1) {
+    // ao avançar do passo 1, copia a data de nascimento para o campo do passo 2
+    const nascP1 = document.getElementById('f-nasc-p1').value;
+    if(nascP1) {
+      const nascP2 = document.getElementById('f-nasc');
+      if(nascP2 && !nascP2.value) nascP2.value = nascP1;
+    }
+  }
+  if(formStep<4){formStep++;updateForm();}
+  else {
+    const nome = document.getElementById('f-nome').value + ' ' + document.getElementById('f-apel').value;
+    const esc = document.getElementById('f-esc').value;
+    if(nome.trim()!==' ') {
+      pendentes.push({nome:nome.trim()||'Novo atleta',escalao:esc||'—',data:new Date().toLocaleDateString('pt-PT')});
+      renderPendentes();
+      document.getElementById('pendentes-box').classList.add('visible');
+    }
+    closeForm();
+    toast('Atleta adicionado — aguarda ativação!','ok');
+  }
+}
+function formAnt() { if(formStep>1){formStep--;updateForm();} }
+
+function onTipoChange() {
+  const v = document.getElementById('f-tipo').value;
+  document.getElementById('fg-clube').style.display = v==='cedido'?'block':'none';
+  document.getElementById('fg-lic-fpc').style.display = (v==='proprio-lic'||v==='cedido')?'block':'none';
+  if(v==='cedido') document.getElementById('f-mens').value='definir';
+}
+function calcEscalao() {
+  const nasc = document.getElementById('f-nasc-p1').value;
+  if (!nasc) return;
+
+  const nascDate = new Date(nasc);
+  const anoNasc = nascDate.getFullYear();
+  const epoca = DB.epoca_atual;
+
+  // No ciclismo o escalão baseia-se no ano de nascimento
+  // A idade relevante é a que o atleta tem no ano da época
+  const idadeEpoca = epoca - anoNasc;
+
+  let escalao = '', subescalao = '', label = '', sub = '';
+
+  if (idadeEpoca <= 6) {
+    escalao = 'escolas'; subescalao = 'sub7';
+    label = 'Escolas — SUB7'; sub = 'Nascido em ' + anoNasc + ' · ' + idadeEpoca + ' anos em ' + epoca;
+  } else if (idadeEpoca <= 8) {
+    escalao = 'escolas'; subescalao = 'sub9';
+    label = 'Escolas — SUB9'; sub = 'Nascido em ' + anoNasc + ' · ' + idadeEpoca + ' anos em ' + epoca;
+  } else if (idadeEpoca <= 10) {
+    escalao = 'escolas'; subescalao = 'sub11';
+    label = 'Escolas — SUB11'; sub = 'Nascido em ' + anoNasc + ' · ' + idadeEpoca + ' anos em ' + epoca;
+  } else if (idadeEpoca <= 12) {
+    escalao = 'escolas'; subescalao = 'sub13';
+    label = 'Escolas — SUB13'; sub = 'Nascido em ' + anoNasc + ' · ' + idadeEpoca + ' anos em ' + epoca;
+  } else if (idadeEpoca <= 14) {
+    escalao = 'escolas'; subescalao = 'sub15';
+    label = 'Escolas — SUB15'; sub = 'Nascido em ' + anoNasc + ' · ' + idadeEpoca + ' anos em ' + epoca;
+  } else if (idadeEpoca <= 16) {
+    escalao = 'sub17'; subescalao = '';
+    label = 'SUB17'; sub = 'Nascido em ' + anoNasc + ' · ' + idadeEpoca + ' anos em ' + epoca;
+  } else if (idadeEpoca <= 18) {
+    escalao = 'sub19'; subescalao = '';
+    label = 'SUB19'; sub = 'Nascido em ' + anoNasc + ' · ' + idadeEpoca + ' anos em ' + epoca;
+  } else if (idadeEpoca <= 22) {
+    escalao = 'sub23'; subescalao = '';
+    label = 'SUB23'; sub = 'Nascido em ' + anoNasc + ' · ' + idadeEpoca + ' anos em ' + epoca;
+  } else {
+    escalao = 'sub23'; subescalao = '';
+    label = 'SUB23 / Sénior'; sub = 'Nascido em ' + anoNasc + ' · ' + idadeEpoca + ' anos em ' + epoca + ' — confirmar categoria';
+  }
+
+  // Guardar nos campos hidden
+  document.getElementById('f-esc').value = escalao;
+  document.getElementById('f-subesc').value = subescalao;
+
+  // Mostrar resultado
+  document.getElementById('escalao-result-label').textContent = label;
+  document.getElementById('escalao-result-sub').textContent = sub;
+  document.getElementById('fg-escalao-result').style.display = 'block';
+
+  // Pré-preencher o manual também
+  document.getElementById('f-esc-manual').value = escalao;
+  if (escalao === 'escolas') {
+    document.getElementById('f-subesc-manual').style.display = 'block';
+    document.getElementById('f-subesc-manual').value = subescalao;
+  }
+}
+
+function toggleOverride() {
+  const b = document.getElementById('override-block');
+  b.style.display = b.style.display === 'none' ? 'block' : 'none';
+}
+
+function onEscManualChange() {
+  const v = document.getElementById('f-esc-manual').value;
+  document.getElementById('f-subesc-manual').style.display = v === 'escolas' ? 'block' : 'none';
+  document.getElementById('f-esc').value = v;
+  // actualizar label
+  const labels = {escolas:'Escolas',sub17:'SUB17',sub19:'SUB19',sub23:'SUB23',paraciclismo:'Paraciclismo'};
+  document.getElementById('escalao-result-label').textContent = (labels[v]||v) + ' (corrigido manualmente)';
+  document.getElementById('escalao-result-box').style.background = 'var(--amber-bg)';
+  document.getElementById('escalao-result-box').style.borderColor = 'var(--amber-border)';
+  document.getElementById('escalao-result-label').style.color = 'var(--amber)';
+}
+
+function onEscChange() {
+  // mantido por compatibilidade
+}
+
+// VALIDAÇÕES
+function vNome() {
+  const v=document.getElementById('f-nome').value.trim();
+  const el=document.getElementById('f-nome'), h=document.getElementById('h-nome');
+  if(v.length>=2){el.classList.add('ok');el.classList.remove('err');h.className='fhint ok';h.textContent='✓ Ok';}
+  else if(v.length>0){el.classList.add('err');el.classList.remove('ok');h.className='fhint err';h.textContent='Nome demasiado curto';}
+  else{el.classList.remove('ok','err');h.textContent='';}
+}
+function vCC() {
+  const raw=document.getElementById('f-cc').value;
+  const el=document.getElementById('f-cc'), h=document.getElementById('h-cc');
+  if(!raw){el.classList.remove('ok','err');h.textContent='';return;}
+  const ok=/^\d{8}\s\d\s[A-Z]{2}\d$/.test(raw)||raw.replace(/\s/g,'').length===12;
+  if(ok){el.classList.add('ok');el.classList.remove('err');h.className='fhint ok';h.textContent='✓ Formato válido';}
+  else{el.classList.add('err');el.classList.remove('ok');h.className='fhint err';h.textContent='Formato: 12345678 9 ZZ4';}
+}
+function vNIF() {
+  const v=document.getElementById('f-nif').value.replace(/\D/g,'');
+  const el=document.getElementById('f-nif'), h=document.getElementById('h-nif');
+  if(!v){el.classList.remove('ok','err');h.textContent='';return;}
+  if(v.length===9){el.classList.add('ok');el.classList.remove('err');h.className='fhint ok';h.textContent='✓ Ok';}
+  else{el.classList.add('err');el.classList.remove('ok');h.className='fhint err';h.textContent='Deve ter 9 dígitos';}
+}
+
+// ============================================================
+// NOVA ÉPOCA
+// ============================================================
+function openEpoca() {
+  epocaEstados={};
+  const ativos = DB.atletas.filter(a=>{const e=a.epocas[DB.epoca_atual];return e&&e.estado==='ativo'});
+  document.getElementById('epoca-list').innerHTML = `<div style="padding:.9rem 0">`+ativos.map(a=>{
+    const ep=a.epocas[DB.epoca_atual];
+    return `<div class="ep-row" id="epr-${a.id}">
+      <div class="av av-${avColor(a)}" style="width:30px;height:30px;font-size:11px;flex-shrink:0">${initials(a.nome)}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">${a.nome}</div>
+        <div style="font-size:11px;color:var(--muted)">${escalaoFull(ep)} · ${calcAge(a.nasc)} anos</div>
+      </div>
+      <div class="ep-btns">
+        <div class="ep-btn-sm" onclick="setEpocaEstado(${a.id},'renova',this)">Renova</div>
+        <div class="ep-btn-sm" onclick="setEpocaEstado(${a.id},'sai',this)">Sai</div>
+        <div class="ep-btn-sm" onclick="setEpocaEstado(${a.id},'inativo',this)">Inativo</div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+  updateEpocaProg();
+  document.getElementById('epoca-overlay').classList.add('open');
+}
+
+function setEpocaEstado(id, estado, el) {
+  epocaEstados[id]=estado;
+  const row=document.getElementById(`epr-${id}`);
+  row.querySelectorAll('.ep-btn-sm').forEach(b=>b.className='ep-btn-sm');
+  el.className=`ep-btn-sm ep-sel-${estado}`;
+  updateEpocaProg();
+}
+
+function updateEpocaProg() {
+  const total=DB.atletas.filter(a=>{const e=a.epocas[DB.epoca_atual];return e&&e.estado==='ativo'}).length;
+  const done=Object.keys(epocaEstados).length;
+  const renova=Object.values(epocaEstados).filter(v=>v==='renova').length;
+  const sai=Object.values(epocaEstados).filter(v=>v==='sai').length;
+  document.getElementById('ep-prog').textContent = `${done}/${total} classificados · ${renova} renovam · ${sai} saem`;
+}
+
+function confirmarEpoca() {
+  closeEpoca();
+  toast('Época 2027 preparada — ativa em 1 Jan 2027!','ok');
+}
+function closeEpoca() { document.getElementById('epoca-overlay').classList.remove('open'); }
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, type='') {
+  const el=document.getElementById('toast-el');
+  el.textContent=msg; el.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ============================================================
+// START
+// ============================================================
+init();
+</script>
+</body>
+</html>

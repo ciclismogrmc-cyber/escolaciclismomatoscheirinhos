@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrocinadores — Escola de Ciclismo</title>
+<style>
+:root{
+  --red:#CC0000;--red-bg:#FFF0F0;--red-bd:rgba(204,0,0,.25);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-bd:rgba(24,95,165,.25);
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-bd:rgba(15,110,86,.25);
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-bd:rgba(133,79,11,.25);
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-bd:rgba(59,109,17,.25);
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-bd:rgba(83,74,183,.25);
+  --gray:#5F5E5A;--gray-bg:#F1EFE8;--gray-bd:rgba(95,94,90,.25);
+  --bg:#F5F4F1;--surface:#fff;--border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.16);
+  --text:#1A1A1A;--muted:#666660;--hint:#9A9A94;
+  --r:10px;--rs:6px;--sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sb-logo{padding:1.1rem 1rem .9rem;border-bottom:.5px solid var(--border)}
+.sb-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.sb-icon{width:32px;height:32px;background:var(--red);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.sb-name{font-size:13px;font-weight:600;line-height:1.2}
+.sb-season{font-size:11px;color:var(--hint);padding-left:40px}
+.sb-nav{padding:.6rem .5rem;flex:1;overflow-y:auto}
+.nav-sec{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;padding:.5rem .5rem .2rem;margin-top:.4rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.45rem .75rem;border-radius:var(--rs);cursor:pointer;color:var(--muted);font-size:13px;transition:background .1s,color .1s;text-decoration:none}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500}
+.nav-badge{margin-left:auto;background:var(--red-bg);color:var(--red);font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-foot{padding:.7rem 1rem;border-top:.5px solid var(--border);display:flex;align-items:center;gap:8px}
+.ua{width:28px;height:28px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:.5px solid var(--border);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-title{font-size:16px;font-weight:600}
+.tb-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.tb-actions{display:flex;gap:8px}
+.content{padding:1.1rem 1.5rem;flex:1}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+.b-ok{background:var(--green-bg);color:var(--green)}
+.b-warn{background:var(--amber-bg);color:var(--amber)}
+.b-danger{background:var(--red-bg);color:var(--red)}
+.b-info{background:var(--blue-bg);color:var(--blue)}
+.b-gray{background:var(--gray-bg);color:var(--gray)}
+.b-purple{background:var(--purple-bg);color:var(--purple)}
+
+/* BUTTONS */
+button,.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rs);border:.5px solid var(--border2);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;transition:background .11s;font-family:inherit;white-space:nowrap}
+button:hover,.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn-primary:hover{background:#AA0000}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-teal{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn-green{background:var(--green);border-color:var(--green);color:#fff}
+.btn-wa{background:#25D366;border-color:#25D366;color:#fff}
+.btn-wa:hover{background:#1aad53}
+
+select,input,textarea{padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--surface);color:var(--text);outline:none;font-family:inherit;width:100%}
+select:focus,input:focus,textarea:focus{border-color:var(--blue)}
+
+/* MÉTRICAS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:1.1rem}
+.metric{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1rem}
+.metric-l{font-size:11px;color:var(--muted);margin-bottom:4px}
+.metric-v{font-size:24px;font-weight:700;line-height:1}
+.metric-s{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* ALERTAS */
+.alerta-box{border-radius:var(--r);padding:.85rem 1rem;margin-bottom:1.1rem}
+.ab-warn{background:var(--amber-bg);border:.5px solid var(--amber-bd)}
+.ab-red{background:var(--red-bg);border:.5px solid var(--red-bd)}
+.ab-green{background:var(--green-bg);border:.5px solid var(--green-bd)}
+.alerta-title{font-size:12px;font-weight:600;margin-bottom:.5rem}
+.alerta-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;border-bottom:.5px solid rgba(0,0,0,.06)}
+.alerta-row:last-child{border-bottom:none}
+
+/* GRID PATROCINADORES */
+.pat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-bottom:1.1rem}
+.pat-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:box-shadow .12s,border-color .12s}
+.pat-card:hover{border-color:var(--border2);box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.pat-card.inativo{opacity:.65}
+.pat-hd{display:flex;align-items:flex-start;gap:12px;margin-bottom:.85rem}
+.pat-logo{width:44px;height:44px;border-radius:var(--rs);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:.5px solid var(--border)}
+.pat-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.pat-sector{font-size:12px;color:var(--muted)}
+.pat-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.pat-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:.85rem}
+.pat-stat{text-align:center;padding:.4rem;background:var(--bg);border-radius:var(--rs)}
+.ps-val{font-size:14px;font-weight:700}
+.ps-lbl{font-size:10px;color:var(--muted)}
+.pat-contacto{font-size:12px;color:var(--muted);margin-bottom:.5rem;display:flex;align-items:center;gap:5px}
+.pat-progresso{margin-bottom:.5rem}
+.prog-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:3px}
+.prog-fill{height:100%;border-radius:3px;background:var(--green)}
+.pat-footer{display:flex;gap:6px;margin-top:.85rem;padding-top:.85rem;border-top:.5px solid var(--border)}
+
+/* PAINEL DETALHE */
+.panel{position:fixed;top:0;right:0;bottom:0;width:520px;background:var(--surface);border-left:.5px solid var(--border);z-index:200;display:none;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
+.panel.open{display:flex}
+.panel-top{padding:.85rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.panel-tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--rs);padding:3px}
+.pt{padding:4px 11px;border-radius:4px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .11s;border:none;background:transparent;font-family:inherit}
+.pt.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.panel-body{flex:1;overflow-y:auto;padding:1.1rem}
+.panel-foot{padding:.8rem 1.1rem;border-top:.5px solid var(--border);display:flex;gap:7px;flex-shrink:0;flex-wrap:wrap}
+
+/* SECÇÕES PAINEL */
+.sec{margin-bottom:1.1rem}
+.sec-t{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem;padding-bottom:4px;border-bottom:.5px solid var(--border)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+.fl{font-size:11px;color:var(--muted);margin-bottom:1px}
+.fv{font-size:13px;color:var(--text)}
+.info-box{padding:.65rem .85rem;border-radius:var(--rs);font-size:12px;margin-bottom:.8rem}
+.ib-blue{background:var(--blue-bg);color:var(--blue)}
+.ib-green{background:var(--green-bg);color:var(--green)}
+.ib-warn{background:var(--amber-bg);color:var(--amber)}
+
+/* APOIOS */
+.apoio-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.5px solid var(--border);font-size:13px}
+.apoio-row:last-child{border-bottom:none}
+
+/* CONTRAPARTIDAS */
+.cont-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--border);font-size:13px}
+.cont-row:last-child{border-bottom:none}
+.cont-check{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .12s;flex-shrink:0}
+.cont-check.done{background:var(--green);border-color:var(--green);color:#fff}
+
+/* CONTACTOS HISTÓRICO */
+.contacto-item{padding:.7rem .85rem;border:.5px solid var(--border);border-radius:var(--rs);margin-bottom:6px}
+.contacto-hd{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.contacto-data{font-size:11px;color:var(--muted)}
+.contacto-tipo{font-size:11px}
+.contacto-resumo{font-size:13px;color:var(--text)}
+.contacto-autor{font-size:11px;color:var(--hint);margin-top:2px}
+
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:500px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;margin:1rem}
+.modal-hd{padding:.9rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:15px;font-weight:600}
+.modal-body{flex:1;overflow-y:auto;padding:1.1rem}
+.modal-foot{padding:.8rem 1.1rem;border-top:.5px solid var(--border);display:flex;gap:7px;justify-content:flex-end;flex-shrink:0}
+.fg{margin-bottom:.8rem}
+.fl2{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:3px;display:block}
+.fi{padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;width:100%}
+.fi:focus{border-color:var(--blue);outline:none}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:.55rem .95rem;border-radius:var(--rs);font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .18s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--green)}
+.toast.warn{background:var(--amber)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-icon">🚴</div>
+      <div class="sb-name">Escola de<br>Ciclismo</div>
+    </div>
+    <div class="sb-season">Época 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Principal</div>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">⬡ Cockpit</a>
+    <div class="nav-sec">Equipa</div>
+    <a class="nav-item" href="atletas_standalone.html">👥 Atletas</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🪪 Staff</a>
+    <div class="nav-sec">Desportivo</div>
+    <a class="nav-item" href="calendario_standalone.html">📅 Calendário</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🏆 Resultados</a>
+    <div class="nav-sec">Gestão</div>
+    <a class="nav-item" href="equipamentos_standalone.html">🚐 Logística</a>
+    <a class="nav-item" href="financeira_standalone.html">💰 Financeira</a>
+    <a class="nav-item active" href="#">🤝 Patrocinadores</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">📢 Comunicações</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="ua">JP</div>
+    <div><div style="font-size:12px;font-weight:500">João Paulo Serra</div><div style="font-size:11px;color:var(--muted)">Treinador</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+<div class="topbar">
+  <div>
+    <div class="tb-title">Patrocinadores</div>
+    <div class="tb-sub">Gestão de patrocinadores e apoios</div>
+  </div>
+  <div class="tb-actions">
+    <button onclick="openModalPatrocinador()">+ Novo patrocinador</button>
+  </div>
+</div>
+
+<div class="content" id="main-content"></div>
+</div>
+</div>
+
+<!-- PAINEL DETALHE -->
+<div class="panel" id="panel">
+  <div class="panel-top">
+    <button class="btn-ghost btn-sm" onclick="closePanel()">← Voltar</button>
+    <div style="flex:1"></div>
+    <div class="panel-tabs">
+      <button class="pt active" onclick="setPanelTab(this,'ficha')">Ficha</button>
+      <button class="pt" onclick="setPanelTab(this,'apoios')">Apoios</button>
+      <button class="pt" onclick="setPanelTab(this,'contrapartidas')">Contrapartidas</button>
+      <button class="pt" onclick="setPanelTab(this,'historico')">Histórico</button>
+    </div>
+  </div>
+  <div class="panel-body" id="panel-body"></div>
+  <div class="panel-foot" id="panel-foot"></div>
+</div>
+
+<!-- MODAL NOVO PATROCINADOR -->
+<div class="modal-overlay" id="modal-pat" onclick="if(event.target===this)closeModal('modal-pat')">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-hd">
+      <div class="modal-title">Novo patrocinador</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-pat')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl2">Nome / Empresa *</label><input type="text" class="fi" id="pat-nome"></div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Sector de actividade</label><input type="text" class="fi" id="pat-sector" placeholder="Ex: Comércio, Saúde..."></div>
+        <div class="fg"><label class="fl2">Patrocinador desde</label><input type="text" class="fi" id="pat-desde" placeholder="Ex: 2026" value="2026"></div>
+      </div>
+      <div class="fg"><label class="fl2">Morada</label><input type="text" class="fi" id="pat-morada"></div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Website</label><input type="text" class="fi" id="pat-web"></div>
+        <div class="fg"><label class="fl2">Redes sociais</label><input type="text" class="fi" id="pat-redes"></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:.85rem 0 .6rem;padding-bottom:4px;border-bottom:.5px solid var(--border)">Contacto principal</div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Nome *</label><input type="text" class="fi" id="pat-c1-nome"></div>
+        <div class="fg"><label class="fl2">Cargo</label><input type="text" class="fi" id="pat-c1-cargo"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Telemóvel *</label><input type="tel" class="fi" id="pat-c1-tel"></div>
+        <div class="fg"><label class="fl2">Email</label><input type="email" class="fi" id="pat-c1-email"></div>
+      </div>
+      <div class="fg"><label class="fl2">Notas de relacionamento</label><textarea class="fi" id="pat-notas" rows="2" placeholder="Preferências, personalidade, datas importantes..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-pat')">Cancelar</button>
+      <button class="btn-primary" onclick="confirmarNovoPatrocinador()">+ Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVO APOIO -->
+<div class="modal-overlay" id="modal-apoio" onclick="if(event.target===this)closeModal('modal-apoio')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Registar apoio</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-apoio')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl2">Descrição *</label><input type="text" class="fi" id="apoio-desc"></div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Tipo</label>
+          <select class="fi" id="apoio-tipo">
+            <option value="dinheiro">💶 Dinheiro</option>
+            <option value="especie">📦 Espécie</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl2">Valor estimado (€)</label><input type="number" step="0.01" class="fi" id="apoio-valor"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Periodicidade</label>
+          <select class="fi" id="apoio-period">
+            <option value="unica">Única</option>
+            <option value="mensal">Mensal</option>
+            <option value="trimestral">Trimestral</option>
+            <option value="anual">Anual</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl2">Data prevista</label><input type="date" class="fi" id="apoio-data" value="2026-07-01"></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:.5rem">
+        <input type="checkbox" id="apoio-recebido"> Já recebido
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-apoio')">Cancelar</button>
+      <button class="btn-primary" onclick="confirmarApoio()">+ Registar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL REGISTAR CONTACTO -->
+<div class="modal-overlay" id="modal-cont" onclick="if(event.target===this)closeModal('modal-cont')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Registar contacto</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-cont')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="f2">
+        <div class="fg"><label class="fl2">Data</label><input type="date" class="fi" id="cont-data" value="2026-06-16"></div>
+        <div class="fg"><label class="fl2">Tipo</label>
+          <select class="fi" id="cont-tipo">
+            <option value="telefone">📞 Telefone</option>
+            <option value="email">📧 Email</option>
+            <option value="whatsapp">📱 WhatsApp</option>
+            <option value="presencial">🤝 Presencial</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl2">Resumo do contacto *</label><textarea class="fi" id="cont-resumo" rows="3"></textarea></div>
+      <div class="fg"><label class="fl2">Próximo contacto previsto</label><input type="date" class="fi" id="cont-proximo"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-cont')">Cancelar</button>
+      <button class="btn-primary" onclick="confirmarContacto()">✓ Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<script>
+// ============================================================
+// PATROCINADORES_DB.JS
+// ============================================================
+
+const PATROCINADORES_DB = {
+
+  patrocinadores: [
+    {
+      id: 'p1',
+      nome: 'Matos Cheirinhos',
+      logo: '🏪',
+      sector: 'Comércio alimentar',
+      morada: 'Rua Principal, 45 — Matos Cheirinhos',
+      website: 'www.matoscheirinhos.pt',
+      redes: '@matoscheirinhos',
+      estado: 'ativo',
+      desde: '2022',
+      // Contactos
+      contacto1_nome: 'António Rodrigues',
+      contacto1_cargo: 'Gerente',
+      contacto1_tel: '912 111 222',
+      contacto1_email: 'antonio@matoscheirinhos.pt',
+      contacto2_nome: 'Filipa Rodrigues',
+      contacto2_cargo: 'Administrativa',
+      contacto2_tel: '913 222 333',
+      contacto2_email: 'filipa@matoscheirinhos.pt',
+      // Notas de relacionamento
+      notas: 'Família muito ligada ao ciclismo. António gosta de ser contactado por telefone. Aniversário em Março.',
+      data_aniversario: '1965-03-15',
+      // Apoios
+      apoios: [
+        {id:'a1', tipo:'dinheiro', descricao:'Patrocínio anual 2026', valor:1500, periodicidade:'unica', dataPrevista:'2026-01-15', dataRecebida:'2026-01-20', estado:'recebido'},
+        {id:'a2', tipo:'dinheiro', descricao:'Patrocínio anual 2026 — 2ª tranche', valor:1000, periodicidade:'unica', dataPrevista:'2026-07-01', dataRecebida:'', estado:'pendente'},
+        {id:'a3', tipo:'especie', descricao:'Fornecimento de alimentação para estágios', valor:300, periodicidade:'anual', dataPrevista:'2026-03-01', dataRecebida:'2026-03-05', estado:'recebido'},
+      ],
+      // Contrapartidas
+      contrapartidas: [
+        {id:'c1', tipo:'visibilidade', descricao:'Logo no jersey de corrida', cumprida:true},
+        {id:'c2', tipo:'visibilidade', descricao:'Logo nas viaturas', cumprida:true},
+        {id:'c3', tipo:'comunicacao', descricao:'Menção em publicações redes sociais (mínimo 12/ano)', cumprida:false, progresso:'8/12'},
+        {id:'c4', tipo:'presenca', descricao:'Convite para festa de fim de época', cumprida:false},
+      ],
+      // Histórico de contactos
+      contactos: [
+        {data:'2026-01-10', tipo:'telefone', resumo:'Confirmado patrocínio 2026. Muito satisfeito com visibilidade obtida em 2025.', autor:'JP Serra'},
+        {data:'2026-03-08', tipo:'presencial', resumo:'Visita ao stand na corrida de Cascais. Entregou alimentação para estágio.', autor:'JP Serra'},
+        {data:'2026-05-20', tipo:'whatsapp', resumo:'Enviados resultados e fotos das corridas de Maio.', autor:'JP Serra'},
+      ],
+      proximo_contacto: '2026-08-15',
+    },
+    {
+      id: 'p2',
+      nome: 'LA Alumínios',
+      logo: '🏗️',
+      sector: 'Construção / Materiais',
+      morada: 'Zona Industrial, Lote 12 — Cascais',
+      website: 'www.laaluminios.pt',
+      redes: '',
+      estado: 'ativo',
+      desde: '2024',
+      contacto1_nome: 'Luís Antunes',
+      contacto1_cargo: 'CEO',
+      contacto1_tel: '914 333 444',
+      contacto1_email: 'l.antunes@laaluminios.pt',
+      contacto2_nome: 'Sara Antunes',
+      contacto2_cargo: 'Responsável Marketing',
+      contacto2_tel: '915 444 555',
+      contacto2_email: 's.antunes@laaluminios.pt',
+      notas: 'Patrocinador do naming do kit de corrida. Prefere contacto por email.',
+      data_aniversario: '',
+      apoios: [
+        {id:'a4', tipo:'dinheiro', descricao:'Naming kit corrida 2026', valor:500, periodicidade:'anual', dataPrevista:'2026-03-01', dataRecebida:'2026-03-10', estado:'recebido'},
+      ],
+      contrapartidas: [
+        {id:'c5', tipo:'visibilidade', descricao:'Nome no kit de corrida (naming)', cumprida:true},
+        {id:'c6', tipo:'comunicacao', descricao:'Menção em publicações (mínimo 6/ano)', cumprida:false, progresso:'4/6'},
+      ],
+      contactos: [
+        {data:'2026-02-15', tipo:'email', resumo:'Confirmação do patrocínio naming 2026.', autor:'JP Serra'},
+        {data:'2026-04-10', tipo:'email', resumo:'Enviadas fotos do kit com logo.', autor:'JP Serra'},
+      ],
+      proximo_contacto: '2026-09-01',
+    },
+    {
+      id: 'p3',
+      nome: 'Vila Galé Hotéis',
+      logo: '🏨',
+      sector: 'Hotelaria / Turismo',
+      morada: 'Av. do Mar, 1 — Cascais',
+      website: 'www.vilagale.com',
+      redes: '@vilagale',
+      estado: 'negociacao',
+      desde: '2026',
+      contacto1_nome: 'Pedro Galvão',
+      contacto1_cargo: 'Director Regional',
+      contacto1_tel: '916 555 666',
+      contacto1_email: 'p.galvao@vilagale.pt',
+      contacto2_nome: '', contacto2_cargo: '', contacto2_tel: '', contacto2_email: '',
+      notas: 'Em negociação para apoio em alojamento em corridas por etapas.',
+      data_aniversario: '',
+      apoios: [],
+      contrapartidas: [],
+      contactos: [
+        {data:'2026-05-10', tipo:'presencial', resumo:'Reunião inicial. Interesse em apoiar alojamento em corridas por etapas.', autor:'JP Serra'},
+      ],
+      proximo_contacto: '2026-07-01',
+    },
+    {
+      id: 'p4',
+      nome: 'Marcos Car',
+      logo: '🚗',
+      sector: 'Automóvel',
+      morada: 'Estrada Nacional, 250 — Sintra',
+      website: '',
+      redes: '',
+      estado: 'inativo',
+      desde: '2023',
+      contacto1_nome: 'Carlos Marcos',
+      contacto1_cargo: 'Proprietário',
+      contacto1_tel: '917 666 777',
+      contacto1_email: 'c.marcos@marcoscar.pt',
+      contacto2_nome: '', contacto2_cargo: '', contacto2_tel: '', contacto2_email: '',
+      notas: 'Apoiou em 2023 e 2024. Não renovou em 2025/2026. Manter contacto para eventual retorno.',
+      data_aniversario: '',
+      apoios: [],
+      contrapartidas: [],
+      contactos: [
+        {data:'2025-11-20', tipo:'telefone', resumo:'Contacto para renovação 2026. Dificuldades financeiras, não renova este ano.', autor:'JP Serra'},
+      ],
+      proximo_contacto: '2026-11-01',
+    },
+  ],
+
+  TIPOS_APOIO: [
+    {id:'dinheiro', nome:'Dinheiro', icone:'💶'},
+    {id:'especie', nome:'Espécie', icone:'📦'},
+  ],
+
+  TIPOS_CONTRAPARTIDA: [
+    {id:'visibilidade', nome:'Visibilidade', icone:'👁️'},
+    {id:'comunicacao', nome:'Comunicação', icone:'📢'},
+    {id:'presenca', nome:'Presença em eventos', icone:'🎟️'},
+    {id:'outro', nome:'Outro', icone:'📌'},
+  ],
+
+  TIPOS_CONTACTO: [
+    {id:'telefone', nome:'Telefone', icone:'📞'},
+    {id:'email', nome:'Email', icone:'📧'},
+    {id:'whatsapp', nome:'WhatsApp', icone:'📱'},
+    {id:'presencial', nome:'Presencial', icone:'🤝'},
+  ],
+
+  ESTADOS: [
+    {id:'ativo', nome:'Ativo', color:'green'},
+    {id:'negociacao', nome:'Em negociação', color:'amber'},
+    {id:'inativo', nome:'Inativo', color:'gray'},
+  ],
+
+  getById(id) { return this.patrocinadores.find(p=>p.id===id); },
+
+  totalApoios(pat) {
+    const recebido = pat.apoios.filter(a=>a.estado==='recebido').reduce((s,a)=>s+a.valor,0);
+    const pendente = pat.apoios.filter(a=>a.estado==='pendente').reduce((s,a)=>s+a.valor,0);
+    return {recebido, pendente, total:recebido+pendente};
+  },
+
+  diasSemContacto(pat) {
+    if(!pat.contactos.length) return 999;
+    const ultimo = pat.contactos.sort((a,b)=>b.data.localeCompare(a.data))[0];
+    const d = new Date(ultimo.data);
+    const hoje = new Date();
+    return Math.floor((hoje-d)/86400000);
+  },
+
+  totalGeral() {
+    const ativos = this.patrocinadores.filter(p=>p.estado==='ativo');
+    const recebido = ativos.reduce((s,p)=>s+this.totalApoios(p).recebido,0);
+    const pendente = ativos.reduce((s,p)=>s+this.totalApoios(p).pendente,0);
+    return {recebido, pendente, total:recebido+pendente, ativos:ativos.length};
+  },
+};
+
+</script>
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let PANEL_PAT = null;
+let PANEL_TAB = 'ficha';
+
+// ============================================================
+// UTILS
+// ============================================================
+function fmtEur(v) { return v.toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2})+'€'; }
+function fmtDate(d) { if(!d) return '—'; return new Date(d+'T00:00:00').toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function fmtDateLong(d) { if(!d) return '—'; return new Date(d+'T00:00:00').toLocaleDateString('pt-PT',{day:'numeric',month:'long',year:'numeric'}); }
+
+function estadoBadge(e) {
+  if(e==='ativo') return '<span class="badge b-ok">Ativo</span>';
+  if(e==='negociacao') return '<span class="badge b-warn">Em negociação</span>';
+  return '<span class="badge b-gray">Inativo</span>';
+}
+
+function tipoContactoIco(tipo) {
+  const map={telefone:'📞',email:'📧',whatsapp:'📱',presencial:'🤝'};
+  return map[tipo]||'💬';
+}
+
+// ============================================================
+// RENDER PRINCIPAL
+// ============================================================
+function renderMain() {
+  const todos = PATROCINADORES_DB.patrocinadores;
+  const ativos = todos.filter(p=>p.estado==='ativo');
+  const negoc = todos.filter(p=>p.estado==='negociacao');
+  const inat = todos.filter(p=>p.estado==='inativo');
+  const total = PATROCINADORES_DB.totalGeral();
+
+  // Alertas
+  const semContacto60 = ativos.filter(p=>PATROCINADORES_DB.diasSemContacto(p)>60);
+  const proximoContacto = todos.filter(p=>p.proximo_contacto&&new Date(p.proximo_contacto)<=new Date(Date.now()+7*86400000));
+  const apoiosPendentes = ativos.filter(p=>p.apoios.some(a=>a.estado==='pendente'));
+
+  // Aniversários próximos (30 dias)
+  const hoje = new Date();
+  const bdays = ativos.filter(p=>{
+    if(!p.data_aniversario) return false;
+    const d = new Date(p.data_aniversario);
+    const esteAno = new Date(hoje.getFullYear(), d.getMonth(), d.getDate());
+    const diff = (esteAno-hoje)/86400000;
+    return diff >= 0 && diff <= 30;
+  });
+
+  document.getElementById('main-content').innerHTML = `
+  <!-- MÉTRICAS -->
+  <div class="metrics">
+    <div class="metric"><div class="metric-l">Patrocinadores ativos</div><div class="metric-v">${ativos.length}</div></div>
+    <div class="metric"><div class="metric-l">Em negociação</div><div class="metric-v" style="color:var(--amber)">${negoc.length}</div></div>
+    <div class="metric"><div class="metric-l">Total recebido</div><div class="metric-v" style="color:var(--green)">${fmtEur(total.recebido)}</div></div>
+    <div class="metric"><div class="metric-l">Pendente a receber</div><div class="metric-v" style="color:var(--amber)">${fmtEur(total.pendente)}</div></div>
+    <div class="metric"><div class="metric-l">Apoios pendentes</div><div class="metric-v" style="color:${apoiosPendentes.length?'var(--amber)':'var(--text)'}">${apoiosPendentes.length}</div><div class="metric-s">patrocinadores</div></div>
+  </div>
+
+  <!-- ALERTAS -->
+  ${bdays.length ? `<div class="alerta-box ab-green">
+    <div class="alerta-title" style="color:var(--green)">🎂 Aniversários próximos (30 dias)</div>
+    ${bdays.map(p=>{
+      const d = new Date(p.data_aniversario);
+      const esteAno = new Date(hoje.getFullYear(), d.getMonth(), d.getDate());
+      const dias = Math.ceil((esteAno-hoje)/86400000);
+      return `<div class="alerta-row">
+        <span style="flex:1;font-weight:500">${p.contacto1_nome}</span>
+        <span style="color:var(--muted)">${p.nome}</span>
+        <span class="badge b-ok">${dias===0?'Hoje':dias+' dias'}</span>
+        <button class="btn-sm btn-wa" onclick="enviarBdayWA('${p.contacto1_nome}')">🎂 WA</button>
+      </div>`;
+    }).join('')}
+  </div>` : ''}
+
+  ${semContacto60.length ? `<div class="alerta-box ab-warn">
+    <div class="alerta-title" style="color:var(--amber)">⚠️ Sem contacto há mais de 60 dias</div>
+    ${semContacto60.map(p=>`<div class="alerta-row">
+      <span class="pat-logo" style="font-size:16px">${p.logo}</span>
+      <span style="flex:1;font-weight:500">${p.nome}</span>
+      <span class="badge b-warn">${PATROCINADORES_DB.diasSemContacto(p)} dias</span>
+      <button class="btn-sm" onclick="openPanel('${p.id}')">Ver →</button>
+    </div>`).join('')}
+  </div>` : ''}
+
+  ${proximoContacto.length ? `<div class="alerta-box ab-red">
+    <div class="alerta-title" style="color:var(--red)">📅 Próximos contactos esta semana</div>
+    ${proximoContacto.map(p=>`<div class="alerta-row">
+      <span class="pat-logo" style="font-size:16px">${p.logo}</span>
+      <span style="flex:1;font-weight:500">${p.nome}</span>
+      <span class="badge b-danger">${fmtDate(p.proximo_contacto)}</span>
+      <button class="btn-sm btn-wa" onclick="contactarWA('${p.id}')">📱 Contactar</button>
+    </div>`).join('')}
+  </div>` : ''}
+
+  <!-- GRID ATIVOS -->
+  ${ativos.length ? `<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem">Patrocinadores ativos</div>
+  <div class="pat-grid">
+    ${ativos.map(p=>renderPatCard(p)).join('')}
+  </div>` : ''}
+
+  <!-- EM NEGOCIAÇÃO -->
+  ${negoc.length ? `<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:.5rem 0 .6rem">Em negociação</div>
+  <div class="pat-grid">
+    ${negoc.map(p=>renderPatCard(p)).join('')}
+  </div>` : ''}
+
+  <!-- INATIVOS -->
+  ${inat.length ? `<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:.5rem 0 .6rem">Inativos — manter contacto</div>
+  <div class="pat-grid">
+    ${inat.map(p=>renderPatCard(p)).join('')}
+  </div>` : ''}`;
+}
+
+function renderPatCard(p) {
+  const t = PATROCINADORES_DB.totalApoios(p);
+  const dias = PATROCINADORES_DB.diasSemContacto(p);
+  const conts = p.contrapartidas;
+  const cumpridas = conts.filter(c=>c.cumprida).length;
+  const pct = conts.length ? Math.round((cumpridas/conts.length)*100) : 0;
+
+  return `<div class="pat-card${p.estado==='inativo'?' inativo':''}" onclick="openPanel('${p.id}')">
+    <div class="pat-hd">
+      <div class="pat-logo">${p.logo}</div>
+      <div style="flex:1">
+        <div class="pat-name">${p.nome}</div>
+        <div class="pat-sector">${p.sector} · desde ${p.desde}</div>
+        <div class="pat-badges">
+          ${estadoBadge(p.estado)}
+          ${dias>60?'<span class="badge b-danger">'+dias+'d sem contacto</span>':''}
+          ${p.apoios.some(a=>a.estado==='pendente')?'<span class="badge b-warn">Apoio pendente</span>':''}
+        </div>
+      </div>
+    </div>
+
+    <div class="pat-stats">
+      <div class="pat-stat"><div class="ps-val" style="color:var(--green)">${fmtEur(t.recebido)}</div><div class="ps-lbl">Recebido</div></div>
+      <div class="pat-stat"><div class="ps-val" style="color:var(--amber)">${fmtEur(t.pendente)}</div><div class="ps-lbl">Pendente</div></div>
+      <div class="pat-stat"><div class="ps-val">${p.apoios.length}</div><div class="ps-lbl">Apoios</div></div>
+    </div>
+
+    <div class="pat-contacto">👤 ${p.contacto1_nome} · ${p.contacto1_cargo}</div>
+    <div class="pat-contacto">📱 ${p.contacto1_tel} · 📧 ${p.contacto1_email}</div>
+
+    ${conts.length ? `<div class="pat-progresso">
+      <div style="font-size:11px;color:var(--muted)">Contrapartidas: ${cumpridas}/${conts.length}</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    </div>` : ''}
+
+    ${p.proximo_contacto ? `<div class="pat-contacto">📅 Próximo contacto: <strong>${fmtDate(p.proximo_contacto)}</strong></div>` : ''}
+
+    <div class="pat-footer">
+      <button class="btn-sm btn-wa" onclick="event.stopPropagation();contactarWA('${p.id}')">📱 WA</button>
+      <button class="btn-sm" onclick="event.stopPropagation();openPanel('${p.id}');setPanelTab(document.querySelectorAll('.pt')[3],'historico')">📋 Contacto</button>
+      <div style="flex:1"></div>
+      <span style="font-size:11px;color:var(--hint)">Ver detalhe →</span>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// PAINEL
+// ============================================================
+function openPanel(id) {
+  PANEL_PAT = PATROCINADORES_DB.getById(id);
+  if(!PANEL_PAT) return;
+  PANEL_TAB = 'ficha';
+  document.querySelectorAll('.pt').forEach((t,i)=>t.classList.toggle('active',i===0));
+  renderPanel();
+  document.getElementById('panel').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('panel').classList.remove('open');
+  PANEL_PAT = null;
+}
+
+function setPanelTab(el, tab) {
+  document.querySelectorAll('.pt').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  PANEL_TAB = tab;
+  renderPanel();
+}
+
+function renderPanel() {
+  if(!PANEL_PAT) return;
+  const p = PANEL_PAT;
+  const body = document.getElementById('panel-body');
+  const foot = document.getElementById('panel-foot');
+
+  // Footer comum
+  foot.innerHTML = `
+    <button class="btn-sm btn-wa" onclick="contactarWA('${p.id}')">📱 WhatsApp</button>
+    <button class="btn-sm" onclick="openModalContacto()">+ Registar contacto</button>
+    <div style="flex:1"></div>
+    <button class="btn-sm btn-ghost" onclick="toggleEstado('${p.id}')">${p.estado==='ativo'?'Marcar inativo':'Marcar ativo'}</button>
+  `;
+
+  if(PANEL_TAB==='ficha') {
+    const t = PATROCINADORES_DB.totalApoios(p);
+    const dias = PATROCINADORES_DB.diasSemContacto(p);
+    body.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:.5px solid var(--border)">
+      <div style="width:52px;height:52px;border-radius:var(--rs);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:.5px solid var(--border)">${p.logo}</div>
+      <div style="flex:1">
+        <div style="font-size:17px;font-weight:700;margin-bottom:2px">${p.nome}</div>
+        <div style="font-size:12px;color:var(--muted)">${p.sector} · Parceiro desde ${p.desde}</div>
+        <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap">
+          ${estadoBadge(p.estado)}
+          ${dias>60?`<span class="badge b-danger">${dias} dias sem contacto</span>`:''}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">Resumo financeiro</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div style="text-align:center;padding:.6rem;background:var(--green-bg);border-radius:var(--rs)">
+          <div style="font-size:16px;font-weight:700;color:var(--green)">${fmtEur(t.recebido)}</div>
+          <div style="font-size:11px;color:var(--muted)">Recebido</div>
+        </div>
+        <div style="text-align:center;padding:.6rem;background:var(--amber-bg);border-radius:var(--rs)">
+          <div style="font-size:16px;font-weight:700;color:var(--amber)">${fmtEur(t.pendente)}</div>
+          <div style="font-size:11px;color:var(--muted)">Pendente</div>
+        </div>
+        <div style="text-align:center;padding:.6rem;background:var(--bg);border-radius:var(--rs)">
+          <div style="font-size:16px;font-weight:700">${fmtEur(t.total)}</div>
+          <div style="font-size:11px;color:var(--muted)">Total acordado</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">Dados da empresa</div>
+      <div class="fields">
+        <div><div class="fl">Morada</div><div class="fv">${p.morada||'—'}</div></div>
+        <div><div class="fl">Website</div><div class="fv">${p.website||'—'}</div></div>
+        <div><div class="fl">Redes sociais</div><div class="fv">${p.redes||'—'}</div></div>
+        <div><div class="fl">Próximo contacto</div><div class="fv">${fmtDate(p.proximo_contacto)}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">Contacto principal</div>
+      <div class="fields">
+        <div><div class="fl">Nome</div><div class="fv">${p.contacto1_nome}</div></div>
+        <div><div class="fl">Cargo</div><div class="fv">${p.contacto1_cargo}</div></div>
+        <div><div class="fl">Telemóvel</div><div class="fv">${p.contacto1_tel}</div></div>
+        <div><div class="fl">Email</div><div class="fv">${p.contacto1_email}</div></div>
+      </div>
+    </div>
+
+    ${p.contacto2_nome ? `<div class="sec">
+      <div class="sec-t">Contacto secundário</div>
+      <div class="fields">
+        <div><div class="fl">Nome</div><div class="fv">${p.contacto2_nome}</div></div>
+        <div><div class="fl">Cargo</div><div class="fv">${p.contacto2_cargo}</div></div>
+        <div><div class="fl">Telemóvel</div><div class="fv">${p.contacto2_tel}</div></div>
+        <div><div class="fl">Email</div><div class="fv">${p.contacto2_email}</div></div>
+      </div>
+    </div>` : ''}
+
+    ${p.data_aniversario ? `<div class="sec">
+      <div class="sec-t">Datas especiais</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:.5rem;background:var(--green-bg);border-radius:var(--rs);font-size:13px">
+        🎂 Aniversário de ${p.contacto1_nome}: <strong>${fmtDateLong(p.data_aniversario)}</strong>
+        <button class="btn-sm btn-wa" style="margin-left:auto" onclick="enviarBdayWA('${p.contacto1_nome}')">Parabéns 🎂</button>
+      </div>
+    </div>` : ''}
+
+    ${p.notas ? `<div class="sec">
+      <div class="sec-t">Notas de relacionamento</div>
+      <div style="font-size:13px;color:var(--muted);font-style:italic;padding:.6rem .85rem;background:var(--bg);border-radius:var(--rs)">${p.notas}</div>
+    </div>` : ''}`;
+
+  } else if(PANEL_TAB==='apoios') {
+    body.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem">
+      <div style="font-size:14px;font-weight:600">${p.nome} — Apoios</div>
+      <button class="btn-sm btn-primary" onclick="openModalApoio()">+ Apoio</button>
+    </div>
+    ${!p.apoios.length ? '<div class="info-box ib-blue">Sem apoios registados.</div>' : ''}
+    ${p.apoios.map(a=>`
+      <div class="apoio-row">
+        <div style="font-size:18px">${a.tipo==='dinheiro'?'💶':'📦'}</div>
+        <div style="flex:1">
+          <div style="font-weight:500">${a.descricao}</div>
+          <div style="font-size:11px;color:var(--muted)">Previsto: ${fmtDate(a.dataPrevista)} · ${a.periodicidade}</div>
+          ${a.dataRecebida?`<div style="font-size:11px;color:var(--green)">✓ Recebido em ${fmtDate(a.dataRecebida)}</div>`:''}
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700;color:${a.estado==='recebido'?'var(--green)':'var(--amber)'}">${fmtEur(a.valor)}</div>
+          ${a.estado==='recebido'?'<span class="badge b-ok">Recebido</span>':'<span class="badge b-warn">Pendente</span>'}
+        </div>
+        ${a.estado==='pendente'?`<button class="btn-sm btn-green" onclick="marcarApoioRecebido('${p.id}','${a.id}')">✓</button>`:''}
+      </div>`).join('')}`;
+
+  } else if(PANEL_TAB==='contrapartidas') {
+    const cumpridas = p.contrapartidas.filter(c=>c.cumprida).length;
+    body.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem">
+      <div style="font-size:14px;font-weight:600">${p.nome} — Contrapartidas</div>
+      <button class="btn-sm" onclick="openModalContrapartida()">+ Contrapartida</button>
+    </div>
+    ${p.contrapartidas.length ? `<div class="info-box ib-blue">${cumpridas}/${p.contrapartidas.length} cumpridas</div>` : '<div class="info-box ib-blue">Sem contrapartidas definidas.</div>'}
+    ${p.contrapartidas.map(c=>{
+      const t = PATROCINADORES_DB.TIPOS_CONTRAPARTIDA.find(x=>x.id===c.tipo);
+      return `<div class="cont-row">
+        <div class="cont-check${c.cumprida?' done':''}" onclick="toggleContrapartida('${p.id}','${c.id}')">${c.cumprida?'✓':''}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;${c.cumprida?'text-decoration:line-through;color:var(--muted)':''}">${c.descricao}</div>
+          ${c.progresso?`<div style="font-size:11px;color:var(--muted)">Progresso: ${c.progresso}</div>`:''}
+        </div>
+        <span class="badge ${c.cumprida?'b-ok':'b-gray'}">${t?.icone||''} ${t?.nome||c.tipo}</span>
+      </div>`;
+    }).join('')}`;
+
+  } else if(PANEL_TAB==='historico') {
+    const sortedContactos = [...p.contactos].sort((a,b)=>b.data.localeCompare(a.data));
+    body.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem">
+      <div style="font-size:14px;font-weight:600">${p.nome} — Histórico</div>
+      <button class="btn-sm btn-primary" onclick="openModalContacto()">+ Contacto</button>
+    </div>
+    ${p.proximo_contacto?`<div class="info-box ib-warn">📅 Próximo contacto previsto: <strong>${fmtDate(p.proximo_contacto)}</strong></div>`:''}
+    ${!sortedContactos.length ? '<div class="info-box ib-blue">Sem contactos registados.</div>' : ''}
+    ${sortedContactos.map(c=>`
+      <div class="contacto-item">
+        <div class="contacto-hd">
+          <span class="contacto-tipo">${tipoContactoIco(c.tipo)}</span>
+          <span class="contacto-data">${fmtDateLong(c.data)}</span>
+          <span class="badge b-gray" style="margin-left:auto">${c.tipo}</span>
+        </div>
+        <div class="contacto-resumo">${c.resumo}</div>
+        <div class="contacto-autor">por ${c.autor}</div>
+      </div>`).join('')}`;
+  }
+}
+
+// ============================================================
+// AÇÕES
+// ============================================================
+function marcarApoioRecebido(patId, apoioId) {
+  const p = PATROCINADORES_DB.getById(patId);
+  const a = p.apoios.find(x=>x.id===apoioId);
+  if(a) { a.estado='recebido'; a.dataRecebida=new Date().toISOString().split('T')[0]; }
+  toast('Apoio marcado como recebido!','ok');
+  renderPanel();
+  renderMain();
+}
+
+function toggleContrapartida(patId, contId) {
+  const p = PATROCINADORES_DB.getById(patId);
+  const c = p.contrapartidas.find(x=>x.id===contId);
+  if(c) c.cumprida = !c.cumprida;
+  toast(c.cumprida?'Contrapartida cumprida!':'Marcada como pendente', c.cumprida?'ok':'');
+  renderPanel();
+}
+
+function toggleEstado(patId) {
+  const p = PATROCINADORES_DB.getById(patId);
+  p.estado = p.estado==='ativo'?'inativo':'ativo';
+  toast('Estado atualizado','ok');
+  renderPanel();
+  renderMain();
+}
+
+function contactarWA(patId) {
+  const p = PATROCINADORES_DB.getById(patId);
+  const msg = encodeURIComponent(`Olá ${p.contacto1_nome}!\n\nContacto da Escola de Ciclismo de Formação.\n\nEsperamos que esteja tudo bem! Gostaríamos de partilhar consigo as últimas novidades da nossa escola...\n\nCom os melhores cumprimentos,\nJoão Paulo Serra\nEscola de Ciclismo de Formação 🚴`);
+  window.open('https://wa.me/?text='+msg,'_blank');
+  toast('Mensagem pronta para enviar!','ok');
+}
+
+function enviarBdayWA(nome) {
+  const msg = encodeURIComponent(`🎂 Feliz Aniversário, ${nome.split(' ')[0]}!\n\nA toda a equipa da Escola de Ciclismo de Formação deseja-lhe um dia muito feliz e cheio de alegria!\n\nCom muita gratidão pela sua parceria,\nEscola de Ciclismo de Formação 🚴`);
+  window.open('https://wa.me/?text='+msg,'_blank');
+  toast('Mensagem de parabéns pronta!','ok');
+}
+
+// ============================================================
+// MODAIS
+// ============================================================
+function openModalPatrocinador() { openModal('modal-pat'); }
+
+function confirmarNovoPatrocinador() {
+  const nome = document.getElementById('pat-nome').value.trim();
+  if(!nome) { toast('Nome é obrigatório'); return; }
+  PATROCINADORES_DB.patrocinadores.push({
+    id:'p'+Date.now(), nome, logo:'🤝',
+    sector:document.getElementById('pat-sector').value,
+    morada:document.getElementById('pat-morada').value,
+    website:document.getElementById('pat-web').value,
+    redes:document.getElementById('pat-redes').value,
+    estado:'negociacao', desde:document.getElementById('pat-desde').value,
+    contacto1_nome:document.getElementById('pat-c1-nome').value,
+    contacto1_cargo:document.getElementById('pat-c1-cargo').value,
+    contacto1_tel:document.getElementById('pat-c1-tel').value,
+    contacto1_email:document.getElementById('pat-c1-email').value,
+    contacto2_nome:'', contacto2_cargo:'', contacto2_tel:'', contacto2_email:'',
+    notas:document.getElementById('pat-notas').value,
+    data_aniversario:'', apoios:[], contrapartidas:[], contactos:[],
+    proximo_contacto:'',
+  });
+  closeModal('modal-pat');
+  toast('Patrocinador adicionado!','ok');
+  renderMain();
+}
+
+function openModalApoio() { openModal('modal-apoio'); }
+
+function confirmarApoio() {
+  if(!PANEL_PAT) return;
+  const desc = document.getElementById('apoio-desc').value.trim();
+  const valor = parseFloat(document.getElementById('apoio-valor').value)||0;
+  const recebido = document.getElementById('apoio-recebido').checked;
+  if(!desc) { toast('Descrição obrigatória'); return; }
+  PANEL_PAT.apoios.push({
+    id:'a'+Date.now(),
+    tipo:document.getElementById('apoio-tipo').value,
+    descricao:desc, valor,
+    periodicidade:document.getElementById('apoio-period').value,
+    dataPrevista:document.getElementById('apoio-data').value,
+    dataRecebida:recebido?new Date().toISOString().split('T')[0]:'',
+    estado:recebido?'recebido':'pendente'
+  });
+  closeModal('modal-apoio');
+  toast('Apoio registado!','ok');
+  renderPanel(); renderMain();
+}
+
+function openModalContacto() { openModal('modal-cont'); }
+
+function confirmarContacto() {
+  if(!PANEL_PAT) return;
+  const resumo = document.getElementById('cont-resumo').value.trim();
+  if(!resumo) { toast('Resumo obrigatório'); return; }
+  PANEL_PAT.contactos.push({
+    data:document.getElementById('cont-data').value,
+    tipo:document.getElementById('cont-tipo').value,
+    resumo, autor:'JP Serra'
+  });
+  const proximo = document.getElementById('cont-proximo').value;
+  if(proximo) PANEL_PAT.proximo_contacto = proximo;
+  closeModal('modal-cont');
+  toast('Contacto registado!','ok');
+  renderPanel(); renderMain();
+}
+
+function openModalContrapartida() {
+  toast('Modal de contrapartida em breve');
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg,type=''){
+  const el=document.getElementById('toast-el');
+  el.textContent=msg;el.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderMain();
+</script>
+</body>
+</html>

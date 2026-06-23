@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cockpit — Escola de Ciclismo</title>
+<style>
+:root{
+  --red:#CC0000;--red-bg:#FFF0F0;--red-bd:rgba(204,0,0,.25);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-bd:rgba(24,95,165,.25);
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-bd:rgba(15,110,86,.25);
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-bd:rgba(133,79,11,.25);
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-bd:rgba(59,109,17,.25);
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-bd:rgba(83,74,183,.25);
+  --gray:#5F5E5A;--gray-bg:#F1EFE8;--gray-bd:rgba(95,94,90,.25);
+  --bg:#F5F4F1;--surface:#fff;--border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.16);
+  --text:#1A1A1A;--muted:#666660;--hint:#9A9A94;
+  --r:10px;--rs:6px;--sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sb-logo{padding:1.1rem 1rem .9rem;border-bottom:.5px solid var(--border)}
+.sb-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.sb-icon{width:32px;height:32px;background:var(--red);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.sb-name{font-size:13px;font-weight:600;line-height:1.2}
+.sb-season{font-size:11px;color:var(--hint);padding-left:40px}
+.sb-nav{padding:.6rem .5rem;flex:1;overflow-y:auto}
+.nav-sec{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;padding:.5rem .5rem .2rem;margin-top:.4rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.45rem .75rem;border-radius:var(--rs);cursor:pointer;color:var(--muted);font-size:13px;transition:background .1s,color .1s;text-decoration:none}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500}
+.nav-badge{margin-left:auto;background:var(--red-bg);color:var(--red);font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-foot{padding:.7rem 1rem;border-top:.5px solid var(--border);display:flex;align-items:center;gap:8px}
+.ua{width:28px;height:28px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:.5px solid var(--border);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-left{display:flex;align-items:center;gap:12px}
+.tb-title{font-size:16px;font-weight:600}
+.tb-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.tb-actions{display:flex;gap:8px;align-items:center}
+.content{padding:1.1rem 1.5rem;flex:1}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+.b-ok{background:var(--green-bg);color:var(--green)}
+.b-warn{background:var(--amber-bg);color:var(--amber)}
+.b-danger{background:var(--red-bg);color:var(--red)}
+.b-info{background:var(--blue-bg);color:var(--blue)}
+.b-gray{background:var(--gray-bg);color:var(--gray)}
+
+/* BUTTONS */
+button,.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rs);border:.5px solid var(--border2);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;transition:background .11s;font-family:inherit;white-space:nowrap;text-decoration:none}
+button:hover,.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn-primary:hover{background:#AA0000}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-wa{background:#25D366;border-color:#25D366;color:#fff}
+
+/* ÉPOCA SELECTOR */
+.epoca-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.6rem 1rem;margin-bottom:1rem}
+.ep-btn{font-size:12px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .12s}
+.ep-btn.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:500}
+
+/* ALERTAS TOPO */
+.alertas-topo{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem}
+.alerta-strip{display:flex;align-items:center;gap:10px;padding:.6rem .9rem;border-radius:var(--rs);font-size:12px}
+.as-danger{background:var(--red-bg);border:.5px solid var(--red-bd)}
+.as-warn{background:var(--amber-bg);border:.5px solid var(--amber-bd)}
+.as-ok{background:var(--green-bg);border:.5px solid var(--green-bd)}
+.as-info{background:var(--blue-bg);border:.5px solid var(--blue-bd)}
+
+/* ANIVERSÁRIOS TOPO */
+.bday-strip{background:var(--red-bg);border:.5px solid var(--red-bd);border-radius:var(--rs);padding:.6rem .9rem;display:flex;align-items:center;gap:10px;font-size:12px}
+
+/* MÉTRICAS */
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1rem}
+.metric{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem 1rem;cursor:pointer;transition:border-color .1s}
+.metric:hover{border-color:var(--border2)}
+.metric-ico{font-size:20px;margin-bottom:4px}
+.metric-val{font-size:24px;font-weight:700;line-height:1}
+.metric-lbl{font-size:11px;color:var(--muted);margin-top:3px}
+.metric-sub{font-size:11px;margin-top:2px}
+
+/* GRID PRINCIPAL */
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.main-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:1100px){.main-grid{grid-template-columns:1fr}.main-grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.main-grid-3{grid-template-columns:1fr}}
+
+/* CARDS */
+.card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+.card-hd{padding:.75rem 1rem;border-bottom:.5px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.card-body{padding:.85rem 1rem}
+.card-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.card-row:last-child{border-bottom:none}
+.card-empty{text-align:center;padding:1rem;color:var(--hint);font-size:12px}
+
+/* PRÓXIMAS CORRIDAS */
+.corrida-row{display:flex;align-items:flex-start;gap:8px;padding:.5rem 0;border-bottom:.5px solid var(--border)}
+.corrida-row:last-child{border-bottom:none}
+.corrida-data{font-size:11px;color:var(--muted);min-width:38px;padding-top:2px}
+.corrida-nome{font-size:13px;font-weight:500;color:var(--text)}
+.corrida-meta{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* MÓDULOS GRID */
+.modulos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:1rem}
+.modulo-btn{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.85rem 1rem;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .12s;text-decoration:none;color:var(--text)}
+.modulo-btn:hover{background:var(--bg);border-color:var(--border2)}
+.mod-ico{width:34px;height:34px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.mod-nome{font-size:13px;font-weight:500}
+.mod-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.m-blue{background:var(--blue-bg)}
+.m-teal{background:var(--teal-bg)}
+.m-amber{background:var(--amber-bg)}
+.m-green{background:var(--green-bg)}
+.m-purple{background:var(--purple-bg)}
+.m-red{background:var(--red-bg)}
+.m-gray{background:var(--gray-bg)}
+
+/* SALDO BAR */
+.saldo-bar{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:1rem}
+.saldo-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.75rem}
+.saldo-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.saldo-lbl{font-size:12px;color:var(--muted);min-width:120px}
+.saldo-track{flex:1;height:14px;background:var(--bg);border-radius:3px;overflow:hidden}
+.saldo-fill{height:100%;border-radius:3px}
+.saldo-val{font-size:12px;font-weight:600;min-width:70px;text-align:right}
+
+/* AV */
+.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.av-blue{background:var(--blue-bg);color:var(--blue)}
+.av-teal{background:var(--teal-bg);color:var(--teal)}
+.av-amber{background:var(--amber-bg);color:var(--amber)}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:.55rem .95rem;border-radius:var(--rs);font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .18s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--green)}
+.toast.warn{background:var(--amber)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-icon">🚴</div>
+      <div class="sb-name">Escola de<br>Ciclismo</div>
+    </div>
+    <div class="sb-season" id="sb-season">Época 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Principal</div>
+    <a class="nav-item active" href="#">⬡ Cockpit</a>
+    <div class="nav-sec">Equipa</div>
+    <a class="nav-item" href="atletas_standalone.html">👥 Atletas</a>
+    <a class="nav-item" href="staff_standalone.html">🪪 Staff</a>
+    <div class="nav-sec">Desportivo</div>
+    <a class="nav-item" href="calendario_standalone.html">📅 Calendário</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🏆 Resultados</a>
+    <div class="nav-sec">Gestão</div>
+    <a class="nav-item" href="equipamentos_standalone.html">🚐 Logística</a>
+    <a class="nav-item" href="financeira_standalone.html">💰 Financeira</a>
+    <a class="nav-item" href="patrocinadores_standalone.html">🤝 Patrocinadores</a>
+    <a class="nav-item" href="comunicacoes_standalone.html">📢 Comunicações</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="ua">JP</div>
+    <div><div style="font-size:12px;font-weight:500">João Paulo Serra</div><div style="font-size:11px;color:var(--muted)">Treinador</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+<div class="topbar">
+  <div class="tb-left">
+    <div>
+      <div class="tb-title">🚴 Escola de Ciclismo de Formação</div>
+      <div class="tb-sub" id="tb-date">—</div>
+    </div>
+  </div>
+  <div class="tb-actions">
+    <a href="comunicacoes_standalone.html" class="btn btn-sm">📢 Comunicar</a>
+    <a href="atletas_standalone.html" class="btn btn-primary btn-sm">+ Novo atleta</a>
+  </div>
+</div>
+
+<div class="content" id="cockpit-content">
+  <div style="text-align:center;padding:3rem;color:var(--muted)">A carregar cockpit...</div>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<!-- Carregar todos os módulos de dados -->
+<script>
+// ============================================================
+// DATA.JS — Base de dados de atletas (mock)
+// ============================================================
+
+const DB = {
+  epoca_atual: 2026,
+
+  atletas: [
+    {
+      id: 1,
+      // Dados permanentes
+      nome: 'Afonso Ferreira',
+      apelidos: 'Ferreira Costa',
+      nasc: '2009-06-12',
+      genero: 'Masculino',
+      cc: '12345678 9 ZZ4',
+      cc_validade: '2028-06-12',
+      nif: '234567890',
+      email: 'afonso@email.com',
+      tel: '912 345 678',
+      tel2: '',
+      morada: 'R. das Flores, 12, 2º Dt.',
+      local: 'Cascais',
+      cp: '2750-123',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      // Filiação
+      pai_nome: 'Carlos Ferreira',
+      pai_tel: '913 456 789',
+      pai_email: 'carlos.f@email.com',
+      pai_enc: true,
+      mae_nome: 'Ana Ferreira',
+      mae_tel: '914 567 890',
+      mae_email: 'ana.f@email.com',
+      mae_enc: false,
+      // Tutor
+      tutor_nome: '',
+      tutor_cc: '',
+      tutor_email: '',
+      tutor_tel: '',
+      // Emergência
+      emerg_nome: 'Carlos Ferreira',
+      emerg_tel: '913 456 789',
+      // Escolar
+      escola: 'EB 2,3 de Cascais',
+      curso: '9º ano',
+      // Documentos
+      doc_imagem: true,
+      doc_seguro: true,
+      doc_medico: false,
+      // Épocas
+      epocas: {
+        2025: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2025-00412', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom resultado na volta a Cascais.' },
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00847', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom atleta, muito dedicado.' }
+      }
+    },
+    {
+      id: 2,
+      nome: 'Maria Santos',
+      apelidos: 'Santos Rodrigues',
+      nasc: '2011-03-22',
+      genero: 'Feminino',
+      cc: '23456789 1 AB2',
+      cc_validade: '2029-03-22',
+      nif: '345678901',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'Av. Central, 45',
+      local: 'Sintra',
+      cp: '2710-001',
+      distrito: 'Lisboa',
+      concelho: 'Sintra',
+      pai_nome: 'Rui Santos',
+      pai_tel: '915 234 567',
+      pai_email: 'rui.s@email.com',
+      pai_enc: true,
+      mae_nome: 'Sofia Santos',
+      mae_tel: '916 345 678',
+      mae_email: 'sofia.s@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Rui Santos',
+      emerg_tel: '915 234 567',
+      escola: 'EB1 de Sintra',
+      curso: '6º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2026-00312', mensalidade:'atraso', equipamento:'Jersey S · Calções S · Meias 36', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 3,
+      nome: 'Rui Fonseca',
+      apelidos: 'Fonseca Matos',
+      nasc: '2007-09-05',
+      genero: 'Masculino',
+      cc: '98765432 1 ZZ2',
+      cc_validade: '2027-09-05',
+      nif: '456789012',
+      email: 'rui.f@email.com',
+      tel: '918 567 890',
+      tel2: '',
+      morada: 'R. Nova, 8',
+      local: 'Oeiras',
+      cp: '2780-010',
+      distrito: 'Lisboa',
+      concelho: 'Oeiras',
+      pai_nome: 'António Fonseca',
+      pai_tel: '917 456 789',
+      pai_email: 'ant.f@email.com',
+      pai_enc: true,
+      mae_nome: '',
+      mae_tel: '',
+      mae_email: '',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'António Fonseca',
+      emerg_tel: '917 456 789',
+      escola: '', curso: '',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'cedido', escalao:'sub19', subescalao:'', clube_origem:'GD Oeiras', licenca:'2026-GD-089', mensalidade:'definir', equipamento:'Jersey M · Calções M', estado:'ativo', obs:'Cedido para 3 corridas em 2026.' }
+      }
+    },
+    {
+      id: 4,
+      nome: 'João Silva',
+      apelidos: 'Silva Pereira',
+      nasc: '2010-11-18',
+      genero: 'Masculino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'R. do Pinheiro, 3',
+      local: 'Cascais',
+      cp: '2750-456',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Manuel Silva',
+      pai_tel: '919 678 901',
+      pai_email: 'man.s@email.com',
+      pai_enc: true,
+      mae_nome: 'Lúcia Silva',
+      mae_tel: '910 789 012',
+      mae_email: 'lucia.s@email.com',
+      mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Manuel Silva',
+      emerg_tel: '919 678 901',
+      escola: 'Colégio São José', curso: '7º ano',
+      doc_imagem: true, doc_seguro: false, doc_medico: false,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'', mensalidade:'atraso', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'Licença a renovar com urgência. Seguro em falta.' }
+      }
+    },
+    {
+      id: 5,
+      nome: 'Dinis Dias',
+      apelidos: 'Dias Cunha',
+      nasc: '2016-06-13',
+      genero: 'Masculino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'Tv. das Rosas, 2',
+      local: 'Matos Cheirinhos',
+      cp: '2775-001',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Pedro Dias',
+      pai_tel: '911 890 123',
+      pai_email: 'pedro.d@email.com',
+      pai_enc: true,
+      mae_nome: 'Carla Dias',
+      mae_tel: '912 901 234',
+      mae_email: 'carla.d@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Pedro Dias',
+      emerg_tel: '911 890 123',
+      escola: 'EB1 de Matos Cheirinhos', curso: '4º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub11', clube_origem:'', licenca:'2026-00123', mensalidade:'pago', equipamento:'Jersey XS · Calções XS · Meias 32', estado:'ativo', obs:'Aniversário hoje! 🎂' }
+      }
+    },
+    {
+      id: 6,
+      nome: 'Ana Costa',
+      apelidos: 'Costa Mendes',
+      nasc: '2010-06-15',
+      genero: 'Feminino',
+      cc: '11223344 5 AB6',
+      cc_validade: '2028-06-15',
+      nif: '567890123',
+      email: 'ana.c@email.com',
+      tel: '915 234 567',
+      tel2: '',
+      morada: 'Av. das Flores, 22',
+      local: 'Cascais',
+      cp: '2750-200',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Jorge Costa',
+      pai_tel: '913 012 345',
+      pai_email: 'jorge.c@email.com',
+      pai_enc: false,
+      mae_nome: 'Beatriz Costa',
+      mae_tel: '914 123 456',
+      mae_email: 'bea.c@email.com',
+      mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Beatriz Costa',
+      emerg_tel: '914 123 456',
+      escola: 'ES de Cascais', curso: '7º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2025: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2025-00211', mensalidade:'pago', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'' },
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00634', mensalidade:'pago', equipamento:'Jersey S · Calções S · Meias 37', estado:'ativo', obs:'Subiu de escalão em 2026.' }
+      }
+    },
+    {
+      id: 7,
+      nome: 'Marco Silva',
+      apelidos: 'Silva Rodrigues',
+      nasc: '2005-06-14',
+      genero: 'Masculino',
+      cc: '22334455 6 CD7',
+      cc_validade: '2027-06-14',
+      nif: '678901234',
+      email: 'marco.s@email.com',
+      tel: '917 456 789',
+      tel2: '',
+      morada: 'R. do Lago, 7',
+      local: 'Sintra',
+      cp: '2710-100',
+      distrito: 'Lisboa',
+      concelho: 'Sintra',
+      pai_nome: '', pai_tel: '', pai_email: '', pai_enc: false,
+      mae_nome: '', mae_tel: '', mae_email: '', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Clara Silva',
+      emerg_tel: '916 345 678',
+      escola: '', curso: '',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub23', subescalao:'', clube_origem:'', licenca:'2026-00789', mensalidade:'pago', equipamento:'Jersey L · Calções L · Meias 42', estado:'ativo', obs:'Maior de 18 anos.' }
+      }
+    },
+    {
+      id: 8,
+      nome: 'Sofia Lopes',
+      apelidos: 'Lopes Ferreira',
+      nasc: '2012-08-30',
+      genero: 'Feminino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'R. das Acácias, 15',
+      local: 'Cascais',
+      cp: '2750-300',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Nuno Lopes',
+      pai_tel: '918 567 890',
+      pai_email: 'nuno.l@email.com',
+      pai_enc: true,
+      mae_nome: 'Rita Lopes',
+      mae_tel: '919 678 901',
+      mae_email: 'rita.l@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Nuno Lopes',
+      emerg_tel: '918 567 890',
+      escola: 'EB 2,3 de Alcabideche', curso: '5º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: false,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub13', clube_origem:'', licenca:'2026-00456', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 9,
+      nome: 'Tomás Oliveira',
+      apelidos: 'Oliveira Santos',
+      nasc: '2014-01-20',
+      genero: 'Masculino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'R. do Mar, 5', local: 'Cascais', cp: '2750-500',
+      distrito: 'Lisboa', concelho: 'Cascais',
+      pai_nome: 'Carlos Oliveira', pai_tel: '920 123 456', pai_email: 'c.oli@email.com', pai_enc: true,
+      mae_nome: 'Marta Oliveira', mae_tel: '921 234 567', mae_email: 'm.oli@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Carlos Oliveira', emerg_tel: '920 123 456',
+      escola: 'EB1 de Cascais', curso: '3º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00234', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 10,
+      nome: 'Inês Martins',
+      apelidos: 'Martins Faria',
+      nasc: '2015-05-10',
+      genero: 'Feminino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'Av. Nova, 33', local: 'Sintra', cp: '2710-200',
+      distrito: 'Lisboa', concelho: 'Sintra',
+      pai_nome: 'Luís Martins', pai_tel: '922 345 678', pai_email: 'l.mar@email.com', pai_enc: false,
+      mae_nome: 'Vera Martins', mae_tel: '923 456 789', mae_email: 'v.mar@email.com', mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Vera Martins', emerg_tel: '923 456 789',
+      escola: 'EB1 de Sintra', curso: '2º ano',
+      doc_imagem: false, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00567', mensalidade:'isento', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'Autorização de imagem pendente.' }
+      }
+    },
+    {
+      id: 11,
+      nome: 'Rodrigo Pinto',
+      apelidos: 'Pinto Alves',
+      nasc: '2008-04-03',
+      genero: 'Masculino',
+      cc: '33445566 7 EF8', cc_validade: '2026-04-03', nif: '789012345',
+      email: 'r.pinto@email.com', tel: '924 567 890', tel2: '',
+      morada: 'R. das Palmeiras, 18', local: 'Oeiras', cp: '2780-100',
+      distrito: 'Lisboa', concelho: 'Oeiras',
+      pai_nome: 'Fernando Pinto', pai_tel: '925 678 901', pai_email: 'f.pin@email.com', pai_enc: true,
+      mae_nome: 'Helena Pinto', mae_tel: '926 789 012', mae_email: 'h.pin@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Fernando Pinto', emerg_tel: '925 678 901',
+      escola: 'ES de Oeiras', curso: '8º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub19', subescalao:'', clube_origem:'', licenca:'2026-00901', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 40', estado:'ativo', obs:'CC a renovar — expirou em Abril.' }
+      }
+    },
+    {
+      id: 12,
+      nome: 'Beatriz Ferreira',
+      apelidos: 'Ferreira Nunes',
+      nasc: '2017-11-25',
+      genero: 'Feminino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'R. dos Pinheiros, 9', local: 'Cascais', cp: '2750-600',
+      distrito: 'Lisboa', concelho: 'Cascais',
+      pai_nome: 'Ricardo Ferreira', pai_tel: '927 890 123', pai_email: 'r.fer@email.com', pai_enc: true,
+      mae_nome: 'Sandra Ferreira', mae_tel: '928 901 234', mae_email: 's.fer@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Ricardo Ferreira', emerg_tel: '927 890 123',
+      escola: 'EB1 de Cascais', curso: '2º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub7', clube_origem:'', licenca:'2026-00678', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    }
+  ],
+
+  // Atletas inativos
+  atletas_inativos: [
+    { id:101, nome:'Pedro Carvalho', nasc:'2008-07-14', escalao:'sub19', tipo:'proprio', estado:'inativo', motivo:'Mudou de clube', epoca_saida: 2025 },
+    { id:102, nome:'Clara Mendes', nasc:'2012-02-28', escalao:'escolas', tipo:'proprio', estado:'inativo', motivo:'Deixou o ciclismo', epoca_saida: 2025 }
+  ],
+
+  getAtletasAtivos() {
+    return this.atletas.filter(a => {
+      const ep = a.epocas[this.epoca_atual];
+      return ep && ep.estado === 'ativo';
+    });
+  },
+
+  getEpocaAtleta(id) {
+    const a = this.atletas.find(x => x.id === id);
+    return a ? (a.epocas[this.epoca_atual] || null) : null;
+  },
+
+  getAniversariosHoje() {
+    const hoje = new Date();
+    return this.atletas.filter(a => {
+      const d = new Date(a.nasc);
+      return d.getMonth() === hoje.getMonth() && d.getDate() === hoje.getDate();
+    });
+  },
+
+  getAniversariosSemana() {
+    const hoje = new Date();
+    const semana = new Date(hoje); semana.setDate(hoje.getDate() + 7);
+    return this.atletas.filter(a => {
+      const d = new Date(a.nasc);
+      const esteAno = new Date(hoje.getFullYear(), d.getMonth(), d.getDate());
+      return esteAno > hoje && esteAno <= semana;
+    });
+  },
+
+  getAlertas() {
+    return this.atletas.filter(a => {
+      const ep = a.epocas[this.epoca_atual];
+      if (!ep || ep.estado !== 'ativo') return false;
+      return ep.mensalidade === 'atraso' || !a.doc_seguro || !a.doc_medico || ep.licenca === '' || ep.licenca === 'renovar';
+    });
+  }
+};
+
+</script>
+<script>
+// ============================================================
+// FINANCEIRA_DB.JS — Dados financeiros
+// ============================================================
+
+const FINANCEIRA_DB = {
+
+  epoca_atual: 2026,
+
+  // Configuração da época — meses de mensalidade e valores por escalão
+  config_epoca: {
+    2026: {
+      meses_ativos: [1,2,3,4,5,6,9,10,11,12], // Jan Feb Mar Abr Mai Jun Set Out Nov Dez (sem Jul/Ago)
+      valores_escalao: {
+        escolas: 25,
+        sub17:   35,
+        sub19:   35,
+        sub23:   40,
+        paraciclismo: 30
+      }
+    }
+  },
+
+  // Mensalidades registadas: {atletaId: [{mes, ano, valor, pago, dataPagamento, metodo, obs}]}
+  mensalidades: {
+    1: [ // Afonso Ferreira (SUB17)
+      {mes:1, ano:2026, valor:35, pago:true, dataPagamento:'2026-01-08', metodo:'transferencia', obs:''},
+      {mes:2, ano:2026, valor:35, pago:true, dataPagamento:'2026-02-06', metodo:'mbway', obs:''},
+      {mes:3, ano:2026, valor:35, pago:true, dataPagamento:'2026-03-10', metodo:'mbway', obs:''},
+      {mes:4, ano:2026, valor:35, pago:true, dataPagamento:'2026-04-07', metodo:'transferencia', obs:''},
+      {mes:5, ano:2026, valor:35, pago:true, dataPagamento:'2026-05-09', metodo:'mbway', obs:''},
+      {mes:6, ano:2026, valor:35, pago:true, dataPagamento:'2026-06-05', metodo:'mbway', obs:''},
+    ],
+    2: [ // Maria Santos (Escolas) - em atraso
+      {mes:1, ano:2026, valor:25, pago:true, dataPagamento:'2026-01-15', metodo:'numerario', obs:''},
+      {mes:2, ano:2026, valor:25, pago:true, dataPagamento:'2026-02-12', metodo:'numerario', obs:''},
+      {mes:3, ano:2026, valor:25, pago:true, dataPagamento:'2026-03-14', metodo:'numerario', obs:''},
+      {mes:4, ano:2026, valor:25, pago:false, dataPagamento:'', metodo:'', obs:''},
+      {mes:5, ano:2026, valor:25, pago:false, dataPagamento:'', metodo:'', obs:''},
+      {mes:6, ano:2026, valor:25, pago:false, dataPagamento:'', metodo:'', obs:''},
+    ],
+    4: [ // João Silva - 2 meses em atraso
+      {mes:1, ano:2026, valor:35, pago:true, dataPagamento:'2026-01-10', metodo:'mbway', obs:''},
+      {mes:2, ano:2026, valor:35, pago:true, dataPagamento:'2026-02-09', metodo:'mbway', obs:''},
+      {mes:3, ano:2026, valor:35, pago:true, dataPagamento:'2026-03-11', metodo:'mbway', obs:''},
+      {mes:4, ano:2026, valor:35, pago:true, dataPagamento:'2026-04-08', metodo:'mbway', obs:''},
+      {mes:5, ano:2026, valor:35, pago:false, dataPagamento:'', metodo:'', obs:''},
+      {mes:6, ano:2026, valor:35, pago:false, dataPagamento:'', metodo:'', obs:'Em contacto com o pai'},
+    ],
+    5: [ // Dinis Dias (Escolas)
+      {mes:1, ano:2026, valor:25, pago:true, dataPagamento:'2026-01-07', metodo:'transferencia', obs:''},
+      {mes:2, ano:2026, valor:25, pago:true, dataPagamento:'2026-02-05', metodo:'transferencia', obs:''},
+      {mes:3, ano:2026, valor:25, pago:true, dataPagamento:'2026-03-06', metodo:'transferencia', obs:''},
+      {mes:4, ano:2026, valor:25, pago:true, dataPagamento:'2026-04-04', metodo:'transferencia', obs:''},
+      {mes:5, ano:2026, valor:25, pago:true, dataPagamento:'2026-05-07', metodo:'transferencia', obs:''},
+      {mes:6, ano:2026, valor:25, pago:true, dataPagamento:'2026-06-04', metodo:'transferencia', obs:''},
+    ],
+    7: [ // Marco Silva (SUB23)
+      {mes:1, ano:2026, valor:40, pago:true, dataPagamento:'2026-01-05', metodo:'transferencia', obs:''},
+      {mes:2, ano:2026, valor:40, pago:true, dataPagamento:'2026-02-04', metodo:'transferencia', obs:''},
+      {mes:3, ano:2026, valor:40, pago:true, dataPagamento:'2026-03-05', metodo:'transferencia', obs:''},
+      {mes:4, ano:2026, valor:40, pago:true, dataPagamento:'2026-04-03', metodo:'transferencia', obs:''},
+      {mes:5, ano:2026, valor:40, pago:true, dataPagamento:'2026-05-05', metodo:'transferencia', obs:''},
+      {mes:6, ano:2026, valor:40, pago:true, dataPagamento:'2026-06-03', metodo:'transferencia', obs:''},
+    ],
+  },
+
+  // Despesas: [{id, data, tipo, descricao, valor, provaId, provaNome, comprovativo, obs}]
+  despesas: [
+    {id:'d1', data:'2026-03-07', tipo:'combustivel', descricao:'Combustível — II Circuito São Pedro Cadeira', valor:65, provaId:'e1', provaNome:'II Circuito São Pedro Cadeira', comprovativo:false, obs:''},
+    {id:'d2', data:'2026-03-07', tipo:'portagens', descricao:'Portagens — II Circuito São Pedro Cadeira', valor:18.50, provaId:'e1', provaNome:'II Circuito São Pedro Cadeira', comprovativo:true, obs:''},
+    {id:'d3', data:'2026-03-08', tipo:'combustivel', descricao:'Combustível — Escolas Avaliações', valor:40, provaId:'e2', provaNome:'Escolas Avaliações', comprovativo:false, obs:''},
+    {id:'d4', data:'2026-03-22', tipo:'combustivel', descricao:'Combustível — Clássica Primavera', valor:55, provaId:'e3', provaNome:'Clássica da Primavera', comprovativo:false, obs:''},
+    {id:'d5', data:'2026-04-10', tipo:'combustivel', descricao:'Combustível — Volta Região Lisboa (3 dias)', valor:120, provaId:'e5', provaNome:'Volta à Região de Lisboa', comprovativo:true, obs:''},
+    {id:'d6', data:'2026-04-10', tipo:'alojamento', descricao:'Alojamento — Volta Região Lisboa (2 noites)', valor:180, provaId:'e5', provaNome:'Volta à Região de Lisboa', comprovativo:true, obs:'3 quartos'},
+    {id:'d7', data:'2026-04-10', tipo:'alimentacao', descricao:'Refeições — Volta Região Lisboa', valor:95, provaId:'e5', provaNome:'Volta à Região de Lisboa', comprovativo:false, obs:''},
+    {id:'d8', data:'2026-04-10', tipo:'portagens', descricao:'Portagens — Volta Região Lisboa', valor:24, provaId:'e5', provaNome:'Volta à Região de Lisboa', comprovativo:true, obs:''},
+    {id:'d9', data:'2026-02-15', tipo:'licencas', descricao:'Licenças FPC 2026 — 12 atletas', valor:360, provaId:'', provaNome:'', comprovativo:true, obs:'30€ por atleta'},
+    {id:'d10', data:'2026-01-10', tipo:'seguros', descricao:'Seguro desportivo coletivo 2026', valor:280, provaId:'', provaNome:'', comprovativo:true, obs:''},
+    {id:'d11', data:'2026-03-01', tipo:'manutencao', descricao:'Revisão Ford Transit — 11-RG-65', valor:145, provaId:'', provaNome:'', comprovativo:true, obs:''},
+    {id:'d12', data:'2026-05-16', tipo:'combustivel', descricao:'Combustível — Taça Regional Sub17', valor:48, provaId:'e8', provaNome:'Taça Regional Sub17', comprovativo:false, obs:''},
+  ],
+
+  // Receitas externas: [{id, data, tipo, descricao, valor, recebido, dataRecebimento, obs}]
+  receitas: [
+    {id:'r1', data:'2026-01-15', tipo:'patrocinio', descricao:'Patrocínio Matos Cheirinhos — anual 2026', valor:1500, recebido:true, dataRecebimento:'2026-01-20', obs:''},
+    {id:'r2', data:'2026-04-01', tipo:'patrocinio', descricao:'Patrocínio Matos Cheirinhos — 2ª tranche', valor:1000, recebido:false, dataRecebimento:'', obs:'Previsto para Julho'},
+    {id:'r3', data:'2026-02-01', tipo:'apoio_oficial', descricao:'Apoio Câmara Municipal — programa desporto jovem', valor:800, recebido:true, dataRecebimento:'2026-02-28', obs:''},
+    {id:'r4', data:'2026-03-01', tipo:'patrocinio', descricao:'Patrocínio LA Alumínios — naming kit corrida', valor:500, recebido:true, dataRecebimento:'2026-03-10', obs:''},
+    {id:'r5', data:'2026-06-01', tipo:'apoio_oficial', descricao:'Apoio Junta de Freguesia', valor:200, recebido:false, dataRecebimento:'', obs:'Aguarda aprovação'},
+  ],
+
+  METODOS: [
+    {id:'mbway', nome:'MB Way', icone:'📱'},
+    {id:'transferencia', nome:'Transferência Bancária', icone:'🏦'},
+    {id:'multibanco', nome:'Referência Multibanco', icone:'💳'},
+    {id:'cheque', nome:'Cheque', icone:'📄'},
+    {id:'numerario', nome:'Numerário', icone:'💶'},
+  ],
+
+  TIPOS_DESPESA: [
+    {id:'combustivel', nome:'Combustível', icone:'⛽'},
+    {id:'portagens', nome:'Portagens', icone:'🛣️'},
+    {id:'alimentacao', nome:'Alimentação', icone:'🍽️'},
+    {id:'alojamento', nome:'Alojamento', icone:'🏨'},
+    {id:'licencas', nome:'Licenças FPC', icone:'📋'},
+    {id:'seguros', nome:'Seguros', icone:'🛡️'},
+    {id:'manutencao', nome:'Manutenção viaturas', icone:'🔧'},
+    {id:'material', nome:'Material desportivo', icone:'🚴'},
+    {id:'outro', nome:'Outro', icone:'📌'},
+  ],
+
+  TIPOS_RECEITA: [
+    {id:'patrocinio', nome:'Patrocínio', icone:'🤝'},
+    {id:'apoio_oficial', nome:'Apoio oficial', icone:'🏛️'},
+    {id:'evento', nome:'Evento/Rifa', icone:'🎉'},
+    {id:'outro', nome:'Outro', icone:'📌'},
+  ],
+
+  getMeses() { return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']; },
+
+  getConfigEpoca(ano) { return this.config_epoca[ano] || this.config_epoca[2026]; },
+
+  getMensalidadesAtleta(atletaId, ano) {
+    const cfg = this.getConfigEpoca(ano);
+    const registadas = this.mensalidades[atletaId] || [];
+    // Devolver apenas os meses ativos
+    return cfg.meses_ativos.map(mes=>{
+      const reg = registadas.find(r=>r.mes===mes && r.ano===ano);
+      return reg || {mes, ano, valor:null, pago:false, dataPagamento:'', metodo:'', obs:''};
+    });
+  },
+
+  totalMensalidadesAtleta(atletaId, ano) {
+    const regs = this.getMensalidadesAtleta(atletaId, ano);
+    const total = regs.reduce((s,r)=>s+(r.valor||0),0);
+    const pago = regs.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0);
+    return {total, pago, pendente:total-pago, meses:regs.length, pagas:regs.filter(r=>r.pago).length};
+  },
+
+  totalDespesas() {
+    return this.despesas.reduce((s,d)=>s+d.valor,0);
+  },
+
+  totalReceitas() {
+    const mens = Object.entries(this.mensalidades).reduce((s,[id,regs])=>
+      s+regs.filter(r=>r.pago).reduce((ss,r)=>ss+r.valor,0),0);
+    const ext = this.receitas.filter(r=>r.recebido).reduce((s,r)=>s+r.valor,0);
+    return {mensalidades:mens, externas:ext, total:mens+ext};
+  },
+
+  saldoEpoca() {
+    const rec = this.totalReceitas();
+    const desp = this.totalDespesas();
+    return rec.total - desp;
+  },
+
+  getMetodo(id) { return this.METODOS.find(m=>m.id===id); },
+  getTipoDespesa(id) { return this.TIPOS_DESPESA.find(t=>t.id===id); },
+  getTipoReceita(id) { return this.TIPOS_RECEITA.find(t=>t.id===id); },
+};
+
+</script>
+<script>
+// ============================================================
+// PATROCINADORES_DB.JS
+// ============================================================
+
+const PATROCINADORES_DB = {
+
+  patrocinadores: [
+    {
+      id: 'p1',
+      nome: 'Matos Cheirinhos',
+      logo: '🏪',
+      sector: 'Comércio alimentar',
+      morada: 'Rua Principal, 45 — Matos Cheirinhos',
+      website: 'www.matoscheirinhos.pt',
+      redes: '@matoscheirinhos',
+      estado: 'ativo',
+      desde: '2022',
+      // Contactos
+      contacto1_nome: 'António Rodrigues',
+      contacto1_cargo: 'Gerente',
+      contacto1_tel: '912 111 222',
+      contacto1_email: 'antonio@matoscheirinhos.pt',
+      contacto2_nome: 'Filipa Rodrigues',
+      contacto2_cargo: 'Administrativa',
+      contacto2_tel: '913 222 333',
+      contacto2_email: 'filipa@matoscheirinhos.pt',
+      // Notas de relacionamento
+      notas: 'Família muito ligada ao ciclismo. António gosta de ser contactado por telefone. Aniversário em Março.',
+      data_aniversario: '1965-03-15',
+      // Apoios
+      apoios: [
+        {id:'a1', tipo:'dinheiro', descricao:'Patrocínio anual 2026', valor:1500, periodicidade:'unica', dataPrevista:'2026-01-15', dataRecebida:'2026-01-20', estado:'recebido'},
+        {id:'a2', tipo:'dinheiro', descricao:'Patrocínio anual 2026 — 2ª tranche', valor:1000, periodicidade:'unica', dataPrevista:'2026-07-01', dataRecebida:'', estado:'pendente'},
+        {id:'a3', tipo:'especie', descricao:'Fornecimento de alimentação para estágios', valor:300, periodicidade:'anual', dataPrevista:'2026-03-01', dataRecebida:'2026-03-05', estado:'recebido'},
+      ],
+      // Contrapartidas
+      contrapartidas: [
+        {id:'c1', tipo:'visibilidade', descricao:'Logo no jersey de corrida', cumprida:true},
+        {id:'c2', tipo:'visibilidade', descricao:'Logo nas viaturas', cumprida:true},
+        {id:'c3', tipo:'comunicacao', descricao:'Menção em publicações redes sociais (mínimo 12/ano)', cumprida:false, progresso:'8/12'},
+        {id:'c4', tipo:'presenca', descricao:'Convite para festa de fim de época', cumprida:false},
+      ],
+      // Histórico de contactos
+      contactos: [
+        {data:'2026-01-10', tipo:'telefone', resumo:'Confirmado patrocínio 2026. Muito satisfeito com visibilidade obtida em 2025.', autor:'JP Serra'},
+        {data:'2026-03-08', tipo:'presencial', resumo:'Visita ao stand na corrida de Cascais. Entregou alimentação para estágio.', autor:'JP Serra'},
+        {data:'2026-05-20', tipo:'whatsapp', resumo:'Enviados resultados e fotos das corridas de Maio.', autor:'JP Serra'},
+      ],
+      proximo_contacto: '2026-08-15',
+    },
+    {
+      id: 'p2',
+      nome: 'LA Alumínios',
+      logo: '🏗️',
+      sector: 'Construção / Materiais',
+      morada: 'Zona Industrial, Lote 12 — Cascais',
+      website: 'www.laaluminios.pt',
+      redes: '',
+      estado: 'ativo',
+      desde: '2024',
+      contacto1_nome: 'Luís Antunes',
+      contacto1_cargo: 'CEO',
+      contacto1_tel: '914 333 444',
+      contacto1_email: 'l.antunes@laaluminios.pt',
+      contacto2_nome: 'Sara Antunes',
+      contacto2_cargo: 'Responsável Marketing',
+      contacto2_tel: '915 444 555',
+      contacto2_email: 's.antunes@laaluminios.pt',
+      notas: 'Patrocinador do naming do kit de corrida. Prefere contacto por email.',
+      data_aniversario: '',
+      apoios: [
+        {id:'a4', tipo:'dinheiro', descricao:'Naming kit corrida 2026', valor:500, periodicidade:'anual', dataPrevista:'2026-03-01', dataRecebida:'2026-03-10', estado:'recebido'},
+      ],
+      contrapartidas: [
+        {id:'c5', tipo:'visibilidade', descricao:'Nome no kit de corrida (naming)', cumprida:true},
+        {id:'c6', tipo:'comunicacao', descricao:'Menção em publicações (mínimo 6/ano)', cumprida:false, progresso:'4/6'},
+      ],
+      contactos: [
+        {data:'2026-02-15', tipo:'email', resumo:'Confirmação do patrocínio naming 2026.', autor:'JP Serra'},
+        {data:'2026-04-10', tipo:'email', resumo:'Enviadas fotos do kit com logo.', autor:'JP Serra'},
+      ],
+      proximo_contacto: '2026-09-01',
+    },
+    {
+      id: 'p3',
+      nome: 'Vila Galé Hotéis',
+      logo: '🏨',
+      sector: 'Hotelaria / Turismo',
+      morada: 'Av. do Mar, 1 — Cascais',
+      website: 'www.vilagale.com',
+      redes: '@vilagale',
+      estado: 'negociacao',
+      desde: '2026',
+      contacto1_nome: 'Pedro Galvão',
+      contacto1_cargo: 'Director Regional',
+      contacto1_tel: '916 555 666',
+      contacto1_email: 'p.galvao@vilagale.pt',
+      contacto2_nome: '', contacto2_cargo: '', contacto2_tel: '', contacto2_email: '',
+      notas: 'Em negociação para apoio em alojamento em corridas por etapas.',
+      data_aniversario: '',
+      apoios: [],
+      contrapartidas: [],
+      contactos: [
+        {data:'2026-05-10', tipo:'presencial', resumo:'Reunião inicial. Interesse em apoiar alojamento em corridas por etapas.', autor:'JP Serra'},
+      ],
+      proximo_contacto: '2026-07-01',
+    },
+    {
+      id: 'p4',
+      nome: 'Marcos Car',
+      logo: '🚗',
+      sector: 'Automóvel',
+      morada: 'Estrada Nacional, 250 — Sintra',
+      website: '',
+      redes: '',
+      estado: 'inativo',
+      desde: '2023',
+      contacto1_nome: 'Carlos Marcos',
+      contacto1_cargo: 'Proprietário',
+      contacto1_tel: '917 666 777',
+      contacto1_email: 'c.marcos@marcoscar.pt',
+      contacto2_nome: '', contacto2_cargo: '', contacto2_tel: '', contacto2_email: '',
+      notas: 'Apoiou em 2023 e 2024. Não renovou em 2025/2026. Manter contacto para eventual retorno.',
+      data_aniversario: '',
+      apoios: [],
+      contrapartidas: [],
+      contactos: [
+        {data:'2025-11-20', tipo:'telefone', resumo:'Contacto para renovação 2026. Dificuldades financeiras, não renova este ano.', autor:'JP Serra'},
+      ],
+      proximo_contacto: '2026-11-01',
+    },
+  ],
+
+  TIPOS_APOIO: [
+    {id:'dinheiro', nome:'Dinheiro', icone:'💶'},
+    {id:'especie', nome:'Espécie', icone:'📦'},
+  ],
+
+  TIPOS_CONTRAPARTIDA: [
+    {id:'visibilidade', nome:'Visibilidade', icone:'👁️'},
+    {id:'comunicacao', nome:'Comunicação', icone:'📢'},
+    {id:'presenca', nome:'Presença em eventos', icone:'🎟️'},
+    {id:'outro', nome:'Outro', icone:'📌'},
+  ],
+
+  TIPOS_CONTACTO: [
+    {id:'telefone', nome:'Telefone', icone:'📞'},
+    {id:'email', nome:'Email', icone:'📧'},
+    {id:'whatsapp', nome:'WhatsApp', icone:'📱'},
+    {id:'presencial', nome:'Presencial', icone:'🤝'},
+  ],
+
+  ESTADOS: [
+    {id:'ativo', nome:'Ativo', color:'green'},
+    {id:'negociacao', nome:'Em negociação', color:'amber'},
+    {id:'inativo', nome:'Inativo', color:'gray'},
+  ],
+
+  getById(id) { return this.patrocinadores.find(p=>p.id===id); },
+
+  totalApoios(pat) {
+    const recebido = pat.apoios.filter(a=>a.estado==='recebido').reduce((s,a)=>s+a.valor,0);
+    const pendente = pat.apoios.filter(a=>a.estado==='pendente').reduce((s,a)=>s+a.valor,0);
+    return {recebido, pendente, total:recebido+pendente};
+  },
+
+  diasSemContacto(pat) {
+    if(!pat.contactos.length) return 999;
+    const ultimo = pat.contactos.sort((a,b)=>b.data.localeCompare(a.data))[0];
+    const d = new Date(ultimo.data);
+    const hoje = new Date();
+    return Math.floor((hoje-d)/86400000);
+  },
+
+  totalGeral() {
+    const ativos = this.patrocinadores.filter(p=>p.estado==='ativo');
+    const recebido = ativos.reduce((s,p)=>s+this.totalApoios(p).recebido,0);
+    const pendente = ativos.reduce((s,p)=>s+this.totalApoios(p).pendente,0);
+    return {recebido, pendente, total:recebido+pendente, ativos:ativos.length};
+  },
+};
+
+</script>
+<script>
+// ============================================================
+// STAFF_DB.JS
+// ============================================================
+
+const STAFF_DB = {
+
+  membros: [
+    {
+      id: 's1',
+      nome: 'João Paulo Serra',
+      apelidos: 'Serra Rodrigues',
+      nasc: '1975-06-20',
+      genero: 'Masculino',
+      foto: null,
+      funcao: 'treinador',
+      funcao_desc: 'Treinador Principal',
+      email: 'jp.serra@escolaciclismo.pt',
+      tel: '912 111 222',
+      tel2: '',
+      morada: 'R. das Flores, 5 — Cascais',
+      estado: 'ativo',
+      perfil_acesso: 'treinador',
+      escaloes: ['escolas','sub17','sub19','sub23','paraciclismo'],
+      // Certificações
+      certs: [
+        {nome:'Licença Treinador Grau III FPC', validade:'2027-12-31', estado:'valida'},
+        {nome:'Primeiros Socorros', validade:'2026-12-31', estado:'valida'},
+        {nome:'Carta de Condução Cat. D', validade:'2028-06-20', estado:'valida'},
+      ],
+      disponibilidade: 'Todos os dias',
+      notas: 'Treinador de referência. Conhece todos os atletas individualmente.',
+      desde: '2018',
+      aniversario_clube: '',
+    },
+    {
+      id: 's2',
+      nome: 'Manuel Costa',
+      apelidos: 'Costa Ferreira',
+      nasc: '1968-09-14',
+      genero: 'Masculino',
+      foto: null,
+      funcao: 'diretor',
+      funcao_desc: 'Diretor Desportivo',
+      email: 'manuel.costa@escolaciclismo.pt',
+      tel: '913 222 333',
+      tel2: '214 555 666',
+      morada: 'Av. Central, 22 — Sintra',
+      estado: 'ativo',
+      perfil_acesso: 'admin',
+      escaloes: ['sub19','sub23'],
+      certs: [
+        {nome:'Licença Diretor Desportivo FPC', validade:'2027-06-30', estado:'valida'},
+        {nome:'Carta de Condução Cat. D', validade:'2026-09-14', estado:'renovar'},
+      ],
+      disponibilidade: 'Fins de semana e corridas',
+      notas: 'Responsável pela logística e contacto com a FPC.',
+      desde: '2015',
+      aniversario_clube: '',
+    },
+    {
+      id: 's3',
+      nome: 'Carlos Reis',
+      apelidos: 'Reis Alves',
+      nasc: '1980-11-03',
+      genero: 'Masculino',
+      foto: null,
+      funcao: 'mecanico',
+      funcao_desc: 'Mecânico',
+      email: 'carlos.reis@escolaciclismo.pt',
+      tel: '914 333 444',
+      tel2: '',
+      morada: 'R. Nova, 8 — Oeiras',
+      estado: 'ativo',
+      perfil_acesso: 'treinador',
+      escaloes: ['escolas','sub17','sub19','sub23','paraciclismo'],
+      certs: [
+        {nome:'Mecânico Ciclismo Nível 2 FPC', validade:'2028-03-31', estado:'valida'},
+      ],
+      disponibilidade: 'Corridas e estágios',
+      notas: 'Especialista em bicicletas de estrada e BTT. Disponível com 48h de antecedência.',
+      desde: '2020',
+      aniversario_clube: '',
+    },
+    {
+      id: 's4',
+      nome: 'Ana Sousa',
+      apelidos: 'Sousa Martins',
+      nasc: '1985-03-28',
+      genero: 'Feminino',
+      foto: null,
+      funcao: 'delegada',
+      funcao_desc: 'Delegada de Equipa',
+      email: 'ana.sousa@escolaciclismo.pt',
+      tel: '915 444 555',
+      tel2: '',
+      morada: 'Tv. das Acácias, 3 — Cascais',
+      estado: 'ativo',
+      perfil_acesso: 'treinador',
+      escaloes: ['escolas','sub17'],
+      certs: [
+        {nome:'Primeiros Socorros', validade:'2025-12-31', estado:'expirada'},
+      ],
+      disponibilidade: 'Corridas de Escolas e SUB17',
+      notas: 'Responsável pelas inscrições e documentação nas corridas.',
+      desde: '2021',
+      aniversario_clube: '',
+    },
+  ],
+
+  FUNCOES: [
+    {id:'treinador', nome:'Treinador', icone:'🎽'},
+    {id:'diretor', nome:'Diretor Desportivo', icone:'📋'},
+    {id:'mecanico', nome:'Mecânico', icone:'🔧'},
+    {id:'delegada', nome:'Delegado/a de Equipa', icone:'📎'},
+    {id:'fisio', nome:'Fisioterapeuta', icone:'🏥'},
+    {id:'administrativo', nome:'Administrativo', icone:'💼'},
+    {id:'outro', nome:'Outro', icone:'👤'},
+  ],
+
+  PERFIS: [
+    {id:'admin', nome:'Administrador', desc:'Acesso total'},
+    {id:'treinador', nome:'Treinador/Diretor', desc:'Acesso operacional completo'},
+    {id:'consulta', nome:'Consulta', desc:'Só leitura'},
+  ],
+
+  ESCALOES_TODOS: ['escolas','sub17','sub19','sub23','paraciclismo'],
+
+  getById(id) { return this.membros.find(m=>m.id===id); },
+  getFuncao(id) { return this.FUNCOES.find(f=>f.id===id); },
+  getAtivos() { return this.membros.filter(m=>m.estado==='ativo'); },
+
+  getCertsAlerta() {
+    const hoje = new Date();
+    const em30 = new Date(hoje); em30.setDate(hoje.getDate()+30);
+    return this.membros.flatMap(m=>
+      m.certs.filter(c=>{
+        if(c.estado==='expirada') return true;
+        const v = new Date(c.validade);
+        return v <= em30;
+      }).map(c=>({membro:m, cert:c}))
+    );
+  },
+};
+
+</script>
+<script>
+// ============================================================
+// COMUNICACOES_DB.JS
+// ============================================================
+
+const COMUNICACOES_DB = {
+
+  // Grupos WhatsApp por escalão (configuráveis)
+  grupos: [
+    { id:'g_todos', nome:'Todos', escalao:'todos', descricao:'Toda a escola', icone:'📢', cor:'#534AB7' },
+    { id:'g_escolas', nome:'Escolas', escalao:'escolas', descricao:'SUB7 a SUB15', icone:'🏫', cor:'#0F6E56' },
+    { id:'g_sub7', nome:'SUB7', escalao:'sub7', descricao:'Escolas — SUB7', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub9', nome:'SUB9', escalao:'sub9', descricao:'Escolas — SUB9', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub11', nome:'SUB11', escalao:'sub11', descricao:'Escolas — SUB11', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub13', nome:'SUB13', escalao:'sub13', descricao:'Escolas — SUB13', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub15', nome:'SUB15', escalao:'sub15', descricao:'Escolas — SUB15', icone:'⭐', cor:'#0F6E56' },
+    { id:'g_sub17', nome:'SUB17', escalao:'sub17', descricao:'Escalão SUB17', icone:'🚴', cor:'#185FA5' },
+    { id:'g_sub19', nome:'SUB19', escalao:'sub19', descricao:'Escalão SUB19', icone:'🚴', cor:'#854F0B' },
+    { id:'g_sub23', nome:'SUB23', escalao:'sub23', descricao:'Escalão SUB23', icone:'🚴', cor:'#534AB7' },
+    { id:'g_para', nome:'Paraciclismo', escalao:'paraciclismo', descricao:'Escalão Paraciclismo', icone:'♿', cor:'#CC0000' },
+    { id:'g_staff', nome:'Staff', escalao:'staff', descricao:'Treinadores e equipa técnica', icone:'🪪', cor:'#5F5E5A' },
+  ],
+
+  // Templates de mensagens por tipo
+  templates: {
+    aviso: {
+      nome: 'Aviso geral',
+      icone: '📢',
+      template: (dados) => `📢 *AVISO — Escola de Ciclismo de Formação*\n\n${dados.texto}\n\n${dados.rodape||''}`,
+    },
+    convocatoria: {
+      nome: 'Convocatória',
+      icone: '🏁',
+      template: (dados) => `🚴 *CONVOCATÓRIA — ${dados.corrida}*\n📅 ${dados.data}\n📍 ${dados.local||'Local a confirmar'}\n🕐 Concentração: ${dados.hora||'—'}\n\n*Atletas convocados:*\n${dados.atletas||'—'}\n\nConfirmar presença até ${dados.prazo||'breve'}.\n\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+    resultado: {
+      nome: 'Resultado',
+      icone: '🏆',
+      template: (dados) => `🏆 *RESULTADO — ${dados.corrida}*\n📅 ${dados.data} · ${dados.local||''}\n\n*${dados.escalao}:*\n${dados.resultados||'—'}\n\nParabéns a todos! 💪\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+    treino: {
+      nome: 'Informação de treino',
+      icone: '🔄',
+      template: (dados) => `🔄 *TREINO — ${dados.titulo}*\n📅 ${dados.data}\n📍 ${dados.local||'Local habitual'}\n🕐 ${dados.hora||'Hora habitual'}\n\n${dados.texto||''}\n\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+    pagamento: {
+      nome: 'Alerta de pagamento',
+      icone: '💰',
+      template: (dados) => `💰 *MENSALIDADE — Escola de Ciclismo de Formação*\n\nCaro(a) Encarregado(a),\n\nInformamos que existe(m) mensalidade(s) em atraso referente(s) ao atleta *${dados.atleta}*, no valor de *${dados.valor}*.\n\nPor favor regularize a situação com a brevidade possível.\n\nObrigado,\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+    parabens: {
+      nome: 'Parabéns',
+      icone: '🎂',
+      template: (dados) => `🎂🚴 *PARABÉNS, ${(dados.nome||'').toUpperCase()}!* 🚴🎂\n\n${dados.texto||`Hoje é dia de celebrar! Toda a equipa da Escola de Ciclismo deseja-te um dia incrível, cheio de alegria e muita pedalada! 🎉`}\n\nCom muito carinho,\n_Escola de Ciclismo de Formação_ 🚲💛`,
+    },
+    informacao: {
+      nome: 'Informação geral',
+      icone: 'ℹ️',
+      template: (dados) => `ℹ️ *INFORMAÇÃO — Escola de Ciclismo de Formação*\n\n${dados.texto}\n\n_Escola de Ciclismo de Formação_ 🚲`,
+    },
+  },
+
+  // Histórico de comunicações enviadas
+  historico: [
+    {
+      id:'h1', tipo:'convocatoria', titulo:'Convocatória — II Circuito São Pedro Cadeira',
+      grupos:['g_escolas','g_sub17'], data:'2026-03-05', hora:'14:30',
+      autor:'JP Serra', estado:'enviado',
+      texto:'🚴 *CONVOCATÓRIA — II Circuito São Pedro Cadeira*\n📅 7 Mar 2026\n📍 Cadeira, Sintra\n🕐 Concentração: 07:15\n\n*Atletas convocados:*\n• Afonso Ferreira\n• Ana Costa\n• João Silva\n• Dinis Dias\n• Maria Santos\n• Sofia Lopes\n\nConfirmar presença até 6 Mar.\n\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+    {
+      id:'h2', tipo:'resultado', titulo:'Resultado — II Circuito São Pedro Cadeira',
+      grupos:['g_escolas','g_sub17'], data:'2026-03-07', hora:'17:45',
+      autor:'JP Serra', estado:'enviado',
+      texto:'🏆 *RESULTADO — II Circuito São Pedro Cadeira*\n📅 7 Mar 2026 · Cadeira, Sintra\n\n*Escolas SUB15:*\n🥇 1º Maria Santos\n🥈 4º Sofia Lopes\n\n*SUB17:*\n🥈 2º Afonso Ferreira\n🏅 5º Ana Costa\n\nParabéns a todos! 💪\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+    {
+      id:'h3', tipo:'aviso', titulo:'Aviso — Alteração horário treino',
+      grupos:['g_todos'], data:'2026-03-10', hora:'09:15',
+      autor:'JP Serra', estado:'enviado',
+      texto:'📢 *AVISO — Escola de Ciclismo de Formação*\n\nInformamos que o treino de quinta-feira (12 Mar) está cancelado por indisponibilidade do espaço.\n\nO próximo treino será na semana seguinte, no horário habitual.\n\nPedimos desculpa pelo inconveniente.\n\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+    {
+      id:'h4', tipo:'parabens', titulo:'Parabéns — Afonso Ferreira',
+      grupos:['g_sub17'], data:'2026-01-15', hora:'08:05',
+      autor:'JP Serra', estado:'enviado',
+      texto:'🎂🚴 *PARABÉNS, AFONSO!* 🚴🎂\n\nHoje é dia de celebrar! Toda a equipa da Escola de Ciclismo deseja-te um dia incrível, cheio de alegria e muita pedalada! 🎉\n\nCom muito carinho,\n_Escola de Ciclismo de Formação_ 🚲💛'
+    },
+    {
+      id:'h5', tipo:'pagamento', titulo:'Alerta pagamento — Maria Santos',
+      grupos:['g_escolas'], data:'2026-05-15', hora:'10:30',
+      autor:'Sistema', estado:'enviado',
+      texto:'💰 *MENSALIDADE — Escola de Ciclismo de Formação*\n\nCaro(a) Encarregado(a),\n\nInformamos que existe(m) mensalidade(s) em atraso referente(s) ao atleta *Maria Santos*, no valor de *75,00€*.\n\nPor favor regularize a situação com a brevidade possível.\n\nObrigado,\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+  ],
+
+  // Rascunhos
+  rascunhos: [
+    {
+      id:'r1', tipo:'convocatoria', titulo:'Convocatória — GP Cascais Escolas',
+      grupos:['g_escolas'], data:'2026-04-15',
+      texto:'🚴 *CONVOCATÓRIA — GP Cascais Escolas*\n📅 18 Abr 2026\n📍 Cascais\n🕐 Concentração: —\n\n*Atletas convocados:*\n— (por definir)\n\n_Escola de Ciclismo de Formação_ 🚲'
+    },
+  ],
+
+  getGrupo(id) { return this.grupos.find(g=>g.id===id); },
+  getTemplate(tipo) { return this.templates[tipo]; },
+};
+
+</script>
+<script>
+// ============================================================
+// CALENDARIO_DB.JS — Dados do calendário
+// ============================================================
+
+// Converter JSON em variável JS
+const CALENDARIO = {
+  epoca_atual: 2026,
+
+  // Provas que a escola marcou como participando (mock)
+  escola_provas: [
+    { id: 'e1', nome: 'II Circuito São Pedro Cadeira', data: '2026-03-07', data_fim: '2026-03-07', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas / 1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['escolas','sub17'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Cadeira, Sintra', hora_partida: '07:30', hora_concentracao: '07:15',
+      convocados: {escolas: [5,8,12], sub17: [1,4,6]}, viaturas: ['Carrinha Grande','Carrinha 1'],
+      paragens: [{local:'Cascais - R. das Flores', hora:'07:45', atletas:[1,6], km:8},
+                 {local:'Sintra - Av. Central', hora:'08:05', atletas:[5,8], km:15}],
+      obs: 'Concentração no parque de estacionamento junto ao circuito.' },
+
+    { id: 'e2', nome: 'Escolas - Avaliações', data: '2026-03-08', data_fim: '2026-03-08', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas', organizador: 'U.V.P./FPC',
+      escaloes: ['escolas'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Lisboa', hora_partida: '08:00', hora_concentracao: '07:45',
+      convocados: {escolas: [2,5,8,9,10,12]}, viaturas: ['Carrinha Grande'],
+      paragens: [{local:'Sintra - Av. Central', hora:'08:20', atletas:[2,5], km:12}],
+      obs: '' },
+
+    { id: 'e3', nome: '29ª Clássica da Primavera', data: '2026-03-22', data_fim: '2026-03-22', etapas: 1,
+      vertente: 'Estrada', classe: '1.12 Sub23', organizador: 'CDC Navais',
+      escaloes: ['sub23'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Navais', hora_partida: '09:00', hora_concentracao: '08:45',
+      convocados: {sub23: [7]}, viaturas: ['Carrinha 1'],
+      paragens: [],
+      obs: '' },
+
+    { id: 'e4', nome: 'Prova de Abertura Sub19', data: '2026-03-14', data_fim: '2026-03-14', etapas: 1,
+      vertente: 'Estrada', classe: '1.14 Sub19', organizador: 'A.C. Minho',
+      escaloes: ['sub19'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Braga', hora_partida: '06:30', hora_concentracao: '06:15',
+      convocados: {sub19: [3,11]}, viaturas: ['Carrinha 1'],
+      paragens: [{local:'Oeiras - R. Nova', hora:'06:50', atletas:[3], km:10}],
+      obs: 'Viagem longa — saída às 6h30.' },
+
+    { id: 'e5', nome: 'Volta à Região de Lisboa Sub17', data: '2026-04-10', data_fim: '2026-04-12', etapas: 3,
+      vertente: 'Estrada', classe: '1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['sub17'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Lisboa (várias etapas)', hora_partida: '08:00', hora_concentracao: '07:45',
+      convocados: {sub17: [1,4,6]}, viaturas: ['Carrinha Grande','Carrinha 1'],
+      paragens: [{local:'Cascais - R. das Flores', hora:'08:15', atletas:[1,6], km:8},
+                 {local:'Sintra - Av. Central', hora:'08:35', atletas:[4], km:15}],
+      obs: 'Prova por etapas — 3 dias. Verificar alojamento.' },
+
+    { id: 'e6', nome: 'GP Cascais Escolas', data: '2026-04-18', data_fim: '2026-04-18', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas', organizador: 'A.C. Lisboa',
+      escaloes: ['escolas'], estado: 'pendente', origem: 'FPC 2026', escola_participa: true,
+      local: 'Cascais', hora_partida: '', hora_concentracao: '',
+      convocados: {escolas: []}, viaturas: [],
+      paragens: [],
+      obs: 'Aguarda confirmação de convocatória.' },
+
+    { id: 'e7', nome: 'Troféu Internacional da Arrábida', data: '2026-05-03', data_fim: '2026-05-03', etapas: 1,
+      vertente: 'Estrada', classe: '1.2', organizador: 'U.V.P./FPC',
+      escaloes: ['sub23'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Setúbal', hora_partida: '07:00', hora_concentracao: '06:45',
+      convocados: {sub23: [7]}, viaturas: ['Carrinha 1'],
+      paragens: [],
+      obs: '' },
+
+    { id: 'e8', nome: 'Taça Regional Sub17 - 2ª Prova', data: '2026-05-16', data_fim: '2026-05-16', etapas: 1,
+      vertente: 'Estrada', classe: '1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['sub17','sub19'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Oeiras', hora_partida: '08:30', hora_concentracao: '08:15',
+      convocados: {sub17: [1,4,6], sub19: [3,11]}, viaturas: ['Carrinha Grande','Carrinha 1'],
+      paragens: [{local:'Cascais - R. das Flores', hora:'08:45', atletas:[1,6], km:8},
+                 {local:'Sintra - Av. Central', hora:'09:05', atletas:[4], km:15}],
+      obs: '' },
+
+    { id: 'e9', nome: 'Circuito Escolas Lisboa', data: '2026-06-06', data_fim: '2026-06-07', etapas: 2,
+      vertente: 'Estrada', classe: 'Escolas', organizador: 'A.C. Lisboa',
+      escaloes: ['escolas','sub17'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Lisboa', hora_partida: '08:00', hora_concentracao: '07:45',
+      convocados: {escolas: [2,5,8,9,10,12], sub17: [1,4,6]}, viaturas: ['Carrinha Grande','Carrinha 1'],
+      paragens: [{local:'Cascais - R. das Flores', hora:'08:15', atletas:[1,6], km:8},
+                 {local:'Sintra - Av. Central', hora:'08:35', atletas:[2,5], km:15}],
+      obs: 'Escolas sábado, SUB17 domingo.' },
+
+    { id: 'e10', nome: 'Campeonatos Regionais Sub19/Sub23', data: '2026-06-20', data_fim: '2026-06-21', etapas: 2,
+      vertente: 'Estrada', classe: 'Regional', organizador: 'A.C. Lisboa',
+      escaloes: ['sub19','sub23'], estado: 'pendente', origem: 'FPC 2026', escola_participa: true,
+      local: 'Setúbal', hora_partida: '', hora_concentracao: '',
+      convocados: {sub19: [], sub23: []}, viaturas: [],
+      paragens: [],
+      obs: '' },
+  ],
+
+  // Provas FPC que a escola NÃO participa (apenas consulta)
+  provas_fpc_2026: [
+    { id: 'f1', nome: '52ª Volta ao Algarve', data: '2026-02-18', data_fim: '2026-02-22', etapas: 5,
+      vertente: 'Estrada', classe: '2.Pro', organizador: 'FPC', escaloes: ['sub23'],
+      estado: 'confirmado', origem: 'FPC 2026', escola_participa: false },
+    { id: 'f2', nome: 'Clássica Santo Thyrso', data: '2026-03-07', data_fim: '2026-03-07', etapas: 1,
+      vertente: 'Estrada', classe: '1.12', organizador: 'A.C. Porto', escaloes: ['sub23'],
+      estado: 'confirmado', origem: 'FPC 2026', escola_participa: false },
+    { id: 'f3', nome: 'Volta ao Alentejo', data: '2026-04-15', data_fim: '2026-04-19', etapas: 5,
+      vertente: 'Estrada', classe: '2.2', organizador: 'FPC', escaloes: ['sub23'],
+      estado: 'confirmado', origem: 'FPC 2026', escola_participa: false },
+  ],
+
+  // Provas provisórias 2027
+  provas_2027: [
+    { id: 'p1', nome: 'II Circuito São Pedro Cadeira', data: '2027-03-06', data_fim: '2027-03-06', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas / 1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['escolas','sub17'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: 'Data provisória — aguarda calendário FPC 2027' },
+    { id: 'p2', nome: 'Escolas - Avaliações', data: '2027-03-07', data_fim: '2027-03-07', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas', organizador: 'FPC',
+      escaloes: ['escolas'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: '' },
+    { id: 'p3', nome: 'Prova de Abertura Sub19', data: '2027-03-13', data_fim: '2027-03-13', etapas: 1,
+      vertente: 'Estrada', classe: '1.14', organizador: 'A.C. Minho',
+      escaloes: ['sub19'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: '' },
+    { id: 'p4', nome: 'Volta à Região de Lisboa Sub17', data: '2027-04-09', data_fim: '2027-04-11', etapas: 3,
+      vertente: 'Estrada', classe: '1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['sub17'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: '' },
+    { id: 'p5', nome: 'Campeonatos Regionais Sub19/Sub23', data: '2027-06-19', data_fim: '2027-06-20', etapas: 2,
+      vertente: 'Estrada', classe: 'Regional', organizador: 'A.C. Lisboa',
+      escaloes: ['sub19','sub23'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: '' },
+  ],
+
+  getProvasEpoca(ano) {
+    if (ano === 2026) return this.escola_provas;
+    if (ano === 2027) return this.provas_2027;
+    return [];
+  },
+
+  getProvasMes(ano, mes) {
+    const todas = this.getProvasEpoca(ano);
+    return todas.filter(p => {
+      const d = new Date(p.data);
+      return d.getFullYear() === ano && d.getMonth() === mes;
+    });
+  },
+
+  getProvasSemana(ano, inicioSemana) {
+    const fim = new Date(inicioSemana);
+    fim.setDate(fim.getDate() + 6);
+    const todas = this.getProvasEpoca(ano);
+    return todas.filter(p => {
+      const d = new Date(p.data);
+      return d >= inicioSemana && d <= fim;
+    });
+  }
+};
+
+</script>
+
+<script>
+// ============================================================
+// UTILS
+// ============================================================
+function fmtEur(v){return v.toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2})+'€'}
+function fmtDate(d){if(!d)return'—';return new Date(d+'T00:00:00').toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function initials(n){return n.split(' ').filter((_,i,a)=>i===0||i===a.length-1).map(x=>x[0]).join('').toUpperCase()}
+function calcAge(nasc){const d=new Date(nasc),t=new Date();let a=t.getFullYear()-d.getFullYear();if(t<new Date(t.getFullYear(),d.getMonth(),d.getDate()))a--;return a}
+function escalaoLabel(ep){if(!ep)return'—';if(ep.escalao==='escolas')return'Escolas'+(ep.subescalao?' / '+ep.subescalao.toUpperCase():'');return ep.escalao.toUpperCase()}
+function avColor(esc){if(esc==='sub23'||esc==='paraciclismo')return'amber';if(esc==='sub17'||esc==='sub19')return'blue';return'teal'}
+
+// ============================================================
+// COCKPIT RENDER
+// ============================================================
+function renderCockpit() {
+  const ano = DB.epoca_atual;
+  const hoje = new Date();
+
+  // --- DATA TOPO ---
+  document.getElementById('tb-date').textContent =
+    hoje.toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // --- ATLETAS ---
+  const atletas = DB.atletas.filter(a=>{const e=a.epocas[ano];return e&&e.estado==='ativo'});
+  const cedidos = atletas.filter(a=>a.epocas[ano].tipo==='cedido');
+  const mensAtraso = atletas.filter(a=>{
+    const regs = FINANCEIRA_DB.mensalidades[a.id]||[];
+    const cfg = FINANCEIRA_DB.getConfigEpoca(ano);
+    return cfg.meses_ativos.some(m=>!regs.find(r=>r.mes===m&&r.ano===ano&&r.pago));
+  });
+  const docsEmFalta = DB.atletas.filter(a=>!a.doc_seguro||!a.doc_medico);
+
+  // --- ANIVERSÁRIOS ---
+  const anivHoje = DB.atletas.filter(a=>{
+    const d=new Date(a.nasc);
+    return d.getMonth()===hoje.getMonth()&&d.getDate()===hoje.getDate();
+  });
+  const staffAnivHoje = STAFF_DB.membros.filter(m=>{
+    const d=new Date(m.nasc);
+    return d.getMonth()===hoje.getMonth()&&d.getDate()===hoje.getDate();
+  });
+  const todosAnivHoje = [...anivHoje, ...staffAnivHoje];
+
+  // --- CALENDÁRIO ---
+  const provasEpoca = CALENDARIO.escola_provas||[];
+  const proximas = provasEpoca
+    .filter(p=>new Date(p.data)>=hoje)
+    .sort((a,b)=>a.data.localeCompare(b.data))
+    .slice(0,4);
+  const semConvocatoria = proximas.filter(p=>Object.values(p.convocados||{}).flat().length===0);
+
+  // --- FINANCEIRA ---
+  const rec = FINANCEIRA_DB.totalReceitas();
+  const desp = FINANCEIRA_DB.totalDespesas();
+  const saldo = rec.total - desp;
+  const recPend = FINANCEIRA_DB.receitas.filter(r=>!r.recebido).reduce((s,r)=>s+r.valor,0);
+
+  // --- PATROCINADORES ---
+  const pats = PATROCINADORES_DB.patrocinadores;
+  const patsAtivos = pats.filter(p=>p.estado==='ativo');
+  const patsSemContacto = patsAtivos.filter(p=>PATROCINADORES_DB.diasSemContacto(p)>60);
+  const patsApoioPend = patsAtivos.filter(p=>p.apoios.some(a=>a.estado==='pendente'));
+
+  // --- STAFF ---
+  const certAlertas = STAFF_DB.getCertsAlerta();
+
+  // --- RENDER ---
+  document.getElementById('cockpit-content').innerHTML = `
+
+  <!-- ANIVERSÁRIOS DO DIA -->
+  ${todosAnivHoje.length ? `
+  <div class="bday-strip" style="margin-bottom:1rem">
+    <span style="font-size:20px">🎂</span>
+    <span style="font-weight:600">Aniversário${todosAnivHoje.length>1?'s':''} hoje:</span>
+    ${todosAnivHoje.map(p=>`<span class="badge b-danger">${p.nome.split(' ')[0]} — ${calcAge(p.nasc)} anos</span>`).join('')}
+    <div style="flex:1"></div>
+    <a href="comunicacoes_standalone.html" class="btn btn-wa btn-sm">🎂 Enviar parabéns</a>
+  </div>` : ''}
+
+  <!-- ALERTAS CRÍTICOS -->
+  <div class="alertas-topo">
+    ${mensAtraso.length ? `<div class="alerta-strip as-danger">
+      ⚠️ <strong>${mensAtraso.length} atleta(s)</strong> com mensalidades em atraso
+      <div style="flex:1"></div>
+      <a href="financeira_standalone.html" class="btn btn-sm">Ver →</a>
+    </div>` : ''}
+    ${semConvocatoria.length ? `<div class="alerta-strip as-warn">
+      🏁 <strong>${semConvocatoria.length} corrida(s)</strong> sem convocatória definida
+      <div style="flex:1"></div>
+      <a href="calendario_standalone.html" class="btn btn-sm">Ver →</a>
+    </div>` : ''}
+    ${patsSemContacto.length ? `<div class="alerta-strip as-warn">
+      🤝 <strong>${patsSemContacto.length} patrocinador(es)</strong> sem contacto há mais de 60 dias
+      <div style="flex:1"></div>
+      <a href="patrocinadores_standalone.html" class="btn btn-sm">Ver →</a>
+    </div>` : ''}
+    ${certAlertas.length ? `<div class="alerta-strip as-warn">
+      🪪 <strong>${certAlertas.length} certificação(ões)</strong> de staff expiradas ou a vencer
+      <div style="flex:1"></div>
+      <a href="staff_standalone.html" class="btn btn-sm">Ver →</a>
+    </div>` : ''}
+    ${docsEmFalta.length ? `<div class="alerta-strip as-warn">
+      📄 <strong>${docsEmFalta.length} atleta(s)</strong> com documentos em falta
+      <div style="flex:1"></div>
+      <a href="atletas_standalone.html" class="btn btn-sm">Ver →</a>
+    </div>` : ''}
+  </div>
+
+  <!-- MÉTRICAS PRINCIPAIS -->
+  <div class="metrics-grid">
+    <a href="atletas_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+      <div class="metric-ico">👥</div>
+      <div class="metric-val">${atletas.length}</div>
+      <div class="metric-lbl">Atletas ativos</div>
+      <div class="metric-sub" style="color:var(--muted)">${cedidos.length} cedido(s)</div>
+    </a>
+    <a href="financeira_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+      <div class="metric-ico">💰</div>
+      <div class="metric-val" style="color:${saldo>=0?'var(--green)':'var(--red)'}; font-size:18px">${fmtEur(Math.abs(saldo))}</div>
+      <div class="metric-lbl">Saldo época</div>
+      <div class="metric-sub" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'▲ Positivo':'▼ Negativo'}</div>
+    </a>
+    <a href="financeira_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+      <div class="metric-ico">⚠️</div>
+      <div class="metric-val" style="color:${mensAtraso.length?'var(--red)':'var(--green)'}">${mensAtraso.length}</div>
+      <div class="metric-lbl">Mensalidades em atraso</div>
+      <div class="metric-sub" style="color:var(--muted)">atletas</div>
+    </a>
+    <a href="calendario_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+      <div class="metric-ico">📅</div>
+      <div class="metric-val">${proximas.length}</div>
+      <div class="metric-lbl">Próximas corridas</div>
+      <div class="metric-sub" style="color:var(--muted)">${proximas[0]?fmtDate(proximas[0].data):'—'}</div>
+    </a>
+    <a href="patrocinadores_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+      <div class="metric-ico">🤝</div>
+      <div class="metric-val">${patsAtivos.length}</div>
+      <div class="metric-lbl">Patrocinadores ativos</div>
+      <div class="metric-sub" style="color:${patsApoioPend.length?'var(--amber)':'var(--muted)'}">${patsApoioPend.length} apoio(s) pendente(s)</div>
+    </a>
+    <a href="staff_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+      <div class="metric-ico">🪪</div>
+      <div class="metric-val">${STAFF_DB.getAtivos().length}</div>
+      <div class="metric-lbl">Staff ativo</div>
+      <div class="metric-sub" style="color:${certAlertas.length?'var(--amber)':'var(--muted)'}">${certAlertas.length} alerta(s) cert.</div>
+    </a>
+  </div>
+
+  <!-- LINHA 2: corridas + mensalidades em atraso -->
+  <div class="main-grid">
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">📅 Próximas corridas</div>
+        <a href="calendario_standalone.html" class="btn btn-ghost btn-sm">Ver todas →</a>
+      </div>
+      <div class="card-body">
+        ${!proximas.length ? '<div class="card-empty">Sem corridas próximas</div>' :
+          proximas.map(p=>{
+            const conv=Object.values(p.convocados||{}).flat().length;
+            const diasAte=Math.ceil((new Date(p.data)-hoje)/86400000);
+            return `<div class="corrida-row">
+              <div class="corrida-data">${diasAte===0?'Hoje':diasAte===1?'Amanhã':diasAte+'d'}</div>
+              <div style="flex:1">
+                <div class="corrida-nome">${p.nome}</div>
+                <div class="corrida-meta">
+                  ${p.escaloes.map(e=>`<span class="badge b-info" style="font-size:10px">${e.toUpperCase()}</span>`).join(' ')}
+                  ${conv?`· ${conv} convocados`:'<span class="badge b-warn" style="font-size:10px">Sem convocatória</span>'}
+                </div>
+              </div>
+              <span class="badge ${p.estado==='confirmado'?'b-ok':'b-warn'}">${p.estado}</span>
+            </div>`;
+          }).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">⚠️ Mensalidades em atraso</div>
+        <a href="financeira_standalone.html" class="btn btn-ghost btn-sm">Ver todas →</a>
+      </div>
+      <div class="card-body">
+        ${!mensAtraso.length ? '<div class="card-empty" style="color:var(--green)">✓ Sem atrasos!</div>' :
+          mensAtraso.slice(0,5).map(a=>{
+            const ep=a.epocas[ano];
+            const t=FINANCEIRA_DB.totalMensalidadesAtleta(a.id,ano);
+            return `<div class="card-row">
+              <div class="av av-${avColor(ep?.escalao||'')}">${initials(a.nome)}</div>
+              <span style="flex:1;font-weight:500">${a.nome}</span>
+              <span style="color:var(--muted);font-size:11px">${escalaoLabel(ep)}</span>
+              <span class="badge b-danger">${fmtEur(t.pendente)}</span>
+            </div>`;
+          }).join('')}
+        ${mensAtraso.length>5?`<div style="text-align:center;padding:.5rem;font-size:11px;color:var(--muted)">+${mensAtraso.length-5} mais</div>`:''}
+      </div>
+    </div>
+  </div>
+
+  <!-- LINHA 3: saldo financeiro + patrocinadores + staff -->
+  <div class="main-grid-3">
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">💰 Financeira ${ano}</div>
+        <a href="financeira_standalone.html" class="btn btn-ghost btn-sm">Detalhe →</a>
+      </div>
+      <div class="card-body">
+        <div class="saldo-bar" style="border:none;padding:0;background:transparent">
+          <div class="saldo-row">
+            <div class="saldo-lbl">📥 Receitas</div>
+            <div class="saldo-track"><div class="saldo-fill" style="width:100%;background:var(--green)"></div></div>
+            <div class="saldo-val" style="color:var(--green)">${fmtEur(rec.total)}</div>
+          </div>
+          <div class="saldo-row">
+            <div class="saldo-lbl">📤 Despesas</div>
+            <div class="saldo-track"><div class="saldo-fill" style="width:${Math.min(100,Math.round((desp/rec.total)*100))}%;background:var(--red)"></div></div>
+            <div class="saldo-val" style="color:var(--red)">${fmtEur(desp)}</div>
+          </div>
+          <div class="saldo-row">
+            <div class="saldo-lbl">⏳ Por receber</div>
+            <div class="saldo-track"><div class="saldo-fill" style="width:${Math.min(100,Math.round((recPend/rec.total)*100))}%;background:var(--amber)"></div></div>
+            <div class="saldo-val" style="color:var(--amber)">${fmtEur(recPend)}</div>
+          </div>
+        </div>
+        <div style="margin-top:.75rem;padding:.6rem;background:${saldo>=0?'var(--green-bg)':'var(--red-bg)'};border-radius:var(--rs);text-align:center">
+          <div style="font-size:18px;font-weight:700;color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}${fmtEur(saldo)}</div>
+          <div style="font-size:11px;color:var(--muted)">Saldo atual</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">🤝 Patrocinadores</div>
+        <a href="patrocinadores_standalone.html" class="btn btn-ghost btn-sm">Ver →</a>
+      </div>
+      <div class="card-body">
+        ${patsAtivos.map(p=>{
+          const t=PATROCINADORES_DB.totalApoios(p);
+          const dias=PATROCINADORES_DB.diasSemContacto(p);
+          return `<div class="card-row">
+            <span style="font-size:16px">${p.logo}</span>
+            <span style="flex:1;font-weight:500">${p.nome}</span>
+            <div style="text-align:right">
+              <div style="font-size:12px;font-weight:600;color:var(--green)">${fmtEur(t.recebido)}</div>
+              ${t.pendente?`<div style="font-size:10px;color:var(--amber)">+${fmtEur(t.pendente)} pend.</div>`:''}
+              ${dias>60?`<div style="font-size:10px;color:var(--red)">${dias}d sem contacto</div>`:''}
+            </div>
+          </div>`;
+        }).join('')}
+        ${PATROCINADORES_DB.patrocinadores.filter(p=>p.estado==='negociacao').map(p=>`
+          <div class="card-row">
+            <span style="font-size:16px">${p.logo}</span>
+            <span style="flex:1;font-weight:500">${p.nome}</span>
+            <span class="badge b-warn">Negociação</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">🪪 Staff</div>
+        <a href="staff_standalone.html" class="btn btn-ghost btn-sm">Ver →</a>
+      </div>
+      <div class="card-body">
+        ${STAFF_DB.getAtivos().map(m=>{
+          const f=STAFF_DB.getFuncao(m.funcao);
+          const certAlert=m.certs.some(c=>c.estado==='expirada'||new Date(c.validade)<new Date(Date.now()+30*86400000));
+          return `<div class="card-row">
+            <div class="av av-blue">${initials(m.nome)}</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:500">${m.nome}</div>
+              <div style="font-size:11px;color:var(--muted)">${f?.icone||''} ${m.funcao_desc}</div>
+            </div>
+            ${certAlert?'<span class="badge b-warn">⚠️ Cert.</span>':'<span class="badge b-ok">OK</span>'}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem">Módulos</div>
+  <div class="modulos-grid">
+    <a href="atletas_standalone.html" class="modulo-btn">
+      <div class="mod-ico m-blue">👥</div>
+      <div><div class="mod-nome">Atletas</div><div class="mod-sub">${atletas.length} ativos</div></div>
+    </a>
+    <a href="calendario_standalone.html" class="modulo-btn">
+      <div class="mod-ico m-teal">📅</div>
+      <div><div class="mod-nome">Calendário</div><div class="mod-sub">${proximas.length} próximas</div></div>
+    </a>
+    <a href="equipamentos_standalone.html" class="modulo-btn">
+      <div class="mod-ico m-amber">🚐</div>
+      <div><div class="mod-nome">Logística</div><div class="mod-sub">Equipamentos</div></div>
+    </a>
+    <a href="financeira_standalone.html" class="modulo-btn">
+      <div class="mod-ico m-green">💰</div>
+      <div><div class="mod-nome">Financeira</div><div class="mod-sub">${fmtEur(saldo)} saldo</div></div>
+    </a>
+    <a href="patrocinadores_standalone.html" class="modulo-btn">
+      <div class="mod-ico m-purple">🤝</div>
+      <div><div class="mod-nome">Patrocinadores</div><div class="mod-sub">${patsAtivos.length} ativos</div></div>
+    </a>
+    <a href="comunicacoes_standalone.html" class="modulo-btn">
+      <div class="mod-ico m-red">📢</div>
+      <div><div class="mod-nome">Comunicações</div><div class="mod-sub">WhatsApp</div></div>
+    </a>
+    <a href="staff_standalone.html" class="modulo-btn">
+      <div class="mod-ico m-gray">🪪</div>
+      <div><div class="mod-nome">Staff</div><div class="mod-sub">${STAFF_DB.getAtivos().length} membros</div></div>
+    </a>
+  </div>`;
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg,type=''){
+  const el=document.getElementById('toast-el');
+  el.textContent=msg;el.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderCockpit();
+</script>
+</body>
+</html>

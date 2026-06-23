@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendário — Escola de Ciclismo</title>
+<style>
+:root{
+  --red:#CC0000;--red-bg:#FFF0F0;--red-bd:rgba(204,0,0,.25);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-bd:rgba(24,95,165,.25);
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-bd:rgba(15,110,86,.25);
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-bd:rgba(133,79,11,.25);
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-bd:rgba(59,109,17,.25);
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-bd:rgba(83,74,183,.25);
+  --gray:#5F5E5A;--gray-bg:#F1EFE8;--gray-bd:rgba(95,94,90,.25);
+  --prov:#7B5EA7;--prov-bg:#F3EFFE;
+  --bg:#F5F4F1;--surface:#fff;--border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.16);
+  --text:#1A1A1A;--muted:#666660;--hint:#9A9A94;
+  --r:10px;--rs:6px;--sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sb-logo{padding:1.1rem 1rem .9rem;border-bottom:.5px solid var(--border)}
+.sb-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.sb-icon{width:32px;height:32px;background:var(--red);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.sb-name{font-size:13px;font-weight:600;line-height:1.2}
+.sb-season{font-size:11px;color:var(--hint);padding-left:40px}
+.sb-nav{padding:.6rem .5rem;flex:1;overflow-y:auto}
+.nav-sec{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;padding:.5rem .5rem .2rem;margin-top:.4rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.45rem .75rem;border-radius:var(--rs);cursor:pointer;color:var(--muted);font-size:13px;transition:background .1s,color .1s;text-decoration:none}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500}
+.nav-badge{margin-left:auto;background:var(--red-bg);color:var(--red);font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-foot{padding:.7rem 1rem;border-top:.5px solid var(--border);display:flex;align-items:center;gap:8px}
+.ua{width:28px;height:28px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:.5px solid var(--border);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-title{font-size:16px;font-weight:600}
+.tb-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.tb-actions{display:flex;gap:8px;align-items:center}
+.content{padding:1.1rem 1.5rem;flex:1}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+.b-ok{background:var(--green-bg);color:var(--green)}
+.b-warn{background:var(--amber-bg);color:var(--amber)}
+.b-danger{background:var(--red-bg);color:var(--red)}
+.b-info{background:var(--blue-bg);color:var(--blue)}
+.b-gray{background:var(--gray-bg);color:var(--gray)}
+.b-purple{background:var(--purple-bg);color:var(--purple)}
+.b-teal{background:var(--teal-bg);color:var(--teal)}
+.b-prov{background:var(--prov-bg);color:var(--prov)}
+
+/* BUTTONS */
+button,.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rs);border:.5px solid var(--border2);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;transition:background .11s;font-family:inherit;white-space:nowrap}
+button:hover,.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn-primary:hover{background:#AA0000}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-teal{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn-teal:hover{background:#0a5040}
+.btn-blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-blue:hover{background:#124d8a}
+
+/* FILTROS TOPO */
+.top-controls{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.view-toggle{display:flex;background:var(--bg);border-radius:var(--rs);padding:3px;border:.5px solid var(--border)}
+.vt-btn{padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;color:var(--muted);border:none;background:transparent;transition:all .11s;font-family:inherit}
+.vt-btn.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.nav-month{display:flex;align-items:center;gap:6px}
+.nav-month button{padding:4px 8px;font-size:13px}
+.month-label{font-size:14px;font-weight:600;min-width:140px;text-align:center}
+.esc-filter{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}
+.pill{font-size:12px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .11s}
+.pill.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:500}
+.epoch-sel{display:flex;gap:5px}
+.epoch-btn{font-size:12px;padding:4px 12px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .11s}
+.epoch-btn.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:500}
+.epoch-btn.prov{background:var(--prov-bg);color:var(--prov);border-color:var(--prov-bd, rgba(123,94,167,.25))}
+
+/* LEGENDA */
+.legenda{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:.9rem;align-items:center}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)}
+.leg-dot{width:8px;height:8px;border-radius:2px}
+
+/* CALENDÁRIO MENSAL */
+.cal-wrap{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+.cal-header{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:.5px solid var(--border)}
+.cal-dow{padding:8px 4px;text-align:center;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--bg)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-cell{min-height:110px;border-right:.5px solid var(--border);border-bottom:.5px solid var(--border);padding:4px;position:relative;transition:background .1s;vertical-align:top}
+.cal-cell:nth-child(7n){border-right:none}
+.cal-cell.other-month{background:rgba(0,0,0,.015)}
+.cal-cell.today{background:var(--blue-bg)}
+.cal-cell.has-events:hover{background:rgba(0,0,0,.02);cursor:pointer}
+.cal-day{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:3px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.cal-day.today-num{background:var(--blue);color:#fff;font-weight:600}
+.cal-event{font-size:10px;padding:2px 5px;border-radius:3px;margin-bottom:2px;cursor:pointer;line-height:1.3;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:opacity .1s}
+.cal-event:hover{opacity:.8}
+.ev-escola{background:#DCFCE7;color:#166534;border-left:2px solid #16a34a}
+.ev-sub17{background:#DBEAFE;color:#1e40af;border-left:2px solid #3b82f6}
+.ev-sub19{background:#FEF3C7;color:#92400e;border-left:2px solid #f59e0b}
+.ev-sub23{background:#F3E8FF;color:#6b21a8;border-left:2px solid #a855f7}
+.ev-para{background:#FCE7F3;color:#831843;border-left:2px solid #ec4899}
+.ev-multi{background:#F1F5F9;color:#334155;border-left:2px solid #64748b}
+.ev-prov{background:var(--prov-bg);color:var(--prov);border-left:2px solid var(--prov);opacity:.75}
+.ev-etapas::after{content:'▶';margin-left:3px;font-size:9px}
+.more-events{font-size:10px;color:var(--muted);padding:1px 4px;cursor:pointer}
+.more-events:hover{color:var(--blue)}
+
+/* VISTA SEMANAL */
+.week-wrap{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+.week-header{display:grid;grid-template-columns:80px repeat(7,1fr);border-bottom:.5px solid var(--border);background:var(--bg)}
+.week-hd-empty{padding:10px 8px;border-right:.5px solid var(--border)}
+.week-hd-day{padding:8px 6px;border-right:.5px solid var(--border);text-align:center}
+.week-hd-day:last-child{border-right:none}
+.week-dow{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase}
+.week-date{font-size:16px;font-weight:600;color:var(--text);line-height:1}
+.week-date.today{color:var(--blue)}
+.week-body{display:grid;grid-template-columns:80px repeat(7,1fr)}
+.week-time-col{border-right:.5px solid var(--border)}
+.week-day-col{border-right:.5px solid var(--border);min-height:200px;padding:4px}
+.week-day-col:last-child{border-right:none}
+.week-event{border-radius:var(--rs);padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:opacity .1s;position:relative}
+.week-event:hover{opacity:.85}
+.week-ev-name{font-size:12px;font-weight:600;margin-bottom:4px;line-height:1.3}
+.week-ev-meta{font-size:11px;opacity:.8;line-height:1.4}
+.week-ev-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}
+.week-ev-badge{font-size:10px;padding:1px 6px;border-radius:20px;background:rgba(255,255,255,.5);font-weight:500}
+.week-logistics{border-top:.5px solid var(--border);margin-top:6px;padding-top:6px;font-size:11px;opacity:.85}
+.week-no-events{text-align:center;padding:2rem 1rem;color:var(--hint);font-size:12px}
+
+/* SUMÁRIO SEMANAL */
+.week-summary{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:.9rem}
+.ws-title{font-size:13px;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between}
+.ws-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ws-card{background:var(--bg);border-radius:var(--rs);padding:.7rem .8rem;text-align:center}
+.ws-val{font-size:20px;font-weight:600;color:var(--text)}
+.ws-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* TABELA */
+.tbl-wrap{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:11px;font-weight:600;color:var(--muted);text-align:left;padding:8px 12px;border-bottom:.5px solid var(--border);background:var(--bg);text-transform:uppercase;letter-spacing:.04em}
+tbody tr{cursor:pointer;transition:background .1s;border-bottom:.5px solid var(--border)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg)}
+td{padding:9px 12px;vertical-align:middle;font-size:13px}
+.tbl-foot{padding:7px 12px;font-size:11px;color:var(--muted);border-top:.5px solid var(--border);text-align:right}
+
+/* PAINEL CORRIDA */
+.panel{position:fixed;top:0;right:0;bottom:0;width:520px;background:var(--surface);border-left:.5px solid var(--border);z-index:200;display:none;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
+.panel.open{display:flex}
+.panel-top{padding:.85rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.panel-tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--rs);padding:3px}
+.pt{padding:4px 11px;border-radius:4px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .11s;border:none;background:transparent;font-family:inherit}
+.pt.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.panel-body{flex:1;overflow-y:auto;padding:1.1rem}
+.panel-foot{padding:.8rem 1.1rem;border-top:.5px solid var(--border);display:flex;gap:7px;flex-shrink:0;flex-wrap:wrap}
+
+/* CORRIDA HEADER */
+.prova-hd{margin-bottom:1rem;padding-bottom:1rem;border-bottom:.5px solid var(--border)}
+.prova-nome{font-size:17px;font-weight:700;margin-bottom:4px}
+.prova-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.prova-badges{display:flex;gap:5px;flex-wrap:wrap}
+
+/* SECÇÕES */
+.sec{margin-bottom:1.1rem}
+.sec-t{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem;padding-bottom:4px;border-bottom:.5px solid var(--border)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+.fl{font-size:11px;color:var(--muted);margin-bottom:1px}
+.fv{font-size:13px;color:var(--text)}
+
+/* CONVOCATÓRIA */
+.conv-escalao{margin-bottom:.8rem}
+.conv-esc-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:.4rem;display:flex;align-items:center;gap:6px}
+.conv-athletes{display:flex;flex-direction:column;gap:4px}
+.conv-row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:var(--rs);background:var(--bg);font-size:12px}
+.av-sm{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0}
+
+/* PARAGENS */
+.paragem-row{display:flex;gap:10px;padding:.6rem 0;border-bottom:.5px solid var(--border);align-items:flex-start}
+.paragem-row:last-child{border-bottom:none}
+.paragem-dot{width:10px;height:10px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:4px}
+.paragem-dot.start{background:var(--green)}
+.paragem-dot.end{background:var(--red)}
+.paragem-hora{font-size:12px;font-weight:600;color:var(--text);min-width:40px}
+.paragem-local{flex:1}
+.paragem-local-name{font-size:13px;font-weight:500;color:var(--text)}
+.paragem-local-meta{font-size:11px;color:var(--muted)}
+.paragem-km{font-size:11px;color:var(--muted);text-align:right;min-width:45px}
+
+/* ETAPAS */
+.etapa-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--rs);background:var(--bg);margin-bottom:6px}
+.etapa-num{width:28px;height:28px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+
+/* FOLHA VIAGEM (print) */
+@media print {
+  .sidebar,.topbar,.panel-top,.panel-foot,.top-controls,.legenda,.no-print{display:none!important}
+  .main{margin-left:0}
+  .panel{position:static;width:100%;border:none;box-shadow:none;display:flex!important}
+  .panel-body{overflow:visible}
+  body{font-size:12px}
+  .folha-viagem{display:block!important}
+}
+.folha-viagem{display:none}
+
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:500px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;margin:1rem}
+.modal-hd{padding:.9rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:15px;font-weight:600}
+.modal-body{flex:1;overflow-y:auto;padding:1.1rem}
+.modal-foot{padding:.8rem 1.1rem;border-top:.5px solid var(--border);display:flex;gap:7px;justify-content:flex-end;flex-shrink:0}
+.fg{margin-bottom:.8rem}
+.fl2{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:3px;display:block}
+.fi{width:100%;padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;color:var(--text);background:var(--surface);outline:none;font-family:inherit}
+.fi:focus{border-color:var(--blue)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info-box{padding:.65rem .85rem;border-radius:var(--rs);font-size:12px;margin-bottom:.8rem}
+.ib-prov{background:var(--prov-bg);color:var(--prov)}
+.ib-blue{background:var(--blue-bg);color:var(--blue)}
+.ib-green{background:var(--green-bg);color:var(--green)}
+
+/* ESQUEMA VIATURA */
+.van-wrap{margin-bottom:1rem}
+.van-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between}
+.van-body{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.75rem;position:relative}
+.van-row{display:flex;gap:6px;margin-bottom:6px;justify-content:center;align-items:center}
+.van-row:last-child{margin-bottom:0}
+.van-aisle{width:14px;flex-shrink:0}
+.seat{width:54px;height:54px;border-radius:8px;border:1.5px solid var(--border2);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .14s;position:relative;user-select:none}
+.seat:hover{border-color:var(--blue);background:var(--blue-bg)}
+.seat.occupied{background:var(--blue-bg);border-color:var(--blue-bd)}
+.seat.occupied-staff{background:var(--teal-bg);border-color:var(--teal-bd)}
+.seat.occupied-outro{background:var(--amber-bg);border-color:var(--amber-bd)}
+.seat.occupied-outro .seat-name{color:var(--amber);font-weight:600}
+.seat.driver{background:var(--amber-bg);border-color:var(--amber-bd);cursor:default}
+.seat.driver:hover{background:var(--amber-bg);border-color:var(--amber-bd)}
+.seat-ico{font-size:20px;line-height:1}
+.seat-name{font-size:8px;color:var(--muted);text-align:center;line-height:1.2;margin-top:2px;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seat.occupied .seat-name{color:var(--blue);font-weight:600}
+.seat.occupied-staff .seat-name{color:var(--teal);font-weight:600}
+.seat.empty .seat-ico{opacity:.2}
+.van-stats{display:flex;gap:10px;margin-top:.75rem;padding-top:.75rem;border-top:.5px solid var(--border);flex-wrap:wrap}
+.van-stat{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.van-selector{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.van-sel-btn{padding:5px 12px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;font-size:12px;font-weight:500;transition:all .12s;font-family:inherit}
+.van-sel-btn.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd)}
+.seat-picker{position:fixed;background:var(--surface);border:.5px solid var(--border2);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:500;padding:.75rem;min-width:230px;max-height:340px;overflow-y:auto;display:none}
+.seat-picker.open{display:block}
+.sp-title{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.04em;padding-bottom:4px;border-bottom:.5px solid var(--border)}
+.sp-section{font-size:10px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.04em;margin:.4rem 0 .2rem}
+.sp-item{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:var(--rs);cursor:pointer;font-size:13px;transition:background .1s}
+.sp-item:hover{background:var(--bg)}
+.sp-item.already{opacity:.4;cursor:not-allowed;pointer-events:none}
+.sp-remove{color:var(--red);border-top:.5px solid var(--border);margin-top:4px;padding-top:4px}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:.55rem .95rem;border-radius:var(--rs);font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .18s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--green)}
+
+select{padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--bg);color:var(--text);outline:none;cursor:pointer;font-family:inherit}
+select:focus{border-color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-icon">🚴</div>
+      <div class="sb-name">Escola de<br>Ciclismo</div>
+    </div>
+    <div class="sb-season">Época 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Principal</div>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">⬡ Cockpit</a>
+    <div class="nav-sec">Equipa</div>
+    <a class="nav-item" href="atletas_standalone.html">👥 Atletas</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🪪 Staff</a>
+    <div class="nav-sec">Desportivo</div>
+    <a class="nav-item active" href="#">📅 Calendário</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🏆 Resultados</a>
+    <div class="nav-sec">Gestão</div>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🚐 Logística</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">💰 Financeira <span class="nav-badge">6</span></a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🤝 Patrocinadores</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">📢 Comunicações</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="ua">JP</div>
+    <div><div style="font-size:12px;font-weight:500">João Paulo Serra</div><div style="font-size:11px;color:var(--muted)">Treinador</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+<div class="topbar">
+  <div>
+    <div class="tb-title">Calendário</div>
+    <div class="tb-sub" id="tb-sub">Época 2026</div>
+  </div>
+  <div class="tb-actions">
+    <button onclick="gerarProvisorio2027()">🔄 Gerar provisório 2027</button>
+    <button onclick="openAddModal()">+ Adicionar prova</button>
+    <button class="btn-primary" onclick="openImportModal()">📥 Importar Excel FPC</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- CONTROLOS -->
+  <div class="top-controls">
+    <div class="view-toggle">
+      <button class="vt-btn active" id="vt-mes" onclick="setView('mes')">📅 Mensal</button>
+      <button class="vt-btn" id="vt-sem" onclick="setView('semana')">🔍 Semanal</button>
+      <button class="vt-btn" id="vt-tab" onclick="setView('tabela')">📋 Tabela</button>
+    </div>
+
+    <div class="nav-month">
+      <button class="btn-sm btn-ghost" onclick="navPrev()">‹</button>
+      <div class="month-label" id="period-label">—</div>
+      <button class="btn-sm btn-ghost" onclick="navNext()">›</button>
+      <button class="btn-sm" onclick="goToday()">Hoje</button>
+    </div>
+
+    <div class="epoch-sel">
+      <div class="epoch-btn active" id="ep-2026" onclick="setEpoca(2026)">2026</div>
+      <div class="epoch-btn prov" id="ep-2027" onclick="setEpoca(2027)">2027 provisório</div>
+    </div>
+
+    <div class="esc-filter" id="esc-filters">
+      <div class="pill active" onclick="setFiltEsc(this,'todos')" data-esc="todos">Todos</div>
+      <div class="pill" onclick="setFiltEsc(this,'escolas')" data-esc="escolas">Escolas</div>
+      <div class="pill" onclick="setFiltEsc(this,'sub17')" data-esc="sub17">SUB17</div>
+      <div class="pill" onclick="setFiltEsc(this,'sub19')" data-esc="sub19">SUB19</div>
+      <div class="pill" onclick="setFiltEsc(this,'sub23')" data-esc="sub23">SUB23</div>
+      <div class="pill" onclick="setFiltEsc(this,'paraciclismo')" data-esc="para">Para.</div>
+    </div>
+  </div>
+
+  <!-- LEGENDA -->
+  <div class="legenda no-print">
+    <div class="leg-item"><div class="leg-dot" style="background:#16a34a"></div> Escolas</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#3b82f6"></div> SUB17</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#f59e0b"></div> SUB19</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#a855f7"></div> SUB23</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ec4899"></div> Paraciclismo</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#64748b"></div> Multi-escalão</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--prov)"></div> Provisório 2027</div>
+    <div class="leg-item" style="margin-left:auto;font-size:11px;color:var(--muted)">▶ = prova por etapas</div>
+  </div>
+
+  <!-- VISTAS -->
+  <div id="view-mes"></div>
+  <div id="view-semana" style="display:none"></div>
+  <div id="view-tabela" style="display:none"></div>
+
+</div>
+</div>
+</div>
+
+<!-- PAINEL CORRIDA -->
+<div class="panel" id="panel">
+  <div class="panel-top">
+    <button class="btn-ghost btn-sm" onclick="closePanel()">← Voltar</button>
+    <div style="flex:1"></div>
+    <div class="panel-tabs">
+      <button class="pt active" onclick="setPanelTab(this,'info')">Informação</button>
+      <button class="pt" onclick="setPanelTab(this,'conv')">Atletas</button>
+      <button class="pt" onclick="setPanelTab(this,'staff')">Staff</button>
+      <button class="pt" onclick="setPanelTab(this,'outros')">Outros</button>
+      <button class="pt" onclick="setPanelTab(this,'logistica')">Logística</button>
+      <button class="pt" onclick="setPanelTab(this,'lugares')">🚐 Lugares</button>
+      <button class="pt" onclick="setPanelTab(this,'folha')">Folha viagem</button>
+    </div>
+  </div>
+  <div class="panel-body" id="panel-body"></div>
+  <div class="panel-foot">
+    <button onclick="toggleParticipa()" id="btn-participa">✓ Escola participa</button>
+    <button onclick="openConvModal()" class="btn-blue btn-sm">+ Convocar atletas</button>
+    <div style="flex:1"></div>
+    <button class="btn-teal btn-sm" onclick="printFolha()">🖨️ Imprimir folha</button>
+    <button class="btn-sm" onclick="partilharWA()">📱 WhatsApp</button>
+  </div>
+</div>
+
+<!-- MODAL ADD PROVA -->
+<div class="modal-overlay" id="modal-add" onclick="if(event.target===this)closeModal('modal-add')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Adicionar prova</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl2">Nome da prova *</label><input type="text" class="fi" id="add-nome" placeholder="Ex: GP Cascais Escolas"></div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Data início *</label><input type="date" class="fi" id="add-data"></div>
+        <div class="fg"><label class="fl2">Data fim</label><input type="date" class="fi" id="add-data-fim"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Vertente *</label>
+          <select class="fi" id="add-vertente"><option value="Estrada">Estrada</option><option value="BTT">BTT</option><option value="Pista">Pista</option></select>
+        </div>
+        <div class="fg"><label class="fl2">Organizador</label><input type="text" class="fi" id="add-org"></div>
+      </div>
+      <div class="fg"><label class="fl2">Escalões *</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px" id="add-escaloes">
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" value="escolas"> Escolas</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" value="sub17"> SUB17</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" value="sub19"> SUB19</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" value="sub23"> SUB23</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px"><input type="checkbox" value="paraciclismo"> Paraciclismo</label>
+        </div>
+      </div>
+      <div class="fg"><label class="fl2">Local</label><input type="text" class="fi" id="add-local"></div>
+      <div class="fg"><label class="fl2">Observações</label><textarea class="fi" id="add-obs" rows="2"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-add')">Cancelar</button>
+      <button class="btn-primary" onclick="addProva()">+ Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IMPORTAR -->
+<div class="modal-overlay" id="modal-import" onclick="if(event.target===this)closeModal('modal-import')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Importar calendário FPC</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-import')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box ib-blue">📋 O ficheiro Excel da FPC deve ter as colunas: <strong>Data | Data Fim | Prova | Vertente | Classe Prova | Organizador</strong></div>
+      <div class="fg">
+        <label class="fl2">Ficheiro Excel (.xlsx)</label>
+        <input type="file" accept=".xlsx,.xls" class="fi" id="import-file" style="padding:10px">
+      </div>
+      <div class="fg">
+        <label class="fl2">Época</label>
+        <select class="fi" id="import-epoca"><option value="2026">2026</option><option value="2027">2027</option></select>
+      </div>
+      <div class="info-box ib-prov" id="import-preview" style="display:none"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-import')">Cancelar</button>
+      <button class="btn-primary" onclick="simImport()">📥 Importar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROVAS DO DIA -->
+<div class="modal-overlay" id="modal-day" onclick="if(event.target===this)closeModal('modal-day')">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-hd">
+      <div class="modal-title" id="modal-day-title">Provas do dia</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-day')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-day-body"></div>
+  </div>
+</div>
+
+<!-- MODAL CONVOCAR -->
+<div class="modal-overlay" id="modal-conv" onclick="if(event.target===this)closeModal('modal-conv')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Convocar atletas</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-conv')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-conv-body"></div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-conv')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarConvocatoria()">✓ Guardar convocatória</button>
+    </div>
+  </div>
+</div>
+
+<!-- SEAT PICKER POPUP -->
+<div class="seat-picker" id="seat-picker">
+  <div class="sp-title" id="sp-title">Escolher pessoa</div>
+  <div id="sp-content"></div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<script>
+// ============================================================
+// CALENDARIO_DB.JS — Dados do calendário
+// ============================================================
+
+// Converter JSON em variável JS
+const CALENDARIO = {
+  epoca_atual: 2026,
+
+  // Provas que a escola marcou como participando (mock)
+  escola_provas: [
+    { id: 'e1', nome: 'II Circuito São Pedro Cadeira', data: '2026-03-07', data_fim: '2026-03-07', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas / 1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['escolas','sub17'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Cadeira, Sintra', hora_partida: '07:30', hora_concentracao: '07:15',
+      convocados: {escolas: [5,8,12], sub17: [1,4,6]}, viaturas: ['Carrinha Grande','Carrinha 1'],
+      paragens: [{local:'Cascais - R. das Flores', hora:'07:45', atletas:[1,6], km:8},
+                 {local:'Sintra - Av. Central', hora:'08:05', atletas:[5,8], km:15}],
+      obs: 'Concentração no parque de estacionamento junto ao circuito.' },
+
+    { id: 'e2', nome: 'Escolas - Avaliações', data: '2026-03-08', data_fim: '2026-03-08', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas', organizador: 'U.V.P./FPC',
+      escaloes: ['escolas'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Lisboa', hora_partida: '08:00', hora_concentracao: '07:45',
+      convocados: {escolas: [2,5,8,9,10,12]}, viaturas: ['Carrinha Grande'],
+      paragens: [{local:'Sintra - Av. Central', hora:'08:20', atletas:[2,5], km:12}],
+      obs: '' },
+
+    { id: 'e3', nome: '29ª Clássica da Primavera', data: '2026-03-22', data_fim: '2026-03-22', etapas: 1,
+      vertente: 'Estrada', classe: '1.12 Sub23', organizador: 'CDC Navais',
+      escaloes: ['sub23'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Navais', hora_partida: '09:00', hora_concentracao: '08:45',
+      convocados: {sub23: [7]}, viaturas: ['Carrinha 1'],
+      paragens: [],
+      obs: '' },
+
+    { id: 'e4', nome: 'Prova de Abertura Sub19', data: '2026-03-14', data_fim: '2026-03-14', etapas: 1,
+      vertente: 'Estrada', classe: '1.14 Sub19', organizador: 'A.C. Minho',
+      escaloes: ['sub19'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Braga', hora_partida: '06:30', hora_concentracao: '06:15',
+      convocados: {sub19: [3,11]}, viaturas: ['Carrinha 1'],
+      paragens: [{local:'Oeiras - R. Nova', hora:'06:50', atletas:[3], km:10}],
+      obs: 'Viagem longa — saída às 6h30.' },
+
+    { id: 'e5', nome: 'Volta à Região de Lisboa Sub17', data: '2026-04-10', data_fim: '2026-04-12', etapas: 3,
+      vertente: 'Estrada', classe: '1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['sub17'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Lisboa (várias etapas)', hora_partida: '08:00', hora_concentracao: '07:45',
+      convocados: {sub17: [1,4,6]}, viaturas: ['Carrinha Grande','Carrinha 1'],
+      paragens: [{local:'Cascais - R. das Flores', hora:'08:15', atletas:[1,6], km:8},
+                 {local:'Sintra - Av. Central', hora:'08:35', atletas:[4], km:15}],
+      obs: 'Prova por etapas — 3 dias. Verificar alojamento.' },
+
+    { id: 'e6', nome: 'GP Cascais Escolas', data: '2026-04-18', data_fim: '2026-04-18', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas', organizador: 'A.C. Lisboa',
+      escaloes: ['escolas'], estado: 'pendente', origem: 'FPC 2026', escola_participa: true,
+      local: 'Cascais', hora_partida: '', hora_concentracao: '',
+      convocados: {escolas: []}, viaturas: [],
+      paragens: [],
+      obs: 'Aguarda confirmação de convocatória.' },
+
+    { id: 'e7', nome: 'Troféu Internacional da Arrábida', data: '2026-05-03', data_fim: '2026-05-03', etapas: 1,
+      vertente: 'Estrada', classe: '1.2', organizador: 'U.V.P./FPC',
+      escaloes: ['sub23'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Setúbal', hora_partida: '07:00', hora_concentracao: '06:45',
+      convocados: {sub23: [7]}, viaturas: ['Carrinha 1'],
+      paragens: [],
+      obs: '' },
+
+    { id: 'e8', nome: 'Taça Regional Sub17 - 2ª Prova', data: '2026-05-16', data_fim: '2026-05-16', etapas: 1,
+      vertente: 'Estrada', classe: '1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['sub17','sub19'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Oeiras', hora_partida: '08:30', hora_concentracao: '08:15',
+      convocados: {sub17: [1,4,6], sub19: [3,11]}, viaturas: ['Carrinha Grande','Carrinha 1'],
+      paragens: [{local:'Cascais - R. das Flores', hora:'08:45', atletas:[1,6], km:8},
+                 {local:'Sintra - Av. Central', hora:'09:05', atletas:[4], km:15}],
+      obs: '' },
+
+    { id: 'e9', nome: 'Circuito Escolas Lisboa', data: '2026-06-06', data_fim: '2026-06-07', etapas: 2,
+      vertente: 'Estrada', classe: 'Escolas', organizador: 'A.C. Lisboa',
+      escaloes: ['escolas','sub17'], estado: 'confirmado', origem: 'FPC 2026', escola_participa: true,
+      local: 'Lisboa', hora_partida: '08:00', hora_concentracao: '07:45',
+      convocados: {escolas: [2,5,8,9,10,12], sub17: [1,4,6]}, viaturas: ['Carrinha Grande','Carrinha 1'],
+      paragens: [{local:'Cascais - R. das Flores', hora:'08:15', atletas:[1,6], km:8},
+                 {local:'Sintra - Av. Central', hora:'08:35', atletas:[2,5], km:15}],
+      obs: 'Escolas sábado, SUB17 domingo.' },
+
+    { id: 'e10', nome: 'Campeonatos Regionais Sub19/Sub23', data: '2026-06-20', data_fim: '2026-06-21', etapas: 2,
+      vertente: 'Estrada', classe: 'Regional', organizador: 'A.C. Lisboa',
+      escaloes: ['sub19','sub23'], estado: 'pendente', origem: 'FPC 2026', escola_participa: true,
+      local: 'Setúbal', hora_partida: '', hora_concentracao: '',
+      convocados: {sub19: [], sub23: []}, viaturas: [],
+      paragens: [],
+      obs: '' },
+  ],
+
+  // Provas FPC que a escola NÃO participa (apenas consulta)
+  provas_fpc_2026: [
+    { id: 'f1', nome: '52ª Volta ao Algarve', data: '2026-02-18', data_fim: '2026-02-22', etapas: 5,
+      vertente: 'Estrada', classe: '2.Pro', organizador: 'FPC', escaloes: ['sub23'],
+      estado: 'confirmado', origem: 'FPC 2026', escola_participa: false },
+    { id: 'f2', nome: 'Clássica Santo Thyrso', data: '2026-03-07', data_fim: '2026-03-07', etapas: 1,
+      vertente: 'Estrada', classe: '1.12', organizador: 'A.C. Porto', escaloes: ['sub23'],
+      estado: 'confirmado', origem: 'FPC 2026', escola_participa: false },
+    { id: 'f3', nome: 'Volta ao Alentejo', data: '2026-04-15', data_fim: '2026-04-19', etapas: 5,
+      vertente: 'Estrada', classe: '2.2', organizador: 'FPC', escaloes: ['sub23'],
+      estado: 'confirmado', origem: 'FPC 2026', escola_participa: false },
+  ],
+
+  // Provas provisórias 2027
+  provas_2027: [
+    { id: 'p1', nome: 'II Circuito São Pedro Cadeira', data: '2027-03-06', data_fim: '2027-03-06', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas / 1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['escolas','sub17'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: 'Data provisória — aguarda calendário FPC 2027' },
+    { id: 'p2', nome: 'Escolas - Avaliações', data: '2027-03-07', data_fim: '2027-03-07', etapas: 1,
+      vertente: 'Estrada', classe: 'Escolas', organizador: 'FPC',
+      escaloes: ['escolas'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: '' },
+    { id: 'p3', nome: 'Prova de Abertura Sub19', data: '2027-03-13', data_fim: '2027-03-13', etapas: 1,
+      vertente: 'Estrada', classe: '1.14', organizador: 'A.C. Minho',
+      escaloes: ['sub19'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: '' },
+    { id: 'p4', nome: 'Volta à Região de Lisboa Sub17', data: '2027-04-09', data_fim: '2027-04-11', etapas: 3,
+      vertente: 'Estrada', classe: '1.17', organizador: 'A.C. Lisboa',
+      escaloes: ['sub17'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: '' },
+    { id: 'p5', nome: 'Campeonatos Regionais Sub19/Sub23', data: '2027-06-19', data_fim: '2027-06-20', etapas: 2,
+      vertente: 'Estrada', classe: 'Regional', organizador: 'A.C. Lisboa',
+      escaloes: ['sub19','sub23'], estado: 'provisorio', origem: 'Provisório 2027 (base 2026)',
+      escola_participa: false, obs: '' },
+  ],
+
+  getProvasEpoca(ano) {
+    if (ano === 2026) return this.escola_provas;
+    if (ano === 2027) return this.provas_2027;
+    return [];
+  },
+
+  getProvasMes(ano, mes) {
+    const todas = this.getProvasEpoca(ano);
+    return todas.filter(p => {
+      const d = new Date(p.data);
+      return d.getFullYear() === ano && d.getMonth() === mes;
+    });
+  },
+
+  getProvasSemana(ano, inicioSemana) {
+    const fim = new Date(inicioSemana);
+    fim.setDate(fim.getDate() + 6);
+    const todas = this.getProvasEpoca(ano);
+    return todas.filter(p => {
+      const d = new Date(p.data);
+      return d >= inicioSemana && d <= fim;
+    });
+  }
+};
+
+</script>
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let VIEW = 'mes';
+let EPOCA = 2026;
+let FILT_ESC = 'todos';
+let CUR_DATE = new Date();
+CUR_DATE.setDate(1);
+let PANEL_PROVA = null;
+let PANEL_TAB = 'info';
+
+// Atletas mock (simplificado)
+const ATLETAS_MOCK = {
+  1:{nome:'Afonso Ferreira',escalao:'sub17'},2:{nome:'Maria Santos',escalao:'escolas'},
+  3:{nome:'Rui Fonseca',escalao:'sub19'},4:{nome:'João Silva',escalao:'sub17'},
+  5:{nome:'Dinis Dias',escalao:'escolas'},6:{nome:'Ana Costa',escalao:'sub17'},
+  7:{nome:'Marco Silva',escalao:'sub23'},8:{nome:'Sofia Lopes',escalao:'escolas'},
+  9:{nome:'Tomás Oliveira',escalao:'escolas'},10:{nome:'Inês Martins',escalao:'escolas'},
+  11:{nome:'Rodrigo Pinto',escalao:'sub19'},12:{nome:'Beatriz Ferreira',escalao:'escolas'}
+};
+
+const VIATURAS = ['Carrinha Grande (9 lug.)','Carrinha 1 (5 lug.)','Carrinha 2 (5 lug.)'];
+
+// ============================================================
+// UTILS
+// ============================================================
+const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DIAS_PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function fmtDate(d) {
+  const dt = new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function fmtDateLong(d) {
+  const dt = new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long'});
+}
+function isToday(d) {
+  const today = new Date(); const dt = new Date(d+'T00:00:00');
+  return dt.getFullYear()===today.getFullYear()&&dt.getMonth()===today.getMonth()&&dt.getDate()===today.getDate();
+}
+
+function evClass(p) {
+  if(p.estado==='provisorio') return 'ev-prov';
+  if(p.escaloes.length>1) return 'ev-multi';
+  const e = p.escaloes[0];
+  if(e==='escolas') return 'ev-escola';
+  if(e==='sub17') return 'ev-sub17';
+  if(e==='sub19') return 'ev-sub19';
+  if(e==='sub23') return 'ev-sub23';
+  if(e==='paraciclismo') return 'ev-para';
+  return 'ev-multi';
+}
+
+function escalaoLabel(e) {
+  const m={escolas:'Escolas',sub17:'SUB17',sub19:'SUB19',sub23:'SUB23',paraciclismo:'Para.'};
+  return m[e]||e;
+}
+
+function estadoBadge(e) {
+  if(e==='confirmado') return '<span class="badge b-ok">Confirmado</span>';
+  if(e==='pendente') return '<span class="badge b-warn">Pendente</span>';
+  if(e==='cancelado') return '<span class="badge b-danger">Cancelado</span>';
+  if(e==='provisorio') return '<span class="badge b-prov">Provisório</span>';
+  return '<span class="badge b-gray">—</span>';
+}
+
+function getProvas() {
+  return CALENDARIO.getProvasEpoca(EPOCA).filter(p=>{
+    if(FILT_ESC==='todos') return true;
+    return p.escaloes.includes(FILT_ESC);
+  });
+}
+
+function getProvasMes(ano, mes) {
+  return getProvas().filter(p=>{
+    const d=new Date(p.data+'T00:00:00');
+    return d.getFullYear()===ano && d.getMonth()===mes;
+  });
+}
+
+// ============================================================
+// CONTROLS
+// ============================================================
+function setView(v) {
+  VIEW=v;
+  ['mes','semana','tabela'].forEach(x=>{
+    document.getElementById('vt-'+x).classList.toggle('active',x===v);
+    document.getElementById('view-'+x).style.display=x===v?'block':'none';
+  });
+  render();
+}
+
+function setEpoca(e) {
+  EPOCA=e;
+  document.getElementById('ep-2026').classList.toggle('active',e===2026);
+  document.getElementById('ep-2027').classList.toggle('active',e===2027);
+  render();
+}
+
+function setFiltEsc(el,v) {
+  document.querySelectorAll('[data-esc]').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active'); FILT_ESC=v; render();
+}
+
+function navPrev() {
+  if(VIEW==='semana'){CUR_DATE.setDate(CUR_DATE.getDate()-7);}
+  else{CUR_DATE.setMonth(CUR_DATE.getMonth()-1);CUR_DATE.setDate(1);}
+  render();
+}
+function navNext() {
+  if(VIEW==='semana'){CUR_DATE.setDate(CUR_DATE.getDate()+7);}
+  else{CUR_DATE.setMonth(CUR_DATE.getMonth()+1);CUR_DATE.setDate(1);}
+  render();
+}
+function goToday() {CUR_DATE=new Date();CUR_DATE.setDate(VIEW==='semana'?new Date().getDate():1);render();}
+
+function updatePeriodLabel() {
+  if(VIEW==='semana'){
+    const ini=getInicioSemana(CUR_DATE);
+    const fim=new Date(ini); fim.setDate(ini.getDate()+6);
+    document.getElementById('period-label').textContent=
+      `${ini.getDate()} ${MESES_PT[ini.getMonth()].slice(0,3)} — ${fim.getDate()} ${MESES_PT[fim.getMonth()].slice(0,3)} ${fim.getFullYear()}`;
+  } else {
+    document.getElementById('period-label').textContent=`${MESES_PT[CUR_DATE.getMonth()]} ${CUR_DATE.getFullYear()}`;
+  }
+  document.getElementById('tb-sub').textContent=`Época ${EPOCA}${EPOCA===2027?' — Calendário provisório':''}`;
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  updatePeriodLabel();
+  if(VIEW==='mes') renderMes();
+  else if(VIEW==='semana') renderSemana();
+  else renderTabela();
+}
+
+// ---- VISTA MENSAL ----
+function renderMes() {
+  const ano=CUR_DATE.getFullYear(), mes=CUR_DATE.getMonth();
+  const provas=getProvasMes(ano,mes);
+  const hoje=new Date();
+
+  // Mapear provas por dia
+  const byDay={};
+  provas.forEach(p=>{
+    const dIni=new Date(p.data+'T00:00:00');
+    const dFim=new Date(p.data_fim+'T00:00:00');
+    for(let d=new Date(dIni);d<=dFim;d.setDate(d.getDate()+1)){
+      if(d.getMonth()===mes){
+        const k=d.getDate();
+        if(!byDay[k]) byDay[k]=[];
+        if(!byDay[k].find(x=>x.id===p.id)) byDay[k].push(p);
+      }
+    }
+  });
+
+  // Gerar grid
+  const primeiroDia=new Date(ano,mes,1).getDay();
+  const diasMes=new Date(ano,mes+1,0).getDate();
+  const diasMesAnt=new Date(ano,mes,0).getDate();
+
+  let html=`<div class="cal-wrap">
+  <div class="cal-header">
+    ${DIAS_PT.map(d=>`<div class="cal-dow">${d}</div>`).join('')}
+  </div>
+  <div class="cal-grid">`;
+
+  // Dias do mês anterior
+  for(let i=primeiroDia-1;i>=0;i--){
+    html+=`<div class="cal-cell other-month"><div class="cal-day" style="color:var(--hint)">${diasMesAnt-i}</div></div>`;
+  }
+
+  // Dias do mês atual
+  for(let dia=1;dia<=diasMes;dia++){
+    const isTod=dia===hoje.getDate()&&mes===hoje.getMonth()&&ano===hoje.getFullYear();
+    const events=byDay[dia]||[];
+    const max=3;
+    html+=`<div class="cal-cell${isTod?' today':''}${events.length?' has-events':''}">
+      <div class="cal-day${isTod?' today-num':''}"${events.length>1?` onclick="openDayList(${dia},${mes},${ano},event)" style="cursor:pointer" title="${events.length} provas neste dia"`:''}>${dia}</div>`;
+    events.slice(0,max).forEach(p=>{
+      const isStart=new Date(p.data+'T00:00:00').getDate()===dia||new Date(p.data+'T00:00:00').getMonth()!==mes;
+      html+=`<div class="cal-event ${evClass(p)}${p.etapas>1?' ev-etapas':''}" onclick="openPanel('${p.id}',event)" title="${p.nome}">
+        ${p.etapas>1&&isStart?`<span style="font-size:9px">E${p.etapas} </span>`:''}${p.nome}
+      </div>`;
+    });
+    if(events.length>max) html+=`<div class="more-events" onclick="openDayList(${dia},${mes},${ano},event)">+${events.length-max} mais</div>`;
+    html+=`</div>`;
+  }
+
+  // Completar grid
+  const total=primeiroDia+diasMes;
+  const resto=(7-total%7)%7;
+  for(let i=1;i<=resto;i++) html+=`<div class="cal-cell other-month"><div class="cal-day" style="color:var(--hint)">${i}</div></div>`;
+
+  html+=`</div></div>`;
+  document.getElementById('view-mes').innerHTML=html;
+}
+
+// ---- VISTA SEMANAL ----
+function getInicioSemana(d) {
+  const ini=new Date(d);
+  const dow=ini.getDay();
+  ini.setDate(ini.getDate()-(dow===0?6:dow-1)); // começa segunda
+  return ini;
+}
+
+function renderSemana() {
+  const ini=getInicioSemana(CUR_DATE);
+  const dias=[];
+  for(let i=0;i<7;i++){const d=new Date(ini);d.setDate(ini.getDate()+i);dias.push(d);}
+
+  // Provas da semana
+  const provasSem=[];
+  getProvas().forEach(p=>{
+    const pIni=new Date(p.data+'T00:00:00');
+    const pFim=new Date(p.data_fim+'T00:00:00');
+    dias.forEach((dia,idx)=>{
+      if(dia>=pIni&&dia<=pFim){
+        if(!provasSem.find(x=>x.prova.id===p.id&&x.diaIdx===idx))
+          provasSem.push({prova:p,diaIdx:idx,isStart:dia.getTime()===pIni.getTime()});
+      }
+    });
+  });
+
+  // Sumário
+  const provasUnicas=[...new Set(provasSem.map(x=>x.prova.id))].map(id=>provasSem.find(x=>x.prova.id===id).prova);
+  const totalConv=provasUnicas.reduce((acc,p)=>acc+Object.values(p.convocados||{}).flat().length,0);
+  const viaturas=[...new Set(provasUnicas.flatMap(p=>p.viaturas||[]))];
+
+  let html=`<div class="week-summary no-print">
+    <div class="ws-title">Resumo da semana <button class="btn-sm btn-blue" onclick="setView('mes')">← Voltar ao mês</button></div>
+    <div class="ws-grid">
+      <div class="ws-card"><div class="ws-val">${provasUnicas.length}</div><div class="ws-lbl">Provas</div></div>
+      <div class="ws-card"><div class="ws-val">${totalConv}</div><div class="ws-lbl">Atletas convocados</div></div>
+      <div class="ws-card"><div class="ws-val">${viaturas.length}</div><div class="ws-lbl">Viaturas necessárias</div></div>
+      <div class="ws-card"><div class="ws-val">${provasUnicas.filter(p=>p.escola_participa).length}</div><div class="ws-lbl">Escola participa</div></div>
+    </div>
+  </div>`;
+
+  html+=`<div class="week-wrap">
+  <div class="week-header">
+    <div class="week-hd-empty"></div>
+    ${dias.map(d=>{
+      const isTod=d.toDateString()===new Date().toDateString();
+      return `<div class="week-hd-day">
+        <div class="week-dow">${DIAS_PT[d.getDay()]}</div>
+        <div class="week-date${isTod?' today'  :''}">${d.getDate()}</div>
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="week-body">
+    <div class="week-time-col"></div>
+    ${dias.map((_,idx)=>{
+      const dProvas=provasSem.filter(x=>x.diaIdx===idx);
+      if(!dProvas.length) return `<div class="week-day-col"><div class="week-no-events">—</div></div>`;
+      return `<div class="week-day-col">
+        ${dProvas.map(({prova:p,isStart})=>{
+          const conv=Object.values(p.convocados||{}).flat();
+          const isEtapa=p.etapas>1;
+          const etapaNum=isEtapa?(new Date(dias[idx])-new Date(p.data+'T00:00:00'))/(1000*60*60*24)+1:1;
+          return `<div class="week-event ${evClass(p)}" onclick="openPanel('${p.id}',event)" style="${p.estado==='provisorio'?'opacity:.7':''}">
+            <div class="week-ev-name">${isEtapa?`Etapa ${etapaNum} — `:''}${p.nome}</div>
+            <div class="week-ev-meta">
+              ${p.local?`📍 ${p.local}<br>`:''}
+              ${p.hora_partida?`🕐 Partida: ${p.hora_partida}<br>`:''}
+              ${conv.length?`👥 ${conv.length} convocados`:'⏳ Sem convocatória'}
+            </div>
+            <div class="week-ev-badges">
+              ${p.escaloes.map(e=>`<span class="week-ev-badge">${escalaoLabel(e)}</span>`).join('')}
+              ${estadoBadge(p.estado)}
+              ${p.viaturas?.length?`<span class="week-ev-badge">🚐 ${p.viaturas.length}</span>`:''}
+            </div>
+            ${p.escola_participa&&p.paragens?.length?`<div class="week-logistics">🗺️ ${p.paragens.length} paragem(ns) · ${p.paragens.reduce((a,pg)=>a+pg.km,0)}km total</div>`:''}
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('')}
+  </div></div>`;
+
+  document.getElementById('view-semana').innerHTML=html;
+}
+
+// ---- VISTA TABELA ----
+function renderTabela() {
+  const provas=getProvas().sort((a,b)=>a.data.localeCompare(b.data));
+  let html=`<div class="tbl-wrap"><table>
+  <thead><tr>
+    <th>Data</th><th>Prova</th><th>Escalões</th><th>Vertente</th><th>Organizador</th><th>Estado</th><th>Convocados</th><th></th>
+  </tr></thead><tbody>`;
+
+  if(!provas.length){
+    html+=`<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)">Sem provas para mostrar</td></tr>`;
+  } else {
+    provas.forEach(p=>{
+      const conv=Object.values(p.convocados||{}).flat().length;
+      const multiDia=p.etapas>1;
+      html+=`<tr onclick="openPanel('${p.id}',event)">
+        <td><div style="font-size:13px;font-weight:500">${fmtDate(p.data)}</div>
+          ${multiDia?`<div style="font-size:11px;color:var(--muted)">${p.etapas} etapas até ${fmtDate(p.data_fim)}</div>`:''}
+        </td>
+        <td><div style="font-weight:500">${p.nome}</div>${p.local?`<div style="font-size:11px;color:var(--muted)">${p.local}</div>`:''}</td>
+        <td>${p.escaloes.map(e=>`<span class="badge b-info" style="margin-right:3px">${escalaoLabel(e)}</span>`).join('')}</td>
+        <td style="color:var(--muted)">${p.vertente}</td>
+        <td style="color:var(--muted);font-size:12px">${p.organizador}</td>
+        <td>${estadoBadge(p.estado)}</td>
+        <td>${conv?`<span class="badge b-teal">${conv} atletas</span>`:'<span style="color:var(--hint);font-size:12px">—</span>'}</td>
+        <td style="text-align:right;color:var(--hint)">›</td>
+      </tr>`;
+    });
+  }
+  html+=`</tbody></table><div class="tbl-foot">A mostrar ${provas.length} provas</div></div>`;
+  document.getElementById('view-tabela').innerHTML=html;
+}
+
+// ============================================================
+// LUGARES — ESQUEMA VISUAL DE VIATURAS
+// ============================================================
+
+// Base de dados de viaturas
+const VIATURAS_DB = {
+  viaturas: [
+    { id:'v1', nome:'Ford Focus Amarela', matricula:'75-FO-01', lugares:5,
+      tipo:'Carrinha ligeira', cor:'Amarela', marca:'Ford', modelo:'Focus',
+      estado:'disponivel', obs:'5 lugares passageiros + condutor' },
+    { id:'v2', nome:'Ford Focus Cinzenta', matricula:'XX-00-XX', lugares:5,
+      tipo:'Carrinha ligeira', cor:'Cinzenta', marca:'Ford', modelo:'Focus',
+      estado:'disponivel', obs:'Matrícula a actualizar' },
+    { id:'v3', nome:'Ford Transit Longa', matricula:'11-RG-65', lugares:9,
+      tipo:'Carrinha grande', cor:'Branca', marca:'Ford', modelo:'Transit',
+      estado:'disponivel', obs:'9 lugares passageiros + condutor' },
+  ],
+  getDisponiveis() { return this.viaturas.filter(v=>v.estado!=='eliminada'); },
+  getById(id) { return this.viaturas.find(v=>v.id===id); },
+  nomeCurto(v) { return v.nome + ' (' + v.lugares + ' lug.) · ' + v.matricula; }
+};
+
+// Viaturas alocadas por prova: {provaId: ['v1','v3']}
+let VIATURAS_PROVA = {
+  'e1': ['v3','v1'],
+  'e2': ['v3'],
+  'e3': ['v1'],
+  'e4': ['v1'],
+  'e5': ['v3','v1'],
+  'e8': ['v3','v1'],
+  'e9': ['v3','v1'],
+};
+
+function getViaturasProva(provaId) {
+  if(VIATURAS_PROVA[provaId]===undefined) VIATURAS_PROVA[provaId] = [];
+  return VIATURAS_PROVA[provaId];
+}
+
+// Staff alocado por prova: {provaId: ['s1','s2']}
+let STAFF_PROVA = {
+  'e1': ['s1','s3'],
+  'e5': ['s1','s2'],
+  'e9': ['s1','s4'],
+};
+
+function getStaffProva(provaId) {
+  if(STAFF_PROVA[provaId]===undefined) STAFF_PROVA[provaId] = [];
+  return STAFF_PROVA[provaId];
+}
+
+function toggleStaffNaProva(provaId, sid) {
+  const arr = getStaffProva(provaId);
+  const idx = arr.indexOf(sid);
+  if(idx >= 0) arr.splice(idx, 1);
+  else arr.push(sid);
+  STAFF_PROVA[provaId] = arr;
+}
+
+// Outras pessoas por prova: {provaId: [{id, nome, nota}]}
+let OUTROS_PROVA = {};
+
+function getOutrosProva(provaId) {
+  if(OUTROS_PROVA[provaId]===undefined) OUTROS_PROVA[provaId] = [];
+  return OUTROS_PROVA[provaId];
+}
+
+function addOutroNaProva(provaId, nome, nota) {
+  const arr = getOutrosProva(provaId);
+  arr.push({id:'o'+Date.now(), nome, nota});
+  OUTROS_PROVA[provaId] = arr;
+}
+
+function removeOutroDaProva(provaId, oid) {
+  const arr = getOutrosProva(provaId);
+  OUTROS_PROVA[provaId] = arr.filter(o=>o.id!==oid);
+}
+
+function toggleViaturaNaProva(provaId, vid) {
+  const arr = getViaturasProva(provaId);
+  const idx = arr.indexOf(vid);
+  if(idx >= 0) arr.splice(idx, 1);
+  else arr.push(vid);
+  VIATURAS_PROVA[provaId] = arr;
+}
+
+// Mapear id de viatura para nome de layout
+function vidToLayoutName(vid) {
+  const v = VIATURAS_DB.getById(vid);
+  if(!v) return 'Carrinha 1 (5 lug.)';
+  if(v.lugares === 9) return 'Carrinha Grande (9 lug.)';
+  return 'Carrinha 1 (5 lug.)';
+}
+
+// Staff mock
+const STAFF_MOCK = {
+  s1:{nome:'João Paulo Serra', funcao:'Treinador'},
+  s2:{nome:'Manuel Costa', funcao:'Diretor'},
+  s3:{nome:'Carlos Reis', funcao:'Mecânico'},
+  s4:{nome:'Ana Sousa', funcao:'Delegada'},
+};
+
+// Configuração de lugares por viatura (layout visual)
+const VAN_LAYOUTS = {
+  'Carrinha Grande (9 lug.)': {
+    lugares: 9,
+    condutor: true,
+    layout: [
+      [{id:'driver', tipo:'driver'}, {id:'cop', tipo:'passageiro'}],
+      [{id:'r1a', tipo:'passageiro'}, {id:'r1b', tipo:'passageiro'}, {id:'r1c', tipo:'passageiro'}],
+      [{id:'r2a', tipo:'passageiro'}, {id:'r2b', tipo:'passageiro'}, {id:'r2c', tipo:'passageiro'}],
+      [{id:'r3a', tipo:'passageiro'}, {id:'r3b', tipo:'passageiro'}],
+    ]
+  },
+  'Carrinha 1 (5 lug.)': {
+    lugares: 5,
+    condutor: true,
+    layout: [
+      [{id:'driver', tipo:'driver'}, {id:'cop', tipo:'passageiro'}],
+      [{id:'r1a', tipo:'passageiro'}, {id:'r1b', tipo:'passageiro'}, {id:'r1c', tipo:'passageiro'}],
+    ]
+  },
+  'Carrinha 2 (5 lug.)': {
+    lugares: 5,
+    condutor: true,
+    layout: [
+      [{id:'driver', tipo:'driver'}, {id:'cop', tipo:'passageiro'}],
+      [{id:'r1a', tipo:'passageiro'}, {id:'r1b', tipo:'passageiro'}, {id:'r1c', tipo:'passageiro'}],
+    ]
+  }
+};
+
+// Estado dos lugares por prova e viatura
+let LUGARES_STATE = {}; // {provaId: {vanName: {seatId: {id, nome, tipo}}}}
+let SEAT_PICKER_TARGET = null; // {provaId, vanName, seatId, rect}
+let VAN_ATIVA = null; // viatura selecionada no momento
+
+function getLugaresProva(provaId) {
+  if(!LUGARES_STATE[provaId]) LUGARES_STATE[provaId] = {};
+  return LUGARES_STATE[provaId];
+}
+
+function getLugaresViatura(provaId, vanName) {
+  const lp = getLugaresProva(provaId);
+  if(!lp[vanName]) lp[vanName] = {};
+  return lp[vanName];
+}
+
+function renderLugares() {
+  if(!PANEL_PROVA) return;
+  const p = PANEL_PROVA;
+  const body = document.getElementById('panel-body');
+  const viaturasIds = getViaturasProva(p.id);
+  const viaturas = viaturasIds.map(vid=>vidToLayoutName(vid));
+
+  // Se não há viaturas
+  if(!viaturas.length) {
+    body.innerHTML = `
+    <div class="prova-hd">
+      <div class="prova-nome">${p.nome}</div>
+    </div>
+    <div class="info-box ib-blue">🚐 Ainda não há viaturas alocadas a esta prova.<br>
+    Vai ao separador <strong>Logística</strong> para alocar viaturas primeiro.</div>
+    <div style="text-align:center;padding:1rem">
+      <button class="btn-blue" onclick="setPanelTab(document.querySelectorAll('.pt')[2],'logistica')">Ir para Logística →</button>
+    </div>`;
+    return;
+  }
+
+  if(!VAN_ATIVA || !viaturas.includes(VAN_ATIVA)) VAN_ATIVA = viaturas[0];
+
+  const layout = VAN_LAYOUTS[VAN_ATIVA] || VAN_LAYOUTS['Carrinha 1 (5 lug.)'];
+  const lugares = getLugaresViatura(p.id, VAN_ATIVA);
+
+  // Calcular stats
+  const totalLugares = layout.lugares;
+  const ocupados = Object.values(lugares).filter(s=>s&&s.id).length;
+  const staff = Object.values(lugares).filter(s=>s&&s.tipo==='staff').length;
+  const atletas = Object.values(lugares).filter(s=>s&&s.tipo==='atleta').length;
+  const livres = totalLugares - ocupados;
+
+  // Pessoas já alocadas nesta viatura
+  const jaAlocados = Object.values(lugares).filter(s=>s&&s.id).map(s=>s.id);
+
+  // Pessoas disponíveis (convocados não alocados)
+  const convTodos = [];
+  Object.entries(p.convocados||{}).forEach(([esc,ids])=>{
+    ids.forEach(id=>{
+      const a = ATLETAS_MOCK[id];
+      if(a) convTodos.push({id:'a'+id, nome:a.nome, tipo:'atleta', escalao:esc});
+    });
+  });
+  // Apenas staff alocado a esta prova (separador Staff)
+  const staffDisp = getStaffProva(p.id).map(sid=>({id:sid, nome:STAFF_MOCK[sid].nome, tipo:'staff', funcao:STAFF_MOCK[sid].funcao}));
+  // Outras pessoas adicionadas (separador Outros)
+  const outrosDisp = getOutrosProva(p.id).map(o=>({id:o.id, nome:o.nome, tipo:'outro', funcao:o.nota||'Outro'}));
+
+  let html = `
+  <div class="prova-hd">
+    <div class="prova-nome">${p.nome}</div>
+    <div class="prova-meta"><span>📅 ${fmtDate(p.data)}</span></div>
+  </div>
+
+  <!-- Selector de viatura -->
+  <div class="van-selector">
+    ${viaturasIds.map(vid=>{
+      const vname = vidToLayoutName(vid);
+      const vobj = VIATURAS_DB.getById(vid);
+      const label = vobj ? (vobj.nome + ' · ' + vobj.matricula) : vname;
+      return `<button class="van-sel-btn${vname===VAN_ATIVA?' active':''}" onclick="setVanAtiva('${vname.replace(/'/g,"\\'")}',event)">${label}</button>`;
+    }).join('')}
+  </div>
+
+  <!-- Esquema da viatura -->
+  <div class="van-wrap">
+    <div class="van-title">
+      <span>🚐 ${(()=>{const vid=viaturasIds.find(id=>vidToLayoutName(id)===VAN_ATIVA);const v=VIATURAS_DB.getById(vid);return v?v.nome+' · '+v.matricula:VAN_ATIVA;})()}</span>
+      <span style="font-size:11px;font-weight:400">${ocupados}/${totalLugares} lugares ocupados</span>
+    </div>
+    <div class="van-body">
+      <!-- Frente da viatura -->
+      <div style="text-align:center;font-size:10px;color:var(--hint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:.5px dashed var(--border)">▲ Frente</div>
+
+      ${layout.layout.map((row, rowIdx) => {
+        const isFront = rowIdx === 0;
+        const cols = row.length;
+        let rowHtml = `<div class="van-row">`;
+        if(cols === 3 && !isFront) {
+          // Filas traseiras: 2 lados + corredor + 1
+          const seat = (s) => renderSeat(s, lugares, p.id);
+          rowHtml += seat(row[0]) + `<div class="van-aisle"></div>` + seat(row[1]) + seat(row[2]);
+        } else {
+          row.forEach(s => { rowHtml += renderSeat(s, lugares, p.id); });
+          if(isFront && cols===2) rowHtml += ''; // condutor + copiloto
+        }
+        rowHtml += `</div>`;
+        if(rowIdx===0) rowHtml += `<div style="border-bottom:.5px dashed var(--border);margin:4px 0 8px;opacity:.3"></div>`;
+        return rowHtml;
+      }).join('')}
+
+      <!-- Parte traseira -->
+      <div style="text-align:center;font-size:10px;color:var(--hint);letter-spacing:.1em;text-transform:uppercase;margin-top:8px;padding-top:6px;border-top:.5px dashed var(--border)">▼ Porta traseira / atrelado</div>
+
+      <!-- Stats -->
+      <div class="van-stats">
+        <div class="van-stat"><span style="color:var(--amber)">🧑‍✈️</span> Condutor: ${lugares['driver']?lugares['driver'].nome:'Não atribuído'}</div>
+        <div class="van-stat"><span style="color:var(--blue)">👤</span> Atletas: ${atletas}</div>
+        <div class="van-stat"><span style="color:var(--teal)">🪪</span> Staff: ${staff}</div>
+        <div class="van-stat"><span style="color:var(--hint)">○</span> Livres: ${livres}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legenda -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;font-size:11px;color:var(--muted)">
+    <div style="display:flex;align-items:center;gap:4px"><div style="width:12px;height:12px;border-radius:3px;background:var(--amber-bg);border:.5px solid var(--amber-bd)"></div> Condutor</div>
+    <div style="display:flex;align-items:center;gap:4px"><div style="width:12px;height:12px;border-radius:3px;background:var(--blue-bg);border:.5px solid var(--blue-bd)"></div> Atleta</div>
+    <div style="display:flex;align-items:center;gap:4px"><div style="width:12px;height:12px;border-radius:3px;background:var(--teal-bg);border:.5px solid var(--teal-bd)"></div> Staff</div>
+    <div style="display:flex;align-items:center;gap:4px"><div style="width:12px;height:12px;border-radius:3px;background:var(--amber-bg);border:.5px solid var(--amber-bd)"></div> Outro</div>
+    <div style="display:flex;align-items:center;gap:4px"><div style="width:12px;height:12px;border-radius:3px;background:var(--amber-bg);border:.5px solid var(--amber-bd)"></div> Outro</div>
+    <div style="display:flex;align-items:center;gap:4px"><div style="width:12px;height:12px;border-radius:3px;background:var(--surface);border:1.5px solid var(--border2)"></div> Livre</div>
+    <div style="margin-left:auto;font-size:11px;color:var(--hint)">Clica num lugar para atribuir</div>
+  </div>
+
+  <!-- Lista de não alocados -->
+  <div class="sec">
+    <div class="sec-t">Ainda sem lugar (${convTodos.filter(a=>!jaAlocados.includes(a.id)).length + staffDisp.filter(s=>!jaAlocados.includes(s.id)).length})</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px">
+      ${[...convTodos, ...staffDisp, ...outrosDisp].filter(p=>!jaAlocados.includes(p.id)).map(p=>`
+        <div style="display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);font-size:12px;color:var(--muted)">
+          ${p.tipo==='staff'?'🪪':p.tipo==='outro'?'🙋':'👤'} ${p.nome.split(' ')[0]}
+        </div>`).join('')}
+      ${[...convTodos, ...staffDisp, ...outrosDisp].length && [...convTodos, ...staffDisp, ...outrosDisp].every(p=>jaAlocados.includes(p.id))?'<span style="font-size:12px;color:var(--hint)">Todos alocados ✓</span>':''}
+      ${![...convTodos, ...staffDisp, ...outrosDisp].length?'<span style="font-size:12px;color:var(--hint)">Sem convocados, staff ou outros definidos</span>':''}
+    </div>
+  </div>`;
+
+  body.innerHTML = html;
+}
+
+function renderSeat(seatDef, lugares, provaId) {
+  const ocupante = lugares[seatDef.id];
+  const isDriver = seatDef.tipo === 'driver';
+  const isOcupado = ocupante && ocupante.id;
+  const cls = isDriver ? 'driver' : isOcupado ? (ocupante.tipo==='staff'?'occupied-staff':ocupante.tipo==='outro'?'occupied-outro':'occupied') : 'empty';
+  const ico = isDriver ? '🧑‍✈️' : isOcupado ? (ocupante.tipo==='staff'?'🪪':ocupante.tipo==='outro'?'🙋':'👤') : '○';
+  const nome = isDriver ? (ocupante?ocupante.nome.split(' ')[0]:'Condutor') : (isOcupado?ocupante.nome.split(' ')[0]:'');
+  const clickAttr = isDriver
+    ? `onclick="openSeatPicker('${seatDef.id}','driver',event)"`
+    : `onclick="openSeatPicker('${seatDef.id}','passageiro',event)"`;
+  return `<div class="seat ${cls}" ${clickAttr} title="${isOcupado?ocupante.nome:isDriver?'Condutor':'Lugar livre'}">
+    <div class="seat-ico">${ico}</div>
+    <div class="seat-name">${nome}</div>
+  </div>`;
+}
+
+function setVanAtiva(van, e) {
+  if(e) e.stopPropagation();
+  VAN_ATIVA = van;
+  renderLugares();
+}
+
+function openSeatPicker(seatId, tipo, e) {
+  e.stopPropagation();
+  if(!PANEL_PROVA) return;
+  const p = PANEL_PROVA;
+  const lugares = getLugaresViatura(p.id, VAN_ATIVA);
+  const jaAlocados = Object.values(lugares).filter(s=>s&&s.id).map(s=>s.id);
+  const rect = e.currentTarget.getBoundingClientRect();
+
+  // Montar lista de pessoas disponíveis
+  const convTodos = [];
+  Object.entries(p.convocados||{}).forEach(([esc,ids])=>{
+    ids.forEach(id=>{
+      const a = ATLETAS_MOCK[id];
+      if(a) convTodos.push({id:'a'+id, nome:a.nome, tipo:'atleta', sub:esc.toUpperCase()});
+    });
+  });
+  const staffDisp = getStaffProva(p.id).map(sid=>({id:sid, nome:STAFF_MOCK[sid].nome, tipo:'staff', sub:STAFF_MOCK[sid].funcao}));
+  const outrosDisp = getOutrosProva(p.id).map(o=>({id:o.id, nome:o.nome, tipo:'outro', sub:o.nota||'Outro'}));
+
+  const picker = document.getElementById('seat-picker');
+  const ocupante = lugares[seatId];
+
+  let html = '';
+  if(tipo==='driver') {
+    html += `<div class="sp-section">Staff (condutor)</div>`;
+    if(!staffDisp.length) html += `<div style="font-size:11px;color:var(--hint);padding:4px 8px">Sem staff alocado — vai ao separador Staff</div>`;
+    staffDisp.forEach(s=>{
+      const already = jaAlocados.includes(s.id) && (!ocupante || ocupante.id !== s.id);
+      html += `<div class="sp-item${already?' already':''}" onclick="atribuirLugar('${seatId}','${s.id}','${s.nome}','staff')">${already?'✓':''} 🪪 ${s.nome}<span style="font-size:10px;color:var(--hint);margin-left:4px">${s.sub}</span></div>`;
+    });
+  } else {
+    html += `<div class="sp-section">Atletas</div>`;
+    if(!convTodos.length) html += `<div style="font-size:11px;color:var(--hint);padding:4px 8px">Sem atletas convocados</div>`;
+    convTodos.forEach(a=>{
+      const already = jaAlocados.includes(a.id) && (!ocupante || ocupante.id !== a.id);
+      html += `<div class="sp-item${already?' already':''}" onclick="atribuirLugar('${seatId}','${a.id}','${a.nome}','atleta')">${already?'✓':''} 👤 ${a.nome}<span style="font-size:10px;color:var(--hint);margin-left:4px">${a.sub}</span></div>`;
+    });
+    html += `<div class="sp-section">Staff</div>`;
+    if(!staffDisp.length) html += `<div style="font-size:11px;color:var(--hint);padding:4px 8px">Sem staff alocado</div>`;
+    staffDisp.forEach(s=>{
+      const already = jaAlocados.includes(s.id) && (!ocupante || ocupante.id !== s.id);
+      html += `<div class="sp-item${already?' already':''}" onclick="atribuirLugar('${seatId}','${s.id}','${s.nome}','staff')">${already?'✓':''} 🪪 ${s.nome}<span style="font-size:10px;color:var(--hint);margin-left:4px">${s.sub}</span></div>`;
+    });
+    if(outrosDisp.length) {
+      html += `<div class="sp-section">Outros</div>`;
+      outrosDisp.forEach(o=>{
+        const already = jaAlocados.includes(o.id) && (!ocupante || ocupante.id !== o.id);
+        html += `<div class="sp-item${already?' already':''}" onclick="atribuirLugar('${seatId}','${o.id}','${o.nome}','outro')">${already?'✓':''} 🙋 ${o.nome}<span style="font-size:10px;color:var(--hint);margin-left:4px">${o.sub}</span></div>`;
+      });
+    }
+  }
+
+  if(ocupante && ocupante.id) {
+    html += `<div class="sp-item sp-remove" onclick="removerLugar('${seatId}')">✕ Remover ${ocupante.nome.split(' ')[0]}</div>`;
+  }
+
+  document.getElementById('sp-content').innerHTML = html;
+  document.getElementById('sp-title').textContent = tipo==='driver'?'Atribuir condutor':'Escolher pessoa';
+
+  // Posicionar picker
+  const panelRight = 520;
+  const top = Math.min(rect.bottom + 4, window.innerHeight - 360);
+  const right = window.innerWidth - rect.right + 8;
+  picker.style.top = top + 'px';
+  picker.style.right = Math.max(right - panelRight + rect.right - rect.left, 16) + 'px';
+  picker.style.left = 'auto';
+
+  // Verificar se vai sair do ecrã pelo lado esquerdo
+  const pickerLeft = rect.left - 10;
+  if(pickerLeft < 240) {
+    picker.style.left = (rect.left - 8) + 'px';
+    picker.style.right = 'auto';
+  } else {
+    picker.style.left = (rect.left - 100) + 'px';
+    picker.style.right = 'auto';
+  }
+
+  SEAT_PICKER_TARGET = {provaId: p.id, vanName: VAN_ATIVA, seatId};
+  picker.classList.add('open');
+}
+
+function atribuirLugar(seatId, pessoaId, pessoaNome, tipo) {
+  if(!PANEL_PROVA) return;
+  const lugares = getLugaresViatura(PANEL_PROVA.id, VAN_ATIVA);
+  // Remover esta pessoa de qualquer outro lugar
+  Object.keys(lugares).forEach(k=>{if(lugares[k]&&lugares[k].id===pessoaId) delete lugares[k];});
+  lugares[seatId] = {id:pessoaId, nome:pessoaNome, tipo};
+  closeSeatPicker();
+  renderLugares();
+  toast(`${pessoaNome.split(' ')[0]} alocado(a)!`, 'ok');
+}
+
+function removerLugar(seatId) {
+  if(!PANEL_PROVA) return;
+  const lugares = getLugaresViatura(PANEL_PROVA.id, VAN_ATIVA);
+  const nome = lugares[seatId]?.nome?.split(' ')[0] || '';
+  delete lugares[seatId];
+  closeSeatPicker();
+  renderLugares();
+  toast(`${nome} removido(a) do lugar`);
+}
+
+function closeSeatPicker() {
+  document.getElementById('seat-picker').classList.remove('open');
+  SEAT_PICKER_TARGET = null;
+}
+
+// Fechar picker ao clicar fora
+document.addEventListener('click', function(e) {
+  const picker = document.getElementById('seat-picker');
+  if(picker && picker.classList.contains('open') && !picker.contains(e.target)) {
+    closeSeatPicker();
+  }
+});
+
+// ============================================================
+// PAINEL PROVA
+// ============================================================
+function openPanel(id, e) {
+  if(e) e.stopPropagation();
+  const todas=[...CALENDARIO.escola_provas,...CALENDARIO.provas_2027,...(CALENDARIO.provas_fpc_2026||[])];
+  PANEL_PROVA=todas.find(p=>p.id==id||p.id===id);
+  if(!PANEL_PROVA) return;
+  PANEL_TAB='info';
+  document.querySelectorAll('.pt').forEach((t,i)=>t.classList.toggle('active',i===0));
+  renderPanel();
+  document.getElementById('panel').classList.add('open');
+  // Actualizar botão participa
+  document.getElementById('btn-participa').textContent=
+    PANEL_PROVA.escola_participa?'✓ Escola participa':'+ Escola participa';
+  document.getElementById('btn-participa').className=
+    PANEL_PROVA.escola_participa?'btn-teal btn-sm':'btn-sm';
+}
+
+function closePanel(){closeSeatPicker();document.getElementById('panel').classList.remove('open');PANEL_PROVA=null;}
+
+function setPanelTab(el,tab){
+  closeSeatPicker();
+  document.querySelectorAll('.pt').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); PANEL_TAB=tab; renderPanel();
+}
+
+function renderPanel() {
+  if(!PANEL_PROVA) return;
+  const p=PANEL_PROVA;
+  const body=document.getElementById('panel-body');
+  const multiDia=p.etapas>1;
+
+  if(PANEL_TAB==='info') {
+    const etapasDias=[];
+    if(multiDia){
+      const ini=new Date(p.data+'T00:00:00');
+      for(let i=0;i<p.etapas;i++){
+        const d=new Date(ini);d.setDate(ini.getDate()+i);
+        etapasDias.push(d);
+      }
+    }
+    body.innerHTML=`
+    <div class="prova-hd">
+      <div class="prova-nome">${p.nome}</div>
+      <div class="prova-meta">
+        <span>📅 ${multiDia?fmtDate(p.data)+' → '+fmtDate(p.data_fim):fmtDateLong(p.data)}</span>
+        ${p.local?`<span>📍 ${p.local}</span>`:''}
+        <span>🏢 ${p.organizador}</span>
+      </div>
+      <div class="prova-badges">
+        ${estadoBadge(p.estado)}
+        ${p.escaloes.map(e=>`<span class="badge b-info">${escalaoLabel(e)}</span>`).join('')}
+        <span class="badge b-gray">${p.vertente}</span>
+        ${multiDia?`<span class="badge b-purple">▶ ${p.etapas} etapas</span>`:''}
+        ${p.escola_participa?'<span class="badge b-ok">Escola participa</span>':''}
+        <span class="badge b-gray" style="font-size:10px">${p.origem}</span>
+      </div>
+    </div>
+
+    ${p.estado==='provisorio'?`<div class="info-box ib-prov">⚠️ Data provisória baseada no calendário de ${parseInt(p.data)-1>2026?2026:2026}. Aguarda publicação do calendário oficial FPC.</div>`:''}
+
+    ${multiDia?`<div class="sec"><div class="sec-t">Etapas</div>
+      ${etapasDias.map((d,i)=>`<div class="etapa-row">
+        <div class="etapa-num">${i+1}</div>
+        <div><div style="font-size:13px;font-weight:500">${fmtDateLong(d.toISOString().split('T')[0])}</div>
+        <div style="font-size:11px;color:var(--muted)">${p.escaloes.map(e=>escalaoLabel(e)).join(' · ')}</div></div>
+      </div>`).join('')}
+    </div>`:''}
+
+    <div class="sec">
+      <div class="sec-t">Detalhes</div>
+      <div class="info-grid">
+        <div><div class="fl">Vertente</div><div class="fv">${p.vertente}</div></div>
+        <div><div class="fl">Classe</div><div class="fv">${p.classe||'—'}</div></div>
+        <div><div class="fl">Organizador</div><div class="fv">${p.organizador}</div></div>
+        <div><div class="fl">Local</div><div class="fv">${p.local||'—'}</div></div>
+        ${p.hora_concentracao?`<div><div class="fl">Concentração</div><div class="fv">${p.hora_concentracao}</div></div>`:''}
+        ${p.hora_partida?`<div><div class="fl">Partida</div><div class="fv">${p.hora_partida}</div></div>`:''}
+      </div>
+    </div>
+
+    ${p.obs?`<div class="sec"><div class="sec-t">Observações</div><div style="font-size:13px;color:var(--muted);font-style:italic">${p.obs}</div></div>`:''}`;
+
+  } else if(PANEL_TAB==='conv') {
+    const conv=p.convocados||{};
+    const temConv=Object.values(conv).some(v=>v.length>0);
+    body.innerHTML=`
+    <div class="prova-hd">
+      <div class="prova-nome">${p.nome}</div>
+      <div class="prova-meta"><span>📅 ${fmtDate(p.data)}${multiDia?' → '+fmtDate(p.data_fim):''}</span></div>
+    </div>
+    ${!temConv?`<div class="info-box ib-blue">ℹ️ Ainda não há atletas convocados para esta prova. Clica em "+ Convocar atletas" para começar.</div>`:''}
+    <div class="sec"><div class="sec-t">Atletas convocados</div>
+      ${p.escaloes.map(esc=>{
+        const ids=conv[esc]||[];
+        return `<div class="conv-escalao">
+          <div class="conv-esc-title"><span class="badge b-info">${escalaoLabel(esc)}</span> ${ids.length} atleta(s)</div>
+          <div class="conv-athletes">
+            ${ids.length?ids.map(id=>{
+              const a=ATLETAS_MOCK[id];
+              if(!a) return '';
+              return `<div class="conv-row">
+                <div class="av-sm av-blue">${a.nome.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
+                <div style="flex:1;font-size:13px">${a.nome}</div>
+                <span class="badge b-ok">Confirmado</span>
+              </div>`;
+            }).join(''):`<div style="font-size:12px;color:var(--hint);padding:.4rem 0">Sem atletas convocados neste escalão</div>`}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  } else if(PANEL_TAB==='staff') {
+    const staffAloc = getStaffProva(p.id);
+    body.innerHTML=`
+    <div class="prova-hd">
+      <div class="prova-nome">${p.nome}</div>
+      <div class="prova-meta"><span>📅 ${fmtDate(p.data)}${multiDia?' → '+fmtDate(p.data_fim):''}</span></div>
+    </div>
+    <div class="info-box ib-blue">ℹ️ Seleciona o staff que vai a esta prova. Conta para a contagem de lugares nas viaturas.</div>
+    <div class="sec">
+      <div class="sec-t" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Staff disponível</span>
+        <span style="font-size:11px;font-weight:400;color:var(--muted)">${staffAloc.length} selecionado(s)</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${Object.entries(STAFF_MOCK).map(([sid,s])=>{
+          const sel = staffAloc.includes(sid);
+          return `<div style="display:flex;align-items:center;gap:10px;padding:.7rem .9rem;border-radius:var(--rs);border:.5px solid ${sel?'var(--teal-bd)':'var(--border)'};background:${sel?'var(--teal-bg)':'var(--surface)'};cursor:pointer;transition:all .12s" onclick="toggleStaffPanel('${sid}')">
+            <div style="font-size:20px">🪪</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:500;color:var(--text)">${s.nome}</div>
+              <div style="font-size:11px;color:var(--muted)">${s.funcao}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              ${sel?`<span class="badge b-teal">✓ Vai à prova</span>`:`<span class="badge b-gray">Não selecionado</span>`}
+              <div style="width:20px;height:20px;border-radius:50%;border:1.5px solid ${sel?'var(--teal)':'var(--border2)'};background:${sel?'var(--teal)':'transparent'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">${sel?'✓':''}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+
+  } else if(PANEL_TAB==='outros') {
+    const outros = getOutrosProva(p.id);
+    body.innerHTML=`
+    <div class="prova-hd">
+      <div class="prova-nome">${p.nome}</div>
+      <div class="prova-meta"><span>📅 ${fmtDate(p.data)}${multiDia?' → '+fmtDate(p.data_fim):''}</span></div>
+    </div>
+    <div class="info-box ib-blue">ℹ️ Adiciona outras pessoas que vão na viagem (ex: pais que ajudam no transporte, convidados). Também contam para os lugares.</div>
+
+    <div class="sec">
+      <div class="sec-t">Adicionar pessoa</div>
+      <div class="f2">
+        <div class="fg" style="margin-bottom:0"><input type="text" class="fi" id="outro-nome" placeholder="Nome"></div>
+        <div class="fg" style="margin-bottom:0"><input type="text" class="fi" id="outro-nota" placeholder="Nota (ex: Pai do Afonso)"></div>
+      </div>
+      <div style="text-align:right;margin-top:8px">
+        <button class="btn-blue btn-sm" onclick="addOutroPanel()">+ Adicionar</button>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Outras pessoas na viagem</span>
+        <span style="font-size:11px;font-weight:400;color:var(--muted)">${outros.length} pessoa(s)</span>
+      </div>
+      ${outros.length?outros.map(o=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:.6rem .9rem;border-radius:var(--rs);border:.5px solid var(--border);background:var(--surface);margin-bottom:6px">
+          <div style="font-size:18px">🙋</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500;color:var(--text)">${o.nome}</div>
+            ${o.nota?`<div style="font-size:11px;color:var(--muted)">${o.nota}</div>`:''}
+          </div>
+          <button class="btn-ghost btn-sm" onclick="removeOutroPanel('${o.id}')" style="color:var(--red)">✕</button>
+        </div>`).join(''):'<div style="font-size:12px;color:var(--hint)">Sem outras pessoas adicionadas</div>'}
+    </div>`;
+
+  } else if(PANEL_TAB==='logistica') {
+    const paragens=p.paragens||[];
+    const totalKm=paragens.reduce((a,pg)=>a+pg.km,0);
+    const viaturasAloc = getViaturasProva(p.id);
+    const totalLugares = viaturasAloc.reduce((acc,vid)=>{const v=VIATURAS_DB.getById(vid);return acc+(v?v.lugares:0);},0);
+    const totalAtletas = Object.values(p.convocados||{}).flat().length;
+    const staffAlocLog = getStaffProva(p.id);
+    const outrosLog = getOutrosProva(p.id);
+    const totalPessoas = totalAtletas + staffAlocLog.length + outrosLog.length;
+    body.innerHTML=`
+    <div class="prova-hd">
+      <div class="prova-nome">${p.nome}</div>
+      <div class="prova-meta"><span>📅 ${fmtDate(p.data)}</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">Pessoas a transportar</div>
+      <div class="info-grid" style="margin-bottom:.5rem">
+        <div><div class="fl">Atletas</div><div class="fv">${totalAtletas}</div></div>
+        <div><div class="fl">Staff</div><div class="fv">${staffAlocLog.length}</div></div>
+        <div><div class="fl">Outros</div><div class="fv">${outrosLog.length}</div></div>
+        <div><div class="fl">Total</div><div class="fv" style="font-weight:600">${totalPessoas} pessoas</div></div>
+      </div>
+      ${!staffAlocLog.length?`<div class="info-box ib-blue" style="margin-bottom:0">ℹ️ Ainda não selecionaste staff para esta prova — vai ao separador <strong>Staff</strong>.</div>`:''}
+    </div>
+
+    <div class="sec">
+      <div class="sec-t" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Viaturas alocadas</span>
+        <span style="font-size:11px;font-weight:400;color:var(--muted)">${totalLugares} lugares · ${totalPessoas} pessoas</span>
+      </div>
+
+      <!-- Lista de viaturas disponíveis para selecionar -->
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:.9rem">
+        ${VIATURAS_DB.getDisponiveis().map(v=>{
+          const sel = viaturasAloc.includes(v.id);
+          const corIcon = v.cor==='Amarela'?'🟡':v.cor==='Cinzenta'?'⚫':'⬜';
+          return `<div style="display:flex;align-items:center;gap:10px;padding:.7rem .9rem;border-radius:var(--rs);border:.5px solid ${sel?'var(--blue-bd)':'var(--border)'};background:${sel?'var(--blue-bg)':'var(--surface)'};cursor:pointer;transition:all .12s" onclick="toggleViaturaLog('${v.id}')">
+            <div style="font-size:20px">${corIcon}</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:500;color:var(--text)">${v.nome}</div>
+              <div style="font-size:11px;color:var(--muted)">${v.matricula} · ${v.lugares} lugares · ${v.tipo}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              ${sel?`<span class="badge b-ok">✓ Alocada</span>`:`<span class="badge b-gray">Disponível</span>`}
+              <div style="width:20px;height:20px;border-radius:50%;border:1.5px solid ${sel?'var(--blue)':'var(--border2)'};background:${sel?'var(--blue)':'transparent'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">${sel?'✓':''}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <!-- Aviso capacidade -->
+      ${viaturasAloc.length&&totalPessoas>totalLugares?`<div class="info-box" style="background:var(--red-bg);color:var(--red)">⚠️ Atenção: ${totalPessoas} pessoas (atletas+staff+outros) mas só ${totalLugares} lugares disponíveis nas viaturas selecionadas!</div>`:''}
+      ${viaturasAloc.length&&totalLugares>=totalPessoas&&totalPessoas>0?`<div class="info-box ib-green">✓ Capacidade suficiente — ${totalLugares-totalPessoas} lugar(es) livre(s)</div>`:''}
+
+      <!-- Gerir viaturas -->
+      <div style="text-align:right;margin-top:.5rem">
+        <button class="btn-ghost btn-sm" onclick="toast('Gestão de viaturas — módulo Logística em breve')">⚙️ Gerir viaturas</button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">Percurso e paragens ${totalKm?`· ${totalKm}km total`:''}</div>
+      ${!paragens.length&&!p.hora_partida?`<div class="info-box ib-blue">ℹ️ Sem paragens definidas. Adiciona as paragens para gerar a folha de viagem.</div>`:''}
+      <div>
+        <div class="paragem-row">
+          <div class="paragem-dot start"></div>
+          <div class="paragem-hora">${p.hora_partida||'—'}</div>
+          <div class="paragem-local">
+            <div class="paragem-local-name">🏠 Sede da escola</div>
+            <div class="paragem-local-meta">Ponto de partida</div>
+          </div>
+          <div class="paragem-km">0 km</div>
+        </div>
+        ${paragens.map(pg=>{
+          const aths=pg.atletas?.map(id=>ATLETAS_MOCK[id]?.nome.split(' ')[0]).filter(Boolean)||[];
+          return `<div class="paragem-row">
+            <div class="paragem-dot"></div>
+            <div class="paragem-hora">${pg.hora}</div>
+            <div class="paragem-local">
+              <div class="paragem-local-name">📍 ${pg.local}</div>
+              ${aths.length?`<div class="paragem-local-meta">Embarca: ${aths.join(', ')}</div>`:''}
+            </div>
+            <div class="paragem-km">+${pg.km}km</div>
+          </div>`;
+        }).join('')}
+        <div class="paragem-row">
+          <div class="paragem-dot end"></div>
+          <div class="paragem-hora">—</div>
+          <div class="paragem-local">
+            <div class="paragem-local-name">🏁 ${p.local||'Local da corrida'}</div>
+            <div class="paragem-local-meta">Chegada prevista</div>
+          </div>
+          <div class="paragem-km">${totalKm?totalKm+'km':''}</div>
+        </div>
+      </div>
+    </div>`;
+
+  } else if(PANEL_TAB==='lugares') {
+    renderLugares();
+    return;
+  } else if(PANEL_TAB==='folha') {
+    const p2=PANEL_PROVA;
+    const conv=p2.convocados||{};
+    const paragens=p2.paragens||[];
+    const totalConv=Object.values(conv).flat().length;
+    const totalKm=paragens.reduce((a,pg)=>a+pg.km,0);
+    body.innerHTML=`
+    <div style="font-size:12px;color:var(--muted);margin-bottom:1rem" class="no-print">
+      🖨️ Clica em "Imprimir folha" para imprimir ou guardar como PDF
+    </div>
+    <div class="folha-viagem" id="folha-print" style="display:block">
+    <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:.75rem;margin-bottom:.75rem">
+      <div style="font-size:18px;font-weight:700">ESCOLA DE CICLISMO DE FORMAÇÃO</div>
+      <div style="font-size:14px;font-weight:600;margin-top:4px">FOLHA DE VIAGEM</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem;font-size:13px;border-bottom:1px solid #ccc;padding-bottom:.75rem">
+      <div><strong>Prova:</strong> ${p2.nome}</div>
+      <div><strong>Data:</strong> ${fmtDate(p2.data)}${p2.etapas>1?' → '+fmtDate(p2.data_fim):''}</div>
+      <div><strong>Local:</strong> ${p2.local||'—'}</div>
+      <div><strong>Escalões:</strong> ${p2.escaloes.map(e=>escalaoLabel(e)).join(', ')}</div>
+      <div><strong>Concentração:</strong> ${p2.hora_concentracao||'—'}</div>
+      <div><strong>Partida:</strong> ${p2.hora_partida||'—'}</div>
+    </div>
+    <div style="margin-bottom:.75rem">
+      <div style="font-size:13px;font-weight:700;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em">Viaturas e Condutores</div>
+      ${(p2.viaturas||[]).length?p2.viaturas.map(v=>`<div style="font-size:12px;padding:3px 0;border-bottom:1px dotted #ccc">🚐 ${v}</div>`).join('')
+        :'<div style="font-size:12px;color:#666">A definir</div>'}
+    </div>
+    <div style="margin-bottom:.75rem">
+      <div style="font-size:13px;font-weight:700;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em">Percurso de Paragens</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#f0f0f0">
+          <th style="padding:4px 6px;border:1px solid #ccc;text-align:left">Hora</th>
+          <th style="padding:4px 6px;border:1px solid #ccc;text-align:left">Local</th>
+          <th style="padding:4px 6px;border:1px solid #ccc;text-align:left">Atletas que embarcam</th>
+          <th style="padding:4px 6px;border:1px solid #ccc;text-align:right">Km</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:4px 6px;border:1px solid #ccc">${p2.hora_partida||'—'}</td>
+              <td style="padding:4px 6px;border:1px solid #ccc">🏠 Sede da escola</td>
+              <td style="padding:4px 6px;border:1px solid #ccc">Staff</td>
+              <td style="padding:4px 6px;border:1px solid #ccc;text-align:right">0</td></tr>
+          ${paragens.map(pg=>{
+            const aths=pg.atletas?.map(id=>ATLETAS_MOCK[id]?.nome||'').filter(Boolean)||[];
+            return `<tr><td style="padding:4px 6px;border:1px solid #ccc">${pg.hora}</td>
+              <td style="padding:4px 6px;border:1px solid #ccc">📍 ${pg.local}</td>
+              <td style="padding:4px 6px;border:1px solid #ccc">${aths.join(', ')||'—'}</td>
+              <td style="padding:4px 6px;border:1px solid #ccc;text-align:right">+${pg.km}</td></tr>`;
+          }).join('')}
+          <tr style="background:#f9f9f9"><td style="padding:4px 6px;border:1px solid #ccc">—</td>
+              <td style="padding:4px 6px;border:1px solid #ccc">🏁 ${p2.local||'Local da corrida'}</td>
+              <td style="padding:4px 6px;border:1px solid #ccc">Chegada</td>
+              <td style="padding:4px 6px;border:1px solid #ccc;text-align:right"><strong>${totalKm}km</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em">Atletas Convocados (${totalConv})</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#f0f0f0">
+          <th style="padding:4px 6px;border:1px solid #ccc;text-align:left">Nome</th>
+          <th style="padding:4px 6px;border:1px solid #ccc;text-align:left">Escalão</th>
+          <th style="padding:4px 6px;border:1px solid #ccc;text-align:left">Local embarque</th>
+          <th style="padding:4px 6px;border:1px solid #ccc;text-align:center">✓</th>
+        </tr></thead>
+        <tbody>
+          ${p2.escaloes.flatMap(esc=>(conv[esc]||[]).map(id=>{
+            const a=ATLETAS_MOCK[id];
+            const pg=paragens.find(pg=>pg.atletas?.includes(id));
+            return `<tr><td style="padding:4px 6px;border:1px solid #ccc">${a?.nome||'—'}</td>
+              <td style="padding:4px 6px;border:1px solid #ccc">${escalaoLabel(esc)}</td>
+              <td style="padding:4px 6px;border:1px solid #ccc">${pg?pg.local:'Sede'}</td>
+              <td style="padding:4px 6px;border:1px solid #ccc;text-align:center">☐</td></tr>`;
+          })).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid #ccc;display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12px">
+      <div><div style="margin-bottom:24px">Treinador responsável: ___________________</div>
+           <div>Assinatura: ___________________</div></div>
+      <div><div style="margin-bottom:24px">Data: ___________________</div>
+           <div>Km ida/volta: ___________________</div></div>
+    </div>
+    </div>`;
+  }
+}
+
+// ============================================================
+// ACÇÕES
+// ============================================================
+function toggleStaffPanel(sid) {
+  if(!PANEL_PROVA) return;
+  toggleStaffNaProva(PANEL_PROVA.id, sid);
+  const s = STAFF_MOCK[sid];
+  const ativo = getStaffProva(PANEL_PROVA.id).includes(sid);
+  toast(ativo?(s.nome+' vai à prova'):(s.nome+' removido da prova'), ativo?'ok':'');
+  renderPanel();
+}
+
+function addOutroPanel() {
+  if(!PANEL_PROVA) return;
+  const nome = document.getElementById('outro-nome').value.trim();
+  const nota = document.getElementById('outro-nota').value.trim();
+  if(!nome) { toast('Indica o nome da pessoa'); return; }
+  addOutroNaProva(PANEL_PROVA.id, nome, nota);
+  toast(nome+' adicionado(a)!','ok');
+  renderPanel();
+}
+
+function removeOutroPanel(oid) {
+  if(!PANEL_PROVA) return;
+  removeOutroDaProva(PANEL_PROVA.id, oid);
+  renderPanel();
+}
+
+function toggleStaffPanel(sid) {
+  if(!PANEL_PROVA) return;
+  toggleStaffNaProva(PANEL_PROVA.id, sid);
+  const s = STAFF_MOCK[sid];
+  const ativo = getStaffProva(PANEL_PROVA.id).includes(sid);
+  toast(ativo?(s.nome+' vai à prova'):(s.nome+' removido da prova'), ativo?'ok':'');
+  renderPanel();
+}
+
+function addOutroPanel() {
+  if(!PANEL_PROVA) return;
+  const nome = document.getElementById('outro-nome').value.trim();
+  const nota = document.getElementById('outro-nota').value.trim();
+  if(!nome) { toast('Indica o nome da pessoa'); return; }
+  addOutroNaProva(PANEL_PROVA.id, nome, nota);
+  toast(nome+' adicionado(a)!','ok');
+  renderPanel();
+}
+
+function removeOutroPanel(oid) {
+  if(!PANEL_PROVA) return;
+  removeOutroDaProva(PANEL_PROVA.id, oid);
+  renderPanel();
+}
+
+function toggleViaturaLog(vid) {
+  if(!PANEL_PROVA) return;
+  toggleViaturaNaProva(PANEL_PROVA.id, vid);
+  const v = VIATURAS_DB.getById(vid);
+  const ativa = getViaturasProva(PANEL_PROVA.id).includes(vid);
+  toast(ativa?(v.nome+' alocada à prova'):(v.nome+' removida da prova'), ativa?'ok':'');
+  renderPanel();
+}
+
+function toggleParticipa() {
+  if(!PANEL_PROVA) return;
+  PANEL_PROVA.escola_participa=!PANEL_PROVA.escola_participa;
+  document.getElementById('btn-participa').textContent=
+    PANEL_PROVA.escola_participa?'✓ Escola participa':'+ Escola participa';
+  document.getElementById('btn-participa').className=
+    PANEL_PROVA.escola_participa?'btn-teal btn-sm':'btn-sm';
+  toast(PANEL_PROVA.escola_participa?'Marcado como participando!':'Removida participação','ok');
+  render();
+}
+
+function openConvModal() {
+  if(!PANEL_PROVA) return;
+  const p=PANEL_PROVA;
+  let html='';
+  p.escaloes.forEach(esc=>{
+    const atletas=Object.values(ATLETAS_MOCK).filter(a=>a.escalao===esc||(esc==='escolas'&&a.escalao==='escolas'));
+    const conv=(p.convocados||{})[esc]||[];
+    html+=`<div style="margin-bottom:1rem"><div style="font-size:12px;font-weight:600;margin-bottom:.5rem">${escalaoLabel(esc)}</div>
+      ${atletas.length?atletas.map(a=>{
+        const id=Object.keys(ATLETAS_MOCK).find(k=>ATLETAS_MOCK[k]===a);
+        const checked=conv.includes(parseInt(id));
+        return `<label style="display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;font-size:13px">
+          <input type="checkbox" value="${id}" data-esc="${esc}" ${checked?'checked':''}> ${a.nome}</label>`;
+      }).join(''):'<div style="font-size:12px;color:var(--hint)">Sem atletas neste escalão</div>'}
+    </div>`;
+  });
+  document.getElementById('modal-conv-body').innerHTML=html;
+  openModal('modal-conv');
+}
+
+function guardarConvocatoria() {
+  if(!PANEL_PROVA) return;
+  const checks=document.querySelectorAll('#modal-conv-body input[type=checkbox]');
+  const novaConv={};
+  PANEL_PROVA.escaloes.forEach(e=>novaConv[e]=[]);
+  checks.forEach(c=>{
+    if(c.checked) novaConv[c.dataset.esc].push(parseInt(c.value));
+  });
+  PANEL_PROVA.convocados=novaConv;
+  closeModal('modal-conv');
+  renderPanel();
+  const total=Object.values(novaConv).flat().length;
+  toast(`Convocatória guardada — ${total} atletas`,  'ok');
+}
+
+function printFolha() {
+  setPanelTab(document.querySelectorAll('.pt')[3],'folha');
+  setTimeout(()=>window.print(),300);
+}
+
+function partilharWA() {
+  if(!PANEL_PROVA) return;
+  const p=PANEL_PROVA;
+  const conv=Object.values(p.convocados||{}).flat();
+  const nomes=conv.map(id=>ATLETAS_MOCK[id]?.nome).filter(Boolean);
+  const msg=encodeURIComponent(
+    `🚴 CONVOCATÓRIA — ${p.nome}\n📅 ${fmtDate(p.data)}${p.etapas>1?' → '+fmtDate(p.data_fim):''}\n📍 ${p.local||'Local a confirmar'}\n🕐 Concentração: ${p.hora_concentracao||'—'}\n\nAtletas convocados:\n${nomes.map(n=>`• ${n}`).join('\n')}\n\nEscola de Ciclismo de Formação 🚲`
+  );
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+  toast('Convocatória pronta para enviar!','ok');
+}
+
+function gerarProvisorio2027() {
+  toast('Calendário provisório 2027 gerado com base em 2026!','ok');
+  setEpoca(2027);
+}
+
+function openDayList(dia,mes,ano,e) {
+  if(e) e.stopPropagation();
+  const events = getProvasMes(ano,mes).filter(p=>{
+    const dIni=new Date(p.data+'T00:00:00');
+    const dFim=new Date(p.data_fim+'T00:00:00');
+    const d=new Date(ano,mes,dia);
+    return d>=dIni && d<=dFim;
+  });
+
+  if(events.length===0) { toast('Sem provas neste dia'); return; }
+  if(events.length===1) { openPanel(events[0].id); return; }
+
+  // Várias provas — mostrar modal de seleção
+  const dataStr = new Date(ano,mes,dia).toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('modal-day-title').textContent = `Provas — ${dataStr}`;
+  document.getElementById('modal-day-body').innerHTML = `
+    <div style="font-size:12px;color:var(--muted);margin-bottom:.8rem">${events.length} provas neste dia — escolhe qual abrir:</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${events.map(p=>{
+        const conv=Object.values(p.convocados||{}).flat().length;
+        return `<div style="display:flex;align-items:center;gap:10px;padding:.7rem .9rem;border-radius:var(--rs);border:.5px solid var(--border);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='var(--surface)'" onclick="closeModal('modal-day');openPanel('${p.id}')">
+          <div style="width:8px;height:32px;border-radius:3px;flex-shrink:0;background:${evColorHex(p)}"></div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500;color:var(--text)">${p.nome}</div>
+            <div style="font-size:11px;color:var(--muted)">${p.local||'—'} · ${p.escaloes.map(e=>escalaoLabel(e)).join(', ')}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+            ${estadoBadge(p.estado)}
+            ${conv?`<span class="badge b-teal">${conv} conv.</span>`:''}
+          </div>
+          <span style="color:var(--hint);font-size:16px">›</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  openModal('modal-day');
+}
+
+function evColorHex(p) {
+  if(p.estado==='provisorio') return 'var(--prov)';
+  if(p.escaloes.length>1) return '#64748b';
+  const e=p.escaloes[0];
+  const m={escolas:'#16a34a',sub17:'#3b82f6',sub19:'#f59e0b',sub23:'#a855f7',paraciclismo:'#ec4899'};
+  return m[e]||'#64748b';
+}
+
+// ============================================================
+// MODAIS
+// ============================================================
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function openAddModal(){openModal('modal-add')}
+function openImportModal(){openModal('modal-import')}
+
+function addProva() {
+  const nome=document.getElementById('add-nome').value.trim();
+  const data=document.getElementById('add-data').value;
+  if(!nome||!data){toast('Nome e data são obrigatórios');return;}
+  const dataFim=document.getElementById('add-data-fim').value||data;
+  const vert=document.getElementById('add-vertente').value;
+  const org=document.getElementById('add-org').value;
+  const local=document.getElementById('add-local').value;
+  const obs=document.getElementById('add-obs').value;
+  const escaloes=[...document.querySelectorAll('#add-escaloes input:checked')].map(c=>c.value);
+  if(!escaloes.length){toast('Seleciona pelo menos um escalão');return;}
+
+  const nova={
+    id:'m'+Date.now(), nome, data, data_fim:dataFim,
+    etapas:(new Date(dataFim)-new Date(data))/(86400000)+1,
+    vertente:vert, classe:'Manual', organizador:org||'—',
+    escaloes, estado:'confirmado', origem:'Inserção manual',
+    escola_participa:true, convocados:{}, viaturas:[], paragens:[], local, obs
+  };
+  CALENDARIO.escola_provas.push(nova);
+  closeModal('modal-add');
+  toast(`"${nome}" adicionada ao calendário!`,'ok');
+  render();
+}
+
+function simImport() {
+  closeModal('modal-import');
+  toast('Calendário importado — 227 provas carregadas!','ok');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg,type=''){
+  const el=document.getElementById('toast-el');
+  el.textContent=msg;el.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+// Ir para o mês actual com provas
+CUR_DATE=new Date(2026,2,1); // Março 2026 que tem provas
+render();
+</script>
+</body>
+</html>

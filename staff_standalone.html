@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff — Escola de Ciclismo</title>
+<style>
+:root{
+  --red:#CC0000;--red-bg:#FFF0F0;--red-bd:rgba(204,0,0,.25);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-bd:rgba(24,95,165,.25);
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-bd:rgba(15,110,86,.25);
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-bd:rgba(133,79,11,.25);
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-bd:rgba(59,109,17,.25);
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-bd:rgba(83,74,183,.25);
+  --gray:#5F5E5A;--gray-bg:#F1EFE8;--gray-bd:rgba(95,94,90,.25);
+  --bg:#F5F4F1;--surface:#fff;--border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.16);
+  --text:#1A1A1A;--muted:#666660;--hint:#9A9A94;
+  --r:10px;--rs:6px;--sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sb-logo{padding:1.1rem 1rem .9rem;border-bottom:.5px solid var(--border)}
+.sb-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.sb-icon{width:32px;height:32px;background:var(--red);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.sb-name{font-size:13px;font-weight:600;line-height:1.2}
+.sb-season{font-size:11px;color:var(--hint);padding-left:40px}
+.sb-nav{padding:.6rem .5rem;flex:1;overflow-y:auto}
+.nav-sec{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;padding:.5rem .5rem .2rem;margin-top:.4rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.45rem .75rem;border-radius:var(--rs);cursor:pointer;color:var(--muted);font-size:13px;transition:background .1s,color .1s;text-decoration:none}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500}
+.sb-foot{padding:.7rem 1rem;border-top:.5px solid var(--border);display:flex;align-items:center;gap:8px}
+.ua{width:28px;height:28px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:.5px solid var(--border);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-title{font-size:16px;font-weight:600}
+.tb-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.tb-actions{display:flex;gap:8px}
+.content{padding:1.1rem 1.5rem;flex:1}
+
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+.b-ok{background:var(--green-bg);color:var(--green)}
+.b-warn{background:var(--amber-bg);color:var(--amber)}
+.b-danger{background:var(--red-bg);color:var(--red)}
+.b-info{background:var(--blue-bg);color:var(--blue)}
+.b-gray{background:var(--gray-bg);color:var(--gray)}
+.b-purple{background:var(--purple-bg);color:var(--purple)}
+.b-teal{background:var(--teal-bg);color:var(--teal)}
+
+button,.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rs);border:.5px solid var(--border2);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;transition:background .11s;font-family:inherit;white-space:nowrap}
+button:hover,.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn-primary:hover{background:#AA0000}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-wa{background:#25D366;border-color:#25D366;color:#fff}
+.btn-wa:hover{background:#1aad53}
+
+select,input,textarea{padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--surface);color:var(--text);outline:none;font-family:inherit}
+select:focus,input:focus,textarea:focus{border-color:var(--blue)}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.1rem}
+.metric{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem 1rem}
+.metric-l{font-size:11px;color:var(--muted);margin-bottom:3px}
+.metric-v{font-size:22px;font-weight:700;line-height:1}
+.metric-s{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* ALERTAS */
+.alerta-box{border:.5px solid var(--amber-bd);background:var(--amber-bg);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:1.1rem}
+.alerta-title{font-size:12px;font-weight:600;color:var(--amber);margin-bottom:.5rem}
+.alerta-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:.5px solid rgba(133,79,11,.1);font-size:12px}
+.alerta-row:last-child{border-bottom:none}
+
+/* GRID STAFF */
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.staff-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:box-shadow .12s,border-color .12s}
+.staff-card:hover{border-color:var(--border2);box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.staff-hd{display:flex;align-items:flex-start;gap:12px;margin-bottom:.85rem}
+.staff-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;flex-shrink:0}
+.av-admin{background:var(--red-bg);color:var(--red)}
+.av-treinador{background:var(--blue-bg);color:var(--blue)}
+.av-mecanico{background:var(--amber-bg);color:var(--amber)}
+.av-delegada{background:var(--teal-bg);color:var(--teal)}
+.av-outro{background:var(--gray-bg);color:var(--gray)}
+.staff-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.staff-funcao{font-size:12px;color:var(--muted)}
+.staff-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.staff-info{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.cert-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.cert-row:last-child{border-bottom:none}
+.staff-footer{display:flex;gap:6px;margin-top:.85rem;padding-top:.85rem;border-top:.5px solid var(--border)}
+
+/* PAINEL */
+.panel{position:fixed;top:0;right:0;bottom:0;width:500px;background:var(--surface);border-left:.5px solid var(--border);z-index:200;display:none;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
+.panel.open{display:flex}
+.panel-top{padding:.85rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.panel-tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--rs);padding:3px}
+.pt{padding:4px 11px;border-radius:4px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .11s;border:none;background:transparent;font-family:inherit}
+.pt.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.panel-body{flex:1;overflow-y:auto;padding:1.1rem}
+.panel-foot{padding:.8rem 1.1rem;border-top:.5px solid var(--border);display:flex;gap:7px;flex-shrink:0}
+.sec{margin-bottom:1.1rem}
+.sec-t{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.55rem;padding-bottom:4px;border-bottom:.5px solid var(--border)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+.fl{font-size:11px;color:var(--muted);margin-bottom:1px}
+.fv{font-size:13px;color:var(--text)}
+
+/* ESCALÕES CHECK */
+.esc-check{display:flex;gap:6px;flex-wrap:wrap}
+.esc-pill{font-size:12px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .12px}
+.esc-pill.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:500}
+
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:520px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;margin:1rem}
+.modal-hd{padding:.9rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:15px;font-weight:600}
+.modal-body{flex:1;overflow-y:auto;padding:1.1rem}
+.modal-foot{padding:.8rem 1.1rem;border-top:.5px solid var(--border);display:flex;gap:7px;justify-content:flex-end;flex-shrink:0}
+.fg{margin-bottom:.8rem}
+.fl2{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:3px;display:block}
+.fi{width:100%;padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px}
+.fi:focus{border-color:var(--blue);outline:none}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sec-form{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:.85rem 0 .55rem;padding-bottom:4px;border-bottom:.5px solid var(--border)}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:.55rem .95rem;border-radius:var(--rs);font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .18s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--green)}
+.toast.warn{background:var(--amber)}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row"><div class="sb-icon">🚴</div><div class="sb-name">Escola de<br>Ciclismo</div></div>
+    <div class="sb-season">Época 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Principal</div>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">⬡ Cockpit</a>
+    <div class="nav-sec">Equipa</div>
+    <a class="nav-item" href="atletas_standalone.html">👥 Atletas</a>
+    <a class="nav-item active" href="#">🪪 Staff</a>
+    <div class="nav-sec">Desportivo</div>
+    <a class="nav-item" href="calendario_standalone.html">📅 Calendário</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🏆 Resultados</a>
+    <div class="nav-sec">Gestão</div>
+    <a class="nav-item" href="equipamentos_standalone.html">🚐 Logística</a>
+    <a class="nav-item" href="financeira_standalone.html">💰 Financeira</a>
+    <a class="nav-item" href="patrocinadores_standalone.html">🤝 Patrocinadores</a>
+    <a class="nav-item" href="comunicacoes_standalone.html">📢 Comunicações</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="ua">JP</div>
+    <div><div style="font-size:12px;font-weight:500">João Paulo Serra</div><div style="font-size:11px;color:var(--muted)">Treinador</div></div>
+  </div>
+</aside>
+
+<div class="main">
+<div class="topbar">
+  <div>
+    <div class="tb-title">Staff</div>
+    <div class="tb-sub">Equipa técnica e colaboradores</div>
+  </div>
+  <div class="tb-actions">
+    <button class="btn-primary" onclick="openModal('modal-staff')">+ Novo membro</button>
+  </div>
+</div>
+
+<div class="content" id="main-content"></div>
+</div>
+</div>
+
+<!-- PAINEL DETALHE -->
+<div class="panel" id="panel">
+  <div class="panel-top">
+    <button class="btn-ghost btn-sm" onclick="closePanel()">← Voltar</button>
+    <div style="flex:1"></div>
+    <div class="panel-tabs">
+      <button class="pt active" onclick="setPTab(this,'ficha')">Ficha</button>
+      <button class="pt" onclick="setPTab(this,'certs')">Certificações</button>
+      <button class="pt" onclick="setPTab(this,'acesso')">Acesso</button>
+    </div>
+  </div>
+  <div class="panel-body" id="panel-body"></div>
+  <div class="panel-foot">
+    <button class="btn-sm" onclick="editarMembro()">✏️ Editar</button>
+    <button class="btn-wa btn-sm" onclick="contactarWA()">📱 WhatsApp</button>
+    <div style="flex:1"></div>
+    <button class="btn-sm btn-ghost" id="btn-toggle-estado" onclick="toggleEstado()">Inativar</button>
+  </div>
+</div>
+
+<!-- MODAL NOVO MEMBRO -->
+<div class="modal-overlay" id="modal-staff" onclick="if(event.target===this)closeModal('modal-staff')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Novo membro de staff</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-staff')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="f2">
+        <div class="fg"><label class="fl2">Nome próprio *</label><input type="text" class="fi" id="s-nome"></div>
+        <div class="fg"><label class="fl2">Apelidos *</label><input type="text" class="fi" id="s-apel"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Função *</label>
+          <select class="fi" id="s-funcao">
+            <option value="">Selecionar...</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl2">Perfil de acesso</label>
+          <select class="fi" id="s-perfil">
+            <option value="treinador">Treinador/Diretor</option>
+            <option value="admin">Administrador</option>
+            <option value="consulta">Consulta</option>
+          </select>
+        </div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Telemóvel *</label><input type="tel" class="fi" id="s-tel"></div>
+        <div class="fg"><label class="fl2">Email</label><input type="email" class="fi" id="s-email"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label class="fl2">Data de nascimento</label><input type="date" class="fi" id="s-nasc"></div>
+        <div class="fg"><label class="fl2">Na escola desde</label><input type="text" class="fi" id="s-desde" placeholder="Ex: 2022"></div>
+      </div>
+      <div class="fg"><label class="fl2">Disponibilidade</label><input type="text" class="fi" id="s-disp" placeholder="Ex: Fins de semana e corridas"></div>
+      <div class="sec-form">Escalões associados</div>
+      <div class="esc-check" id="s-escaloes">
+        ${['escolas','sub17','sub19','sub23','paraciclismo'].map(e=>`<div class="esc-pill" onclick="toggleEscalaoModal(this,'${e}')" data-esc="${e}">${e.toUpperCase()}</div>`).join('')}
+      </div>
+      <div class="fg" style="margin-top:.85rem"><label class="fl2">Observações</label><textarea class="fi" id="s-notas" rows="2"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-staff')">Cancelar</button>
+      <button class="btn-primary" onclick="confirmarNovoMembro()">+ Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<script>
+// ============================================================
+// STAFF_DB.JS
+// ============================================================
+
+const STAFF_DB = {
+
+  membros: [
+    {
+      id: 's1',
+      nome: 'João Paulo Serra',
+      apelidos: 'Serra Rodrigues',
+      nasc: '1975-06-20',
+      genero: 'Masculino',
+      foto: null,
+      funcao: 'treinador',
+      funcao_desc: 'Treinador Principal',
+      email: 'jp.serra@escolaciclismo.pt',
+      tel: '912 111 222',
+      tel2: '',
+      morada: 'R. das Flores, 5 — Cascais',
+      estado: 'ativo',
+      perfil_acesso: 'treinador',
+      escaloes: ['escolas','sub17','sub19','sub23','paraciclismo'],
+      // Certificações
+      certs: [
+        {nome:'Licença Treinador Grau III FPC', validade:'2027-12-31', estado:'valida'},
+        {nome:'Primeiros Socorros', validade:'2026-12-31', estado:'valida'},
+        {nome:'Carta de Condução Cat. D', validade:'2028-06-20', estado:'valida'},
+      ],
+      disponibilidade: 'Todos os dias',
+      notas: 'Treinador de referência. Conhece todos os atletas individualmente.',
+      desde: '2018',
+      aniversario_clube: '',
+    },
+    {
+      id: 's2',
+      nome: 'Manuel Costa',
+      apelidos: 'Costa Ferreira',
+      nasc: '1968-09-14',
+      genero: 'Masculino',
+      foto: null,
+      funcao: 'diretor',
+      funcao_desc: 'Diretor Desportivo',
+      email: 'manuel.costa@escolaciclismo.pt',
+      tel: '913 222 333',
+      tel2: '214 555 666',
+      morada: 'Av. Central, 22 — Sintra',
+      estado: 'ativo',
+      perfil_acesso: 'admin',
+      escaloes: ['sub19','sub23'],
+      certs: [
+        {nome:'Licença Diretor Desportivo FPC', validade:'2027-06-30', estado:'valida'},
+        {nome:'Carta de Condução Cat. D', validade:'2026-09-14', estado:'renovar'},
+      ],
+      disponibilidade: 'Fins de semana e corridas',
+      notas: 'Responsável pela logística e contacto com a FPC.',
+      desde: '2015',
+      aniversario_clube: '',
+    },
+    {
+      id: 's3',
+      nome: 'Carlos Reis',
+      apelidos: 'Reis Alves',
+      nasc: '1980-11-03',
+      genero: 'Masculino',
+      foto: null,
+      funcao: 'mecanico',
+      funcao_desc: 'Mecânico',
+      email: 'carlos.reis@escolaciclismo.pt',
+      tel: '914 333 444',
+      tel2: '',
+      morada: 'R. Nova, 8 — Oeiras',
+      estado: 'ativo',
+      perfil_acesso: 'treinador',
+      escaloes: ['escolas','sub17','sub19','sub23','paraciclismo'],
+      certs: [
+        {nome:'Mecânico Ciclismo Nível 2 FPC', validade:'2028-03-31', estado:'valida'},
+      ],
+      disponibilidade: 'Corridas e estágios',
+      notas: 'Especialista em bicicletas de estrada e BTT. Disponível com 48h de antecedência.',
+      desde: '2020',
+      aniversario_clube: '',
+    },
+    {
+      id: 's4',
+      nome: 'Ana Sousa',
+      apelidos: 'Sousa Martins',
+      nasc: '1985-03-28',
+      genero: 'Feminino',
+      foto: null,
+      funcao: 'delegada',
+      funcao_desc: 'Delegada de Equipa',
+      email: 'ana.sousa@escolaciclismo.pt',
+      tel: '915 444 555',
+      tel2: '',
+      morada: 'Tv. das Acácias, 3 — Cascais',
+      estado: 'ativo',
+      perfil_acesso: 'treinador',
+      escaloes: ['escolas','sub17'],
+      certs: [
+        {nome:'Primeiros Socorros', validade:'2025-12-31', estado:'expirada'},
+      ],
+      disponibilidade: 'Corridas de Escolas e SUB17',
+      notas: 'Responsável pelas inscrições e documentação nas corridas.',
+      desde: '2021',
+      aniversario_clube: '',
+    },
+  ],
+
+  FUNCOES: [
+    {id:'treinador', nome:'Treinador', icone:'🎽'},
+    {id:'diretor', nome:'Diretor Desportivo', icone:'📋'},
+    {id:'mecanico', nome:'Mecânico', icone:'🔧'},
+    {id:'delegada', nome:'Delegado/a de Equipa', icone:'📎'},
+    {id:'fisio', nome:'Fisioterapeuta', icone:'🏥'},
+    {id:'administrativo', nome:'Administrativo', icone:'💼'},
+    {id:'outro', nome:'Outro', icone:'👤'},
+  ],
+
+  PERFIS: [
+    {id:'admin', nome:'Administrador', desc:'Acesso total'},
+    {id:'treinador', nome:'Treinador/Diretor', desc:'Acesso operacional completo'},
+    {id:'consulta', nome:'Consulta', desc:'Só leitura'},
+  ],
+
+  ESCALOES_TODOS: ['escolas','sub17','sub19','sub23','paraciclismo'],
+
+  getById(id) { return this.membros.find(m=>m.id===id); },
+  getFuncao(id) { return this.FUNCOES.find(f=>f.id===id); },
+  getAtivos() { return this.membros.filter(m=>m.estado==='ativo'); },
+
+  getCertsAlerta() {
+    const hoje = new Date();
+    const em30 = new Date(hoje); em30.setDate(hoje.getDate()+30);
+    return this.membros.flatMap(m=>
+      m.certs.filter(c=>{
+        if(c.estado==='expirada') return true;
+        const v = new Date(c.validade);
+        return v <= em30;
+      }).map(c=>({membro:m, cert:c}))
+    );
+  },
+};
+
+</script>
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let PANEL_STAFF = null;
+let PANEL_TAB = 'ficha';
+
+// ============================================================
+// UTILS
+// ============================================================
+function fmtDate(d){if(!d)return'—';return new Date(d+'T00:00:00').toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function fmtDateLong(d){if(!d)return'—';return new Date(d+'T00:00:00').toLocaleDateString('pt-PT',{day:'numeric',month:'long',year:'numeric'})}
+function initials(n){return n.split(' ').filter((_,i,a)=>i===0||i===a.length-1).map(x=>x[0]).join('').toUpperCase()}
+function calcAge(nasc){const d=new Date(nasc),t=new Date();let a=t.getFullYear()-d.getFullYear();if(t<new Date(t.getFullYear(),d.getMonth(),d.getDate()))a--;return a}
+function avClass(m){
+  if(m.perfil_acesso==='admin') return 'av-admin';
+  if(m.funcao==='treinador') return 'av-treinador';
+  if(m.funcao==='mecanico') return 'av-mecanico';
+  if(m.funcao==='delegada') return 'av-delegada';
+  return 'av-outro';
+}
+function certBadge(c){
+  if(c.estado==='expirada') return '<span class="badge b-danger">Expirada</span>';
+  const v=new Date(c.validade);
+  const diff=(v-new Date())/86400000;
+  if(diff<30) return '<span class="badge b-warn">Renova em breve</span>';
+  return '<span class="badge b-ok">Válida</span>';
+}
+function perfilBadge(p){
+  if(p==='admin') return '<span class="badge b-danger">Admin</span>';
+  if(p==='treinador') return '<span class="badge b-info">Treinador</span>';
+  return '<span class="badge b-gray">Consulta</span>';
+}
+
+// ============================================================
+// RENDER PRINCIPAL
+// ============================================================
+function renderMain(){
+  const membros = STAFF_DB.membros;
+  const ativos = STAFF_DB.getAtivos();
+  const alertas = STAFF_DB.getCertsAlerta();
+
+  document.getElementById('main-content').innerHTML = `
+  <div class="metrics">
+    <div class="metric"><div class="metric-l">Membros ativos</div><div class="metric-v">${ativos.length}</div></div>
+    <div class="metric"><div class="metric-l">Treinadores</div><div class="metric-v">${ativos.filter(m=>m.funcao==='treinador').length}</div></div>
+    <div class="metric"><div class="metric-l">Certificações</div><div class="metric-v">${ativos.reduce((s,m)=>s+m.certs.length,0)}</div><div class="metric-s">total</div></div>
+    <div class="metric"><div class="metric-l">Alertas</div><div class="metric-v" style="color:${alertas.length?'var(--amber)':'var(--green)'}">${alertas.length}</div><div class="metric-s">certificações</div></div>
+  </div>
+
+  ${alertas.length ? `
+  <div class="alerta-box">
+    <div class="alerta-title">⚠️ Certificações a renovar / expiradas</div>
+    ${alertas.map(({membro:m,cert:c})=>`
+      <div class="alerta-row">
+        <span style="font-weight:500">${m.nome}</span>
+        <span style="flex:1;color:var(--muted)">${c.nome}</span>
+        ${certBadge(c)}
+        <span style="font-size:11px;color:var(--muted)">${fmtDate(c.validade)}</span>
+      </div>`).join('')}
+  </div>` : ''}
+
+  <div class="staff-grid">
+    ${membros.map(m=>renderCard(m)).join('')}
+  </div>`;
+}
+
+function renderCard(m){
+  const f = STAFF_DB.getFuncao(m.funcao);
+  const certAlerta = m.certs.some(c=>c.estado==='expirada'||new Date(c.validade)<new Date(Date.now()+30*86400000));
+  return `<div class="staff-card${m.estado==='inativo'?' opacity-50':''}" onclick="openPanel('${m.id}')" style="${m.estado==='inativo'?'opacity:.6':''}">
+    <div class="staff-hd">
+      <div class="staff-av ${avClass(m)}">${initials(m.nome)}</div>
+      <div style="flex:1">
+        <div class="staff-name">${m.nome}</div>
+        <div class="staff-funcao">${f?.icone||''} ${m.funcao_desc}</div>
+        <div class="staff-badges">
+          ${perfilBadge(m.perfil_acesso)}
+          ${m.estado==='inativo'?'<span class="badge b-gray">Inativo</span>':'<span class="badge b-ok">Ativo</span>'}
+          ${certAlerta?'<span class="badge b-warn">⚠️ Cert.</span>':''}
+        </div>
+      </div>
+    </div>
+
+    <div class="staff-info">📱 ${m.tel}</div>
+    <div class="staff-info">📧 ${m.email}</div>
+    <div class="staff-info">📅 Na escola desde ${m.desde}</div>
+    ${m.disponibilidade?`<div class="staff-info">🕐 ${m.disponibilidade}</div>`:''}
+
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin:.6rem 0">
+      ${m.escaloes.map(e=>`<span class="badge b-info" style="font-size:10px">${e.toUpperCase()}</span>`).join('')}
+    </div>
+
+    <div class="staff-footer">
+      <button class="btn-sm btn-wa" onclick="event.stopPropagation();waStaff('${m.id}')">📱 WA</button>
+      <button class="btn-sm" onclick="event.stopPropagation();openPanel('${m.id}')">Ver ficha →</button>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// PAINEL
+// ============================================================
+function openPanel(id){
+  PANEL_STAFF = STAFF_DB.getById(id);
+  if(!PANEL_STAFF) return;
+  PANEL_TAB='ficha';
+  document.querySelectorAll('.pt').forEach((t,i)=>t.classList.toggle('active',i===0));
+  renderPanel();
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('btn-toggle-estado').textContent = PANEL_STAFF.estado==='ativo'?'Inativar':'Ativar';
+}
+function closePanel(){document.getElementById('panel').classList.remove('open');PANEL_STAFF=null}
+function setPTab(el,tab){
+  document.querySelectorAll('.pt').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); PANEL_TAB=tab; renderPanel();
+}
+
+function renderPanel(){
+  if(!PANEL_STAFF) return;
+  const m = PANEL_STAFF;
+  const f = STAFF_DB.getFuncao(m.funcao);
+  const body = document.getElementById('panel-body');
+
+  if(PANEL_TAB==='ficha'){
+    body.innerHTML=`
+    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:.5px solid var(--border)">
+      <div class="staff-av ${avClass(m)}" style="width:52px;height:52px;font-size:18px">${initials(m.nome)}</div>
+      <div style="flex:1">
+        <div style="font-size:17px;font-weight:700">${m.nome}</div>
+        <div style="font-size:12px;color:var(--muted)">${f?.icone||''} ${m.funcao_desc} · Na escola desde ${m.desde}</div>
+        <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap">
+          ${perfilBadge(m.perfil_acesso)}
+          ${m.estado==='ativo'?'<span class="badge b-ok">Ativo</span>':'<span class="badge b-gray">Inativo</span>'}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">Dados pessoais</div>
+      <div class="fields">
+        <div><div class="fl">Data de nascimento</div><div class="fv">${fmtDateLong(m.nasc)} · ${calcAge(m.nasc)} anos</div></div>
+        <div><div class="fl">Género</div><div class="fv">${m.genero}</div></div>
+        <div><div class="fl">Telemóvel</div><div class="fv">${m.tel}</div></div>
+        ${m.tel2?`<div><div class="fl">Telefone</div><div class="fv">${m.tel2}</div></div>`:''}
+        <div><div class="fl">Email</div><div class="fv">${m.email}</div></div>
+        <div><div class="fl">Morada</div><div class="fv">${m.morada||'—'}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">Função e disponibilidade</div>
+      <div class="fields">
+        <div><div class="fl">Função</div><div class="fv">${f?.icone||''} ${m.funcao_desc}</div></div>
+        <div><div class="fl">Disponibilidade</div><div class="fv">${m.disponibilidade||'—'}</div></div>
+      </div>
+      <div style="margin-top:.6rem">
+        <div class="fl">Escalões associados</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px">
+          ${m.escaloes.map(e=>`<span class="badge b-info">${e.toUpperCase()}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    ${m.notas?`<div class="sec">
+      <div class="sec-t">Observações</div>
+      <div style="font-size:13px;color:var(--muted);font-style:italic;padding:.6rem;background:var(--bg);border-radius:var(--rs)">${m.notas}</div>
+    </div>`:''}`;
+
+  } else if(PANEL_TAB==='certs'){
+    body.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem">
+      <div style="font-size:14px;font-weight:600">${m.nome} — Certificações</div>
+      <button class="btn-sm btn-primary" onclick="addCert('${m.id}')">+ Certificação</button>
+    </div>
+    ${!m.certs.length?'<div style="text-align:center;padding:2rem;color:var(--muted)">Sem certificações registadas</div>':''}
+    ${m.certs.map((c,i)=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:.7rem .9rem;border:.5px solid var(--border);border-radius:var(--rs);margin-bottom:6px;background:${c.estado==='expirada'?'var(--red-bg)':new Date(c.validade)<new Date(Date.now()+30*86400000)?'var(--amber-bg)':'var(--surface)'}">
+        <div style="font-size:18px">${c.estado==='expirada'?'❌':new Date(c.validade)<new Date(Date.now()+30*86400000)?'⚠️':'✅'}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500">${c.nome}</div>
+          <div style="font-size:11px;color:var(--muted)">Válida até ${fmtDate(c.validade)}</div>
+        </div>
+        ${certBadge(c)}
+      </div>`).join('')}`;
+
+  } else if(PANEL_TAB==='acesso'){
+    const perfil = STAFF_DB.PERFIS.find(p=>p.id===m.perfil_acesso);
+    body.innerHTML=`
+    <div style="font-size:14px;font-weight:600;margin-bottom:.85rem">${m.nome} — Perfil de acesso</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${STAFF_DB.PERFIS.map(p=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:.75rem .9rem;border-radius:var(--rs);border:.5px solid ${p.id===m.perfil_acesso?'var(--blue-bd)':'var(--border)'};background:${p.id===m.perfil_acesso?'var(--blue-bg)':'var(--surface)'};cursor:pointer" onclick="setPerfilAcesso('${m.id}','${p.id}')">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500">${p.nome}</div>
+            <div style="font-size:12px;color:var(--muted)">${p.desc}</div>
+          </div>
+          <div style="width:20px;height:20px;border-radius:50%;border:1.5px solid ${p.id===m.perfil_acesso?'var(--blue)':'var(--border2)'};background:${p.id===m.perfil_acesso?'var(--blue)':'transparent'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">${p.id===m.perfil_acesso?'✓':''}</div>
+        </div>`).join('')}
+    </div>
+
+    <div style="margin-top:1rem;padding:.75rem;background:var(--bg);border-radius:var(--rs);font-size:12px;color:var(--muted)">
+      ${m.perfil_acesso==='admin'
+        ? '👑 <strong>Admin</strong> — acesso total a todos os módulos, incluindo dados financeiros e patrocinadores. Pode alterar configurações.'
+        : m.perfil_acesso==='treinador'
+        ? '🚴 <strong>Treinador/Diretor</strong> — acesso operacional completo. Pode gerir atletas, calendário, convocatórias e comunicações. Sem acesso a dados financeiros sensíveis.'
+        : '👁️ <strong>Consulta</strong> — apenas leitura. Não pode editar dados.'}
+    </div>`;
+  }
+}
+
+// ============================================================
+// AÇÕES
+// ============================================================
+function toggleEstado(){
+  if(!PANEL_STAFF) return;
+  PANEL_STAFF.estado = PANEL_STAFF.estado==='ativo'?'inativo':'ativo';
+  document.getElementById('btn-toggle-estado').textContent = PANEL_STAFF.estado==='ativo'?'Inativar':'Ativar';
+  toast('Estado atualizado','ok');
+  renderPanel(); renderMain();
+}
+
+function setPerfilAcesso(id, perfil){
+  const m = STAFF_DB.getById(id);
+  if(m){ m.perfil_acesso=perfil; }
+  toast('Perfil de acesso atualizado','ok');
+  renderPanel();
+}
+
+function addCert(id){
+  const nome = prompt('Nome da certificação:');
+  if(!nome) return;
+  const validade = prompt('Data de validade (AAAA-MM-DD):');
+  if(!validade) return;
+  const m = STAFF_DB.getById(id);
+  if(m){ m.certs.push({nome, validade, estado:'valida'}); }
+  toast('Certificação adicionada!','ok');
+  renderPanel(); renderMain();
+}
+
+function editarMembro(){
+  toast('Edição de ficha em breve');
+}
+
+function waStaff(id){
+  const m = STAFF_DB.getById(id);
+  if(!m) return;
+  const msg = encodeURIComponent(`Olá ${m.nome.split(' ')[0]}!\n\nContacto da Escola de Ciclismo de Formação.\n\n_Escola de Ciclismo de Formação_ 🚴`);
+  window.open('https://wa.me/?text='+msg,'_blank');
+  toast('Mensagem pronta para enviar!','ok');
+}
+
+function contactarWA(){
+  if(PANEL_STAFF) waStaff(PANEL_STAFF.id);
+}
+
+// ============================================================
+// MODAL NOVO MEMBRO
+// ============================================================
+function initModal(){
+  const sel = document.getElementById('s-funcao');
+  if(sel) sel.innerHTML = '<option value="">Selecionar...</option>' +
+    STAFF_DB.FUNCOES.map(f=>`<option value="${f.id}">${f.icone} ${f.nome}</option>`).join('');
+}
+
+function toggleEscalaoModal(el, esc){
+  el.classList.toggle('active');
+}
+
+function confirmarNovoMembro(){
+  const nome = document.getElementById('s-nome').value.trim();
+  const apel = document.getElementById('s-apel').value.trim();
+  const funcao = document.getElementById('s-funcao').value;
+  const tel = document.getElementById('s-tel').value.trim();
+  if(!nome||!funcao||!tel){ toast('Nome, função e telemóvel são obrigatórios'); return; }
+
+  const escaloes = [...document.querySelectorAll('#s-escaloes .esc-pill.active')].map(el=>el.dataset.esc);
+  const f = STAFF_DB.getFuncao(funcao);
+
+  STAFF_DB.membros.push({
+    id:'s'+Date.now(),
+    nome: nome+' '+apel, apelidos:apel,
+    nasc: document.getElementById('s-nasc').value,
+    genero:'', foto:null,
+    funcao, funcao_desc: f?.nome||funcao,
+    email: document.getElementById('s-email').value,
+    tel, tel2:'',
+    morada:'', estado:'ativo',
+    perfil_acesso: document.getElementById('s-perfil').value,
+    escaloes, certs:[],
+    disponibilidade: document.getElementById('s-disp').value,
+    notas: document.getElementById('s-notas').value,
+    desde: document.getElementById('s-desde').value || new Date().getFullYear().toString(),
+  });
+
+  closeModal('modal-staff');
+  toast('Membro adicionado!','ok');
+  renderMain();
+}
+
+function openModal(id){ document.getElementById(id).classList.add('open'); initModal(); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function toast(msg,type=''){
+  const el=document.getElementById('toast-el');
+  el.textContent=msg;el.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderMain();
+</script>
+</body>
+</html>

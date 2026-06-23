@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equipamentos — Escola de Ciclismo</title>
+<style>
+:root{
+  --red:#CC0000;--red-bg:#FFF0F0;--red-bd:rgba(204,0,0,.25);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-bd:rgba(24,95,165,.25);
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-bd:rgba(15,110,86,.25);
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-bd:rgba(133,79,11,.25);
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-bd:rgba(59,109,17,.25);
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-bd:rgba(83,74,183,.25);
+  --gray:#5F5E5A;--gray-bg:#F1EFE8;--gray-bd:rgba(95,94,90,.25);
+  --bg:#F5F4F1;--surface:#fff;--border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.16);
+  --text:#1A1A1A;--muted:#666660;--hint:#9A9A94;
+  --r:10px;--rs:6px;--sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sb-logo{padding:1.1rem 1rem .9rem;border-bottom:.5px solid var(--border)}
+.sb-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.sb-icon{width:32px;height:32px;background:var(--red);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.sb-name{font-size:13px;font-weight:600;line-height:1.2}
+.sb-season{font-size:11px;color:var(--hint);padding-left:40px}
+.sb-nav{padding:.6rem .5rem;flex:1;overflow-y:auto}
+.nav-sec{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;padding:.5rem .5rem .2rem;margin-top:.4rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:.45rem .75rem;border-radius:var(--rs);cursor:pointer;color:var(--muted);font-size:13px;transition:background .1s,color .1s;text-decoration:none}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);font-weight:500}
+.nav-badge{margin-left:auto;background:var(--red-bg);color:var(--red);font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-foot{padding:.7rem 1rem;border-top:.5px solid var(--border);display:flex;align-items:center;gap:8px}
+.ua{width:28px;height:28px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:.5px solid var(--border);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-title{font-size:16px;font-weight:600}
+.tb-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.tb-actions{display:flex;gap:8px;align-items:center}
+.content{padding:1.1rem 1.5rem;flex:1}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+.b-ok{background:var(--green-bg);color:var(--green)}
+.b-warn{background:var(--amber-bg);color:var(--amber)}
+.b-danger{background:var(--red-bg);color:var(--red)}
+.b-info{background:var(--blue-bg);color:var(--blue)}
+.b-gray{background:var(--gray-bg);color:var(--gray)}
+.b-purple{background:var(--purple-bg);color:var(--purple)}
+.b-teal{background:var(--teal-bg);color:var(--teal)}
+
+/* BUTTONS */
+button,.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rs);border:.5px solid var(--border2);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;transition:background .11s;font-family:inherit;white-space:nowrap}
+button:hover,.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn-primary:hover{background:#AA0000}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-teal{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn-teal:hover{background:#0a5040}
+.btn-blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-blue:hover{background:#124d8a}
+
+select{padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--bg);color:var(--text);outline:none;cursor:pointer;font-family:inherit}
+select:focus{border-color:var(--blue)}
+
+/* ATLETA SELECTOR */
+.athlete-bar{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.athlete-search{flex:1;min-width:200px;position:relative}
+.athlete-search input{width:100%;padding:7px 10px 7px 30px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--bg);color:var(--text);outline:none}
+.athlete-search input:focus{border-color:var(--blue);background:var(--surface)}
+.s-ico{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--hint);font-size:14px;pointer-events:none}
+.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.av-blue{background:var(--blue-bg);color:var(--blue)}
+.av-teal{background:var(--teal-bg);color:var(--teal)}
+.av-purple{background:var(--purple-bg);color:var(--purple)}
+.av-amber{background:var(--amber-bg);color:var(--amber)}
+
+/* LAYOUT PRINCIPAL: figura + tabelas */
+.eq-layout{display:grid;grid-template-columns:300px 1fr;gap:1rem}
+@media(max-width:1000px){.eq-layout{grid-template-columns:1fr}}
+
+/* FIGURA */
+.figura-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1rem;position:sticky;top:80px}
+.figura-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem;text-align:center}
+.figura-svg{width:100%;display:block}
+.fig-zone{cursor:pointer;transition:opacity .15s}
+.fig-zone:hover{opacity:.7}
+.fig-zone.tem-item{}
+.fig-label{font-size:9px;fill:var(--muted);text-anchor:middle;pointer-events:none}
+.figura-total{margin-top:1rem;padding-top:1rem;border-top:.5px solid var(--border);text-align:center}
+.ft-val{font-size:24px;font-weight:600;color:var(--text)}
+.ft-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.ft-breakdown{display:flex;justify-content:space-around;margin-top:.75rem;gap:8px}
+.ft-item{text-align:center}
+.ft-item-val{font-size:14px;font-weight:600}
+.ft-item-lbl{font-size:10px;color:var(--muted)}
+
+/* TABELAS DE EQUIPAMENTO */
+.eq-section{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1rem}
+.eq-section-hd{padding:.75rem 1rem;border-bottom:.5px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:space-between}
+.eq-section-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:11px;font-weight:600;color:var(--muted);text-align:left;padding:8px 12px;border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.04em}
+tbody tr{border-bottom:.5px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg)}
+td{padding:8px 12px;vertical-align:middle;font-size:13px}
+.peca-name{display:flex;align-items:center;gap:8px;font-weight:500}
+.peca-ico{font-size:18px}
+.row-empty td{color:var(--hint);font-style:italic}
+.add-row{padding:8px 12px;text-align:center}
+
+/* PILL SELECTORS */
+.size-pills{display:flex;gap:3px;flex-wrap:wrap}
+.size-pill{font-size:11px;padding:3px 8px;border-radius:5px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .1s;min-width:28px;text-align:center}
+.size-pill:hover{border-color:var(--blue)}
+.size-pill.active{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:600}
+.size-pill.suggested:not(.active){border-color:var(--green);color:var(--green);font-weight:600}
+
+.gama-select{display:flex;gap:3px;flex-wrap:wrap}
+.gama-pill{font-size:11px;padding:3px 9px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .1s;white-space:nowrap}
+.gama-pill:hover{border-color:var(--blue)}
+.gama-pill.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:600}
+.gama-baixa.active{background:var(--green-bg);color:var(--green);border-color:var(--green-bd)}
+.gama-media.active{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-bd)}
+.gama-alta.active{background:var(--purple-bg);color:var(--purple);border-color:var(--purple-bd)}
+
+.pay-toggle{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .12s}
+.pay-toggle.paid{background:var(--green);border-color:var(--green);color:#fff}
+.pay-toggle:not(.paid):hover{border-color:var(--green)}
+
+.remove-btn{color:var(--red);cursor:pointer;font-size:14px;opacity:.5;transition:opacity .1s}
+.remove-btn:hover{opacity:1}
+
+/* SUGESTÃO ESCALÃO */
+.sugestao-box{background:var(--blue-bg);color:var(--blue);padding:.6rem .85rem;border-radius:var(--rs);font-size:12px;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+
+/* ENCOMENDA */
+.encomenda-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:1rem}
+.enc-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.8rem}
+.enc-val{font-size:20px;font-weight:600}
+.enc-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;margin:1rem}
+.modal-hd{padding:.9rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:15px;font-weight:600}
+.modal-body{flex:1;overflow-y:auto;padding:1.1rem}
+.modal-foot{padding:.8rem 1.1rem;border-top:.5px solid var(--border);display:flex;gap:7px;justify-content:flex-end;flex-shrink:0}
+.fg{margin-bottom:.8rem}
+.fl2{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:3px;display:block}
+.fi{width:100%;padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;color:var(--text);background:var(--surface);outline:none;font-family:inherit}
+.fi:focus{border-color:var(--blue)}
+.info-box{padding:.65rem .85rem;border-radius:var(--rs);font-size:12px;margin-bottom:.8rem}
+.ib-blue{background:var(--blue-bg);color:var(--blue)}
+.ib-green{background:var(--green-bg);color:var(--green)}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:.55rem .95rem;border-radius:var(--rs);font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .18s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--green)}
+
+/* VIEW TOGGLE */
+.view-toggle{display:flex;background:var(--bg);border-radius:var(--rs);padding:3px;border:.5px solid var(--border)}
+.vt-btn{padding:5px 13px;border-radius:4px;font-size:12px;cursor:pointer;color:var(--muted);border:none;background:transparent;transition:all .11s;font-family:inherit}
+.vt-btn.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* CATALOGO VIEW */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.cat-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1rem}
+.cat-card-hd{display:flex;align-items:center;gap:10px;margin-bottom:.7rem}
+.cat-card-ico{font-size:24px}
+.cat-card-name{font-size:14px;font-weight:600}
+.cat-gama-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.cat-gama-row:last-child{border-bottom:none}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .2s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-icon">🚴</div>
+      <div class="sb-name">Escola de<br>Ciclismo</div>
+    </div>
+    <div class="sb-season">Época 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Principal</div>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">⬡ Cockpit</a>
+    <div class="nav-sec">Equipa</div>
+    <a class="nav-item" href="atletas_standalone.html">👥 Atletas</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🪪 Staff</a>
+    <div class="nav-sec">Desportivo</div>
+    <a class="nav-item" href="calendario_standalone.html">📅 Calendário</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🏆 Resultados</a>
+    <div class="nav-sec">Gestão</div>
+    <a class="nav-item active" href="#">🚐 Logística</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">💰 Financeira <span class="nav-badge">6</span></a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🤝 Patrocinadores</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">📢 Comunicações</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="ua">JP</div>
+    <div><div style="font-size:12px;font-weight:500">João Paulo Serra</div><div style="font-size:11px;color:var(--muted)">Treinador</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+<div class="topbar">
+  <div>
+    <div class="tb-title">Equipamentos</div>
+    <div class="tb-sub">Logística — Equipamentos de corrida e casual</div>
+  </div>
+  <div class="tb-actions">
+    <div class="view-toggle">
+      <button class="vt-btn active" id="vt-atleta" onclick="setView('atleta')">👤 Por Atleta</button>
+      <button class="vt-btn" id="vt-catalogo" onclick="setView('catalogo')">📋 Catálogo</button>
+      <button class="vt-btn" id="vt-comparativo" onclick="setView('comparativo')">📊 Comparar Fornecedores</button>
+      <button class="vt-btn" id="vt-encomenda" onclick="setView('encomenda')">📦 Encomenda</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- VISTA POR ATLETA -->
+  <div id="view-atleta">
+    <div class="athlete-bar">
+      <div class="athlete-search">
+        <span class="s-ico">🔍</span>
+        <input type="text" placeholder="Pesquisar atleta..." id="athlete-search" oninput="filterAthletes()">
+      </div>
+      <select id="athlete-select" onchange="selectAthlete(this.value)" style="flex:2;min-width:240px"></select>
+    </div>
+
+    <div id="athlete-content"></div>
+  </div>
+
+  <!-- VISTA CATÁLOGO -->
+  <div id="view-catalogo" style="display:none"></div>
+
+  <!-- VISTA COMPARATIVO -->
+  <div id="view-comparativo" style="display:none"></div>
+
+  <!-- VISTA COMPARATIVO -->
+  <div id="view-comparativo" style="display:none"></div>
+
+  <!-- VISTA ENCOMENDA -->
+  <div id="view-encomenda" style="display:none"></div>
+
+</div>
+</div>
+</div>
+
+<!-- MODAL ADICIONAR PEÇA -->
+<div class="modal-overlay" id="modal-add-peca" onclick="if(event.target===this)closeModal('modal-add-peca')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" id="add-peca-title">Adicionar peça</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-add-peca')">✕</button>
+    </div>
+    <div class="modal-body" id="add-peca-body"></div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-add-peca')">Cancelar</button>
+      <button class="btn-primary" onclick="confirmAddPeca()">+ Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CATALOGO - editar peça/gama -->
+<div class="modal-overlay" id="modal-edit-cat" onclick="if(event.target===this)closeModal('modal-edit-cat')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Editar gama</div>
+      <button class="btn-ghost btn-sm" onclick="closeModal('modal-edit-cat')">✕</button>
+    </div>
+    <div class="modal-body" id="edit-cat-body"></div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-edit-cat')">Cancelar</button>
+      <button class="btn-primary" onclick="confirmEditCat()">✓ Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<script>
+// ============================================================
+// DATA.JS — Base de dados de atletas (mock)
+// ============================================================
+
+const DB = {
+  epoca_atual: 2026,
+
+  atletas: [
+    {
+      id: 1,
+      // Dados permanentes
+      nome: 'Afonso Ferreira',
+      apelidos: 'Ferreira Costa',
+      nasc: '2009-06-12',
+      genero: 'Masculino',
+      cc: '12345678 9 ZZ4',
+      cc_validade: '2028-06-12',
+      nif: '234567890',
+      email: 'afonso@email.com',
+      tel: '912 345 678',
+      tel2: '',
+      morada: 'R. das Flores, 12, 2º Dt.',
+      local: 'Cascais',
+      cp: '2750-123',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      // Filiação
+      pai_nome: 'Carlos Ferreira',
+      pai_tel: '913 456 789',
+      pai_email: 'carlos.f@email.com',
+      pai_enc: true,
+      mae_nome: 'Ana Ferreira',
+      mae_tel: '914 567 890',
+      mae_email: 'ana.f@email.com',
+      mae_enc: false,
+      // Tutor
+      tutor_nome: '',
+      tutor_cc: '',
+      tutor_email: '',
+      tutor_tel: '',
+      // Emergência
+      emerg_nome: 'Carlos Ferreira',
+      emerg_tel: '913 456 789',
+      // Escolar
+      escola: 'EB 2,3 de Cascais',
+      curso: '9º ano',
+      // Documentos
+      doc_imagem: true,
+      doc_seguro: true,
+      doc_medico: false,
+      // Épocas
+      epocas: {
+        2025: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2025-00412', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom resultado na volta a Cascais.' },
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00847', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom atleta, muito dedicado.' }
+      }
+    },
+    {
+      id: 2,
+      nome: 'Maria Santos',
+      apelidos: 'Santos Rodrigues',
+      nasc: '2011-03-22',
+      genero: 'Feminino',
+      cc: '23456789 1 AB2',
+      cc_validade: '2029-03-22',
+      nif: '345678901',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'Av. Central, 45',
+      local: 'Sintra',
+      cp: '2710-001',
+      distrito: 'Lisboa',
+      concelho: 'Sintra',
+      pai_nome: 'Rui Santos',
+      pai_tel: '915 234 567',
+      pai_email: 'rui.s@email.com',
+      pai_enc: true,
+      mae_nome: 'Sofia Santos',
+      mae_tel: '916 345 678',
+      mae_email: 'sofia.s@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Rui Santos',
+      emerg_tel: '915 234 567',
+      escola: 'EB1 de Sintra',
+      curso: '6º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2026-00312', mensalidade:'atraso', equipamento:'Jersey S · Calções S · Meias 36', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 3,
+      nome: 'Rui Fonseca',
+      apelidos: 'Fonseca Matos',
+      nasc: '2007-09-05',
+      genero: 'Masculino',
+      cc: '98765432 1 ZZ2',
+      cc_validade: '2027-09-05',
+      nif: '456789012',
+      email: 'rui.f@email.com',
+      tel: '918 567 890',
+      tel2: '',
+      morada: 'R. Nova, 8',
+      local: 'Oeiras',
+      cp: '2780-010',
+      distrito: 'Lisboa',
+      concelho: 'Oeiras',
+      pai_nome: 'António Fonseca',
+      pai_tel: '917 456 789',
+      pai_email: 'ant.f@email.com',
+      pai_enc: true,
+      mae_nome: '',
+      mae_tel: '',
+      mae_email: '',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'António Fonseca',
+      emerg_tel: '917 456 789',
+      escola: '', curso: '',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'cedido', escalao:'sub19', subescalao:'', clube_origem:'GD Oeiras', licenca:'2026-GD-089', mensalidade:'definir', equipamento:'Jersey M · Calções M', estado:'ativo', obs:'Cedido para 3 corridas em 2026.' }
+      }
+    },
+    {
+      id: 4,
+      nome: 'João Silva',
+      apelidos: 'Silva Pereira',
+      nasc: '2010-11-18',
+      genero: 'Masculino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'R. do Pinheiro, 3',
+      local: 'Cascais',
+      cp: '2750-456',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Manuel Silva',
+      pai_tel: '919 678 901',
+      pai_email: 'man.s@email.com',
+      pai_enc: true,
+      mae_nome: 'Lúcia Silva',
+      mae_tel: '910 789 012',
+      mae_email: 'lucia.s@email.com',
+      mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Manuel Silva',
+      emerg_tel: '919 678 901',
+      escola: 'Colégio São José', curso: '7º ano',
+      doc_imagem: true, doc_seguro: false, doc_medico: false,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'', mensalidade:'atraso', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'Licença a renovar com urgência. Seguro em falta.' }
+      }
+    },
+    {
+      id: 5,
+      nome: 'Dinis Dias',
+      apelidos: 'Dias Cunha',
+      nasc: '2016-06-13',
+      genero: 'Masculino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'Tv. das Rosas, 2',
+      local: 'Matos Cheirinhos',
+      cp: '2775-001',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Pedro Dias',
+      pai_tel: '911 890 123',
+      pai_email: 'pedro.d@email.com',
+      pai_enc: true,
+      mae_nome: 'Carla Dias',
+      mae_tel: '912 901 234',
+      mae_email: 'carla.d@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Pedro Dias',
+      emerg_tel: '911 890 123',
+      escola: 'EB1 de Matos Cheirinhos', curso: '4º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub11', clube_origem:'', licenca:'2026-00123', mensalidade:'pago', equipamento:'Jersey XS · Calções XS · Meias 32', estado:'ativo', obs:'Aniversário hoje! 🎂' }
+      }
+    },
+    {
+      id: 6,
+      nome: 'Ana Costa',
+      apelidos: 'Costa Mendes',
+      nasc: '2010-06-15',
+      genero: 'Feminino',
+      cc: '11223344 5 AB6',
+      cc_validade: '2028-06-15',
+      nif: '567890123',
+      email: 'ana.c@email.com',
+      tel: '915 234 567',
+      tel2: '',
+      morada: 'Av. das Flores, 22',
+      local: 'Cascais',
+      cp: '2750-200',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Jorge Costa',
+      pai_tel: '913 012 345',
+      pai_email: 'jorge.c@email.com',
+      pai_enc: false,
+      mae_nome: 'Beatriz Costa',
+      mae_tel: '914 123 456',
+      mae_email: 'bea.c@email.com',
+      mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Beatriz Costa',
+      emerg_tel: '914 123 456',
+      escola: 'ES de Cascais', curso: '7º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2025: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2025-00211', mensalidade:'pago', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'' },
+        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00634', mensalidade:'pago', equipamento:'Jersey S · Calções S · Meias 37', estado:'ativo', obs:'Subiu de escalão em 2026.' }
+      }
+    },
+    {
+      id: 7,
+      nome: 'Marco Silva',
+      apelidos: 'Silva Rodrigues',
+      nasc: '2005-06-14',
+      genero: 'Masculino',
+      cc: '22334455 6 CD7',
+      cc_validade: '2027-06-14',
+      nif: '678901234',
+      email: 'marco.s@email.com',
+      tel: '917 456 789',
+      tel2: '',
+      morada: 'R. do Lago, 7',
+      local: 'Sintra',
+      cp: '2710-100',
+      distrito: 'Lisboa',
+      concelho: 'Sintra',
+      pai_nome: '', pai_tel: '', pai_email: '', pai_enc: false,
+      mae_nome: '', mae_tel: '', mae_email: '', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Clara Silva',
+      emerg_tel: '916 345 678',
+      escola: '', curso: '',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub23', subescalao:'', clube_origem:'', licenca:'2026-00789', mensalidade:'pago', equipamento:'Jersey L · Calções L · Meias 42', estado:'ativo', obs:'Maior de 18 anos.' }
+      }
+    },
+    {
+      id: 8,
+      nome: 'Sofia Lopes',
+      apelidos: 'Lopes Ferreira',
+      nasc: '2012-08-30',
+      genero: 'Feminino',
+      cc: '',
+      cc_validade: '',
+      nif: '',
+      email: '',
+      tel: '',
+      tel2: '',
+      morada: 'R. das Acácias, 15',
+      local: 'Cascais',
+      cp: '2750-300',
+      distrito: 'Lisboa',
+      concelho: 'Cascais',
+      pai_nome: 'Nuno Lopes',
+      pai_tel: '918 567 890',
+      pai_email: 'nuno.l@email.com',
+      pai_enc: true,
+      mae_nome: 'Rita Lopes',
+      mae_tel: '919 678 901',
+      mae_email: 'rita.l@email.com',
+      mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Nuno Lopes',
+      emerg_tel: '918 567 890',
+      escola: 'EB 2,3 de Alcabideche', curso: '5º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: false,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub13', clube_origem:'', licenca:'2026-00456', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 9,
+      nome: 'Tomás Oliveira',
+      apelidos: 'Oliveira Santos',
+      nasc: '2014-01-20',
+      genero: 'Masculino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'R. do Mar, 5', local: 'Cascais', cp: '2750-500',
+      distrito: 'Lisboa', concelho: 'Cascais',
+      pai_nome: 'Carlos Oliveira', pai_tel: '920 123 456', pai_email: 'c.oli@email.com', pai_enc: true,
+      mae_nome: 'Marta Oliveira', mae_tel: '921 234 567', mae_email: 'm.oli@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Carlos Oliveira', emerg_tel: '920 123 456',
+      escola: 'EB1 de Cascais', curso: '3º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00234', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    },
+    {
+      id: 10,
+      nome: 'Inês Martins',
+      apelidos: 'Martins Faria',
+      nasc: '2015-05-10',
+      genero: 'Feminino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'Av. Nova, 33', local: 'Sintra', cp: '2710-200',
+      distrito: 'Lisboa', concelho: 'Sintra',
+      pai_nome: 'Luís Martins', pai_tel: '922 345 678', pai_email: 'l.mar@email.com', pai_enc: false,
+      mae_nome: 'Vera Martins', mae_tel: '923 456 789', mae_email: 'v.mar@email.com', mae_enc: true,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Vera Martins', emerg_tel: '923 456 789',
+      escola: 'EB1 de Sintra', curso: '2º ano',
+      doc_imagem: false, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00567', mensalidade:'isento', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'Autorização de imagem pendente.' }
+      }
+    },
+    {
+      id: 11,
+      nome: 'Rodrigo Pinto',
+      apelidos: 'Pinto Alves',
+      nasc: '2008-04-03',
+      genero: 'Masculino',
+      cc: '33445566 7 EF8', cc_validade: '2026-04-03', nif: '789012345',
+      email: 'r.pinto@email.com', tel: '924 567 890', tel2: '',
+      morada: 'R. das Palmeiras, 18', local: 'Oeiras', cp: '2780-100',
+      distrito: 'Lisboa', concelho: 'Oeiras',
+      pai_nome: 'Fernando Pinto', pai_tel: '925 678 901', pai_email: 'f.pin@email.com', pai_enc: true,
+      mae_nome: 'Helena Pinto', mae_tel: '926 789 012', mae_email: 'h.pin@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Fernando Pinto', emerg_tel: '925 678 901',
+      escola: 'ES de Oeiras', curso: '8º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'sub19', subescalao:'', clube_origem:'', licenca:'2026-00901', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 40', estado:'ativo', obs:'CC a renovar — expirou em Abril.' }
+      }
+    },
+    {
+      id: 12,
+      nome: 'Beatriz Ferreira',
+      apelidos: 'Ferreira Nunes',
+      nasc: '2017-11-25',
+      genero: 'Feminino',
+      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
+      morada: 'R. dos Pinheiros, 9', local: 'Cascais', cp: '2750-600',
+      distrito: 'Lisboa', concelho: 'Cascais',
+      pai_nome: 'Ricardo Ferreira', pai_tel: '927 890 123', pai_email: 'r.fer@email.com', pai_enc: true,
+      mae_nome: 'Sandra Ferreira', mae_tel: '928 901 234', mae_email: 's.fer@email.com', mae_enc: false,
+      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
+      emerg_nome: 'Ricardo Ferreira', emerg_tel: '927 890 123',
+      escola: 'EB1 de Cascais', curso: '2º ano',
+      doc_imagem: true, doc_seguro: true, doc_medico: true,
+      epocas: {
+        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub7', clube_origem:'', licenca:'2026-00678', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
+      }
+    }
+  ],
+
+  // Atletas inativos
+  atletas_inativos: [
+    { id:101, nome:'Pedro Carvalho', nasc:'2008-07-14', escalao:'sub19', tipo:'proprio', estado:'inativo', motivo:'Mudou de clube', epoca_saida: 2025 },
+    { id:102, nome:'Clara Mendes', nasc:'2012-02-28', escalao:'escolas', tipo:'proprio', estado:'inativo', motivo:'Deixou o ciclismo', epoca_saida: 2025 }
+  ],
+
+  getAtletasAtivos() {
+    return this.atletas.filter(a => {
+      const ep = a.epocas[this.epoca_atual];
+      return ep && ep.estado === 'ativo';
+    });
+  },
+
+  getEpocaAtleta(id) {
+    const a = this.atletas.find(x => x.id === id);
+    return a ? (a.epocas[this.epoca_atual] || null) : null;
+  },
+
+  getAniversariosHoje() {
+    const hoje = new Date();
+    return this.atletas.filter(a => {
+      const d = new Date(a.nasc);
+      return d.getMonth() === hoje.getMonth() && d.getDate() === hoje.getDate();
+    });
+  },
+
+  getAniversariosSemana() {
+    const hoje = new Date();
+    const semana = new Date(hoje); semana.setDate(hoje.getDate() + 7);
+    return this.atletas.filter(a => {
+      const d = new Date(a.nasc);
+      const esteAno = new Date(hoje.getFullYear(), d.getMonth(), d.getDate());
+      return esteAno > hoje && esteAno <= semana;
+    });
+  },
+
+  getAlertas() {
+    return this.atletas.filter(a => {
+      const ep = a.epocas[this.epoca_atual];
+      if (!ep || ep.estado !== 'ativo') return false;
+      return ep.mensalidade === 'atraso' || !a.doc_seguro || !a.doc_medico || ep.licenca === '' || ep.licenca === 'renovar';
+    });
+  }
+};
+
+</script>
+<script>
+// ============================================================
+// EQUIPAMENTOS_DB.JS — Catálogo e atribuições
+// ============================================================
+
+const EQUIPAMENTOS_DB = {
+
+  // Fornecedores
+  fornecedores: [
+    { id:'forn1', nome:'SportWear Lda', contacto:'914 000 111', email:'geral@sportwear.pt', notas:'Fornecedor habitual — equipamento de corrida' },
+    { id:'forn2', nome:'CicloEquip', contacto:'915 222 333', email:'vendas@cicloequip.pt', notas:'Preços competitivos em gamas baixas' },
+    { id:'forn3', nome:'ProBike Store', contacto:'916 444 555', email:'encomendas@probike.pt', notas:'Gama alta e fato CRI' },
+  ],
+
+  getFornecedor(id) { return this.fornecedores.find(f=>f.id===id); },
+
+
+  // Catálogo — peças de corrida
+  catalogo_corrida: [
+    { id:'eq_jersey', nome:'Jersey', obrigatorio:true, icone:'👕',
+      gamas:[
+        {id:'baixa', nome:'Gama Baixa', desc:'Escolas', precos:[{fornecedorId:'forn1',preco:18},{fornecedorId:'forn2',preco:16.5}]},
+        {id:'media', nome:'Gama Média', desc:'SUB17/SUB19', precos:[{fornecedorId:'forn1',preco:25},{fornecedorId:'forn2',preco:26.5},{fornecedorId:'forn3',preco:24}]},
+        {id:'alta', nome:'Gama Alta', desc:'SUB23/Elite', precos:[{fornecedorId:'forn1',preco:35},{fornecedorId:'forn3',preco:32}]}
+      ]},
+    { id:'eq_calcao', nome:'Calção', obrigatorio:true, icone:'🩳',
+      gamas:[
+        {id:'baixa', nome:'Gama Baixa', desc:'Escolas', precos:[{fornecedorId:'forn1',preco:20},{fornecedorId:'forn2',preco:18.5}]},
+        {id:'media', nome:'Gama Média', desc:'SUB17/SUB19', precos:[{fornecedorId:'forn1',preco:28},{fornecedorId:'forn2',preco:29},{fornecedorId:'forn3',preco:27}]},
+        {id:'alta', nome:'Gama Alta', desc:'SUB23/Elite', precos:[{fornecedorId:'forn1',preco:40},{fornecedorId:'forn3',preco:38}]}
+      ]},
+    { id:'eq_meias', nome:'Meias', obrigatorio:true, icone:'🧦',
+      gamas:[
+        {id:'unica', nome:'Padrão', desc:'Tamanho único de gama', precos:[{fornecedorId:'forn1',preco:8},{fornecedorId:'forn2',preco:7}]}
+      ]},
+    { id:'eq_luvas', nome:'Luvas', obrigatorio:true, icone:'🧤',
+      gamas:[
+        {id:'baixa', nome:'Gama Baixa', desc:'', precos:[{fornecedorId:'forn1',preco:10},{fornecedorId:'forn2',preco:9}]},
+        {id:'alta', nome:'Gama Alta', desc:'Inverno/Verão', precos:[{fornecedorId:'forn1',preco:18},{fornecedorId:'forn3',preco:17}]}
+      ]},
+    { id:'eq_casaco', nome:'Casaco', obrigatorio:false, icone:'🧥',
+      gamas:[
+        {id:'media', nome:'Gama Média', desc:'Corta-vento', precos:[{fornecedorId:'forn1',preco:45},{fornecedorId:'forn2',preco:48}]},
+        {id:'alta', nome:'Gama Alta', desc:'Impermeável', precos:[{fornecedorId:'forn1',preco:65},{fornecedorId:'forn3',preco:62}]}
+      ]},
+    { id:'eq_colete', nome:'Colete', obrigatorio:false, icone:'🦺',
+      gamas:[
+        {id:'unica', nome:'Padrão', desc:'', precos:[{fornecedorId:'forn1',preco:22},{fornecedorId:'forn2',preco:21}]}
+      ]},
+    { id:'eq_cri', nome:'Fato Contrarrelógio', obrigatorio:false, icone:'🏁',
+      gamas:[
+        {id:'alta', nome:'Gama Alta', desc:'Apenas SUB19+', precos:[{fornecedorId:'forn3',preco:120},{fornecedorId:'forn1',preco:128}]}
+      ]},
+    { id:'eq_chapeu', nome:'Chapéu', obrigatorio:false, icone:'🧢',
+      gamas:[
+        {id:'unica', nome:'Padrão', desc:'', precos:[{fornecedorId:'forn1',preco:12},{fornecedorId:'forn2',preco:11}]}
+      ]}
+  ],
+
+  // Catálogo — roupa casual
+  catalogo_casual: [
+    { id:'cas_calcao', nome:'Calção casual', icone:'🩳',
+      gamas:[
+        {id:'unica', nome:'Padrão', desc:'', precos:[{fornecedorId:'forn1',preco:15},{fornecedorId:'forn2',preco:14}]}
+      ]},
+    { id:'cas_polo', nome:'Polo', icone:'👔',
+      gamas:[
+        {id:'baixa', nome:'Gama Baixa', desc:'', precos:[{fornecedorId:'forn1',preco:16},{fornecedorId:'forn2',preco:15}]},
+        {id:'alta', nome:'Gama Alta', desc:'Bordado', precos:[{fornecedorId:'forn1',preco:24},{fornecedorId:'forn3',preco:23}]}
+      ]},
+    { id:'cas_sweter', nome:'Sweter', icone:'🧶',
+      gamas:[
+        {id:'unica', nome:'Padrão', desc:'', precos:[{fornecedorId:'forn1',preco:32},{fornecedorId:'forn2',preco:30}]}
+      ]},
+    { id:'cas_mochila', nome:'Mochila', icone:'🎒',
+      gamas:[
+        {id:'unica', nome:'Padrão', desc:'', precos:[{fornecedorId:'forn1',preco:28},{fornecedorId:'forn2',preco:27}]}
+      ]}
+  ],
+
+  TAMANHOS: ['XS','S','M','L','XL','XXL'],
+
+  // Atribuições por atleta e época: {atletaId: {corrida:{peçaId:{tamanho,gama,pago}}, casual:{...}}}
+  atribuicoes: {
+    1: { // Afonso Ferreira
+      corrida: {
+        eq_jersey: {tamanho:'M', gama:'media', fornecedorId:'forn1', pago:true},
+        eq_calcao: {tamanho:'M', gama:'media', fornecedorId:'forn1', pago:true},
+        eq_meias:  {tamanho:'M', gama:'unica', fornecedorId:'forn2', pago:true},
+        eq_luvas:  {tamanho:'M', gama:'baixa', fornecedorId:'forn2', pago:false},
+      },
+      casual: {
+        cas_polo: {tamanho:'M', gama:'baixa', fornecedorId:'forn2', pago:true}
+      }
+    },
+    2: { // Maria Santos
+      corrida: {
+        eq_jersey: {tamanho:'S', gama:'baixa', fornecedorId:'forn2', pago:false},
+        eq_calcao: {tamanho:'S', gama:'baixa', fornecedorId:'forn2', pago:false},
+        eq_meias:  {tamanho:'S', gama:'unica', fornecedorId:'forn2', pago:false},
+      },
+      casual: {}
+    },
+    7: { // Marco Silva (SUB23)
+      corrida: {
+        eq_jersey: {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:true},
+        eq_calcao: {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:true},
+        eq_meias:  {tamanho:'L', gama:'unica', fornecedorId:'forn2', pago:true},
+        eq_luvas:  {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:true},
+        eq_casaco: {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:false},
+        eq_cri:    {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:false},
+      },
+      casual: {
+        cas_polo: {tamanho:'L', gama:'alta', fornecedorId:'forn1', pago:true},
+        cas_mochila: {tamanho:'XL', gama:'unica', fornecedorId:'forn1', pago:true}
+      }
+    }
+  },
+
+  // Histórico de tamanhos por atleta (épocas anteriores) - para sugestão
+  historico_tamanhos: {
+    1: {2025: {eq_jersey:'S', eq_calcao:'S'}}, // Afonso cresceu de S para M
+    5: {2025: {eq_jersey:'XS', eq_calcao:'XS'}}, // Dinis
+  },
+
+  getAtribuicao(atletaId, secao, pecaId) {
+    return this.atribuicoes[atletaId]?.[secao]?.[pecaId] || null;
+  },
+
+  setAtribuicao(atletaId, secao, pecaId, dados) {
+    if(!this.atribuicoes[atletaId]) this.atribuicoes[atletaId] = {corrida:{}, casual:{}};
+    if(!this.atribuicoes[atletaId][secao]) this.atribuicoes[atletaId][secao] = {};
+    if(dados === null) {
+      delete this.atribuicoes[atletaId][secao][pecaId];
+    } else {
+      this.atribuicoes[atletaId][secao][pecaId] = dados;
+    }
+  },
+
+  getPeca(secao, pecaId) {
+    const cat = secao === 'corrida' ? this.catalogo_corrida : this.catalogo_casual;
+    return cat.find(p=>p.id===pecaId);
+  },
+
+  getGama(secao, pecaId, gamaId) {
+    const peca = this.getPeca(secao, pecaId);
+    return peca?.gamas.find(g=>g.id===gamaId);
+  },
+
+  // Preço de uma gama num fornecedor específico
+  getPreco(gama, fornecedorId) {
+    if(!gama || !gama.precos) return 0;
+    const p = gama.precos.find(x=>x.fornecedorId===fornecedorId);
+    return p ? p.preco : (gama.precos[0]?.preco || 0);
+  },
+
+  // Melhor preço (mais barato) de uma gama, com fornecedor
+  getMelhorPreco(gama) {
+    if(!gama || !gama.precos || !gama.precos.length) return null;
+    return gama.precos.reduce((min,p)=>p.preco<min.preco?p:min, gama.precos[0]);
+  },
+
+  // Lista de fornecedores que vendem esta gama, ordenada por preço
+  getFornecedoresGama(gama) {
+    if(!gama || !gama.precos) return [];
+    return [...gama.precos].sort((a,b)=>a.preco-b.preco);
+  },
+
+  // Preço de uma gama num fornecedor específico
+  getPreco(gama, fornecedorId) {
+    if(!gama || !gama.precos) return 0;
+    const p = gama.precos.find(x=>x.fornecedorId===fornecedorId);
+    return p ? p.preco : (gama.precos[0]?.preco || 0);
+  },
+
+  // Melhor preço (mais barato) de uma gama, com fornecedor
+  getMelhorPreco(gama) {
+    if(!gama || !gama.precos || !gama.precos.length) return null;
+    return gama.precos.reduce((min,p)=>p.preco<min.preco?p:min, gama.precos[0]);
+  },
+
+  // Lista de fornecedores que vendem esta gama, ordenada por preço
+  getFornecedoresGama(gama) {
+    if(!gama || !gama.precos) return [];
+    return [...gama.precos].sort((a,b)=>a.preco-b.preco);
+  },
+
+  sugerirTamanho(atletaId, pecaId) {
+    const hist = this.historico_tamanhos[atletaId];
+    if(!hist) return null;
+    const anos = Object.keys(hist).sort((a,b)=>b-a);
+    for(const ano of anos) {
+      if(hist[ano][pecaId]) return hist[ano][pecaId];
+    }
+    return null;
+  },
+
+  totalAtleta(atletaId) {
+    const atr = this.atribuicoes[atletaId];
+    if(!atr) return {total:0, pago:0, pendente:0, itens:0};
+    let total=0, pago=0, itens=0;
+    ['corrida','casual'].forEach(sec=>{
+      Object.entries(atr[sec]||{}).forEach(([pecaId,d])=>{
+        const gama = this.getGama(sec, pecaId, d.gama);
+        if(gama) {
+          const preco = this.getPreco(gama, d.fornecedorId);
+          total += preco;
+          if(d.pago) pago += preco;
+          itens++;
+        }
+      });
+    });
+    return {total, pago, pendente:total-pago, itens};
+  },
+
+  // Sugestão de gama por escalão
+  gamaSugeridaEscalao(escalao) {
+    if(escalao==='escolas') return 'baixa';
+    if(escalao==='sub17'||escalao==='sub19') return 'media';
+    return 'alta';
+  }
+};
+
+</script>
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let CURRENT_ATHLETE = 1;
+let ADD_PECA_CONTEXT = null; // {secao}
+let EDIT_CAT_CONTEXT = null; // {secao, pecaId}
+
+// ============================================================
+// UTILS
+// ============================================================
+function initials(nome) {
+  return nome.split(' ').filter((_,i,a)=>i===0||i===a.length-1).map(n=>n[0]).join('').toUpperCase();
+}
+function avColor(escalao) {
+  if(escalao==='sub23'||escalao==='paraciclismo') return 'amber';
+  if(escalao==='sub17'||escalao==='sub19') return 'blue';
+  return 'teal';
+}
+function escalaoFull(ep) {
+  if(!ep) return '—';
+  if(ep.escalao==='escolas') return 'Escolas' + (ep.subescalao?' / '+ep.subescalao.toUpperCase():'');
+  return ep.escalao.toUpperCase();
+}
+function fmtEur(v) { return v.toFixed(2).replace('.',',') + '€'; }
+
+// ============================================================
+// SETUP - athlete selector
+// ============================================================
+function populateAthleteSelect() {
+  const sel = document.getElementById('athlete-select');
+  const ativos = DB.atletas.filter(a=>{const e=a.epocas[DB.epoca_atual];return e&&e.estado==='ativo'});
+  sel.innerHTML = ativos.map(a=>{
+    const ep = a.epocas[DB.epoca_atual];
+    return `<option value="${a.id}">${a.nome} — ${escalaoFull(ep)}</option>`;
+  }).join('');
+  sel.value = CURRENT_ATHLETE;
+}
+
+function filterAthletes() {
+  const q = document.getElementById('athlete-search').value.toLowerCase();
+  const sel = document.getElementById('athlete-select');
+  const ativos = DB.atletas.filter(a=>{const e=a.epocas[DB.epoca_atual];return e&&e.estado==='ativo'});
+  const filtered = q ? ativos.filter(a=>a.nome.toLowerCase().includes(q)) : ativos;
+  sel.innerHTML = filtered.map(a=>{
+    const ep = a.epocas[DB.epoca_atual];
+    return `<option value="${a.id}">${a.nome} — ${escalaoFull(ep)}</option>`;
+  }).join('');
+  if(filtered.length) { CURRENT_ATHLETE = filtered[0].id; sel.value = CURRENT_ATHLETE; renderAthleteContent(); }
+}
+
+function selectAthlete(id) {
+  CURRENT_ATHLETE = parseInt(id);
+  renderAthleteContent();
+}
+
+// ============================================================
+// FIGURA DO CICLISTA (SVG)
+// ============================================================
+function renderFigura() {
+  const a = DB.atletas.find(x=>x.id===CURRENT_ATHLETE);
+  const ep = a.epocas[DB.epoca_atual];
+  const atr = EQUIPAMENTOS_DB.atribuicoes[CURRENT_ATHLETE] || {corrida:{}, casual:{}};
+
+  const has = (pecaId) => !!atr.corrida?.[pecaId];
+
+  // Zonas clicáveis com cores conforme tem item ou não
+  const colorZone = (pecaId) => has(pecaId) ? 'var(--blue-bg)' : 'var(--bg)';
+  const strokeZone = (pecaId) => has(pecaId) ? 'var(--blue)' : 'var(--border2)';
+
+  return `
+  <div class="figura-card">
+    <div class="figura-title">Equipamento de Corrida</div>
+    <svg class="figura-svg" viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">
+      <!-- Cabeça -->
+      <circle class="fig-zone" cx="100" cy="35" r="22" fill="${colorZone('eq_chapeu')}" stroke="${strokeZone('eq_chapeu')}" stroke-width="2" onclick="goToPeca('corrida','eq_chapeu')"/>
+      <text class="fig-label" x="100" y="35" dy="4">🧢</text>
+
+      <!-- Jersey (tronco) -->
+      <rect class="fig-zone" x="65" y="62" width="70" height="85" rx="10" fill="${colorZone('eq_jersey')}" stroke="${strokeZone('eq_jersey')}" stroke-width="2" onclick="goToPeca('corrida','eq_jersey')"/>
+      <text class="fig-label" x="100" y="105" dy="4" style="font-size:11px">👕 Jersey</text>
+
+      <!-- Colete (sobre o jersey, mais estreito) -->
+      <rect class="fig-zone" x="72" y="68" width="56" height="60" rx="8" fill="none" stroke="${strokeZone('eq_colete')}" stroke-width="2" stroke-dasharray="${has('eq_colete')?'0':'4 3'}" onclick="goToPeca('corrida','eq_colete')"/>
+      <text class="fig-label" x="100" y="135" dy="0" style="font-size:9px">🦺</text>
+
+      <!-- Braços / Luvas -->
+      <rect class="fig-zone" x="40" y="65" width="22" height="55" rx="8" fill="${colorZone('eq_luvas')}" stroke="${strokeZone('eq_luvas')}" stroke-width="2" onclick="goToPeca('corrida','eq_luvas')"/>
+      <rect class="fig-zone" x="138" y="65" width="22" height="55" rx="8" fill="${colorZone('eq_luvas')}" stroke="${strokeZone('eq_luvas')}" stroke-width="2" onclick="goToPeca('corrida','eq_luvas')"/>
+      <text class="fig-label" x="51" y="95" dy="4">🧤</text>
+      <text class="fig-label" x="149" y="95" dy="4">🧤</text>
+
+      <!-- Calção -->
+      <path class="fig-zone" d="M 65 147 L 135 147 L 130 195 L 105 195 L 100 175 L 95 195 L 70 195 Z" fill="${colorZone('eq_calcao')}" stroke="${strokeZone('eq_calcao')}" stroke-width="2" onclick="goToPeca('corrida','eq_calcao')"/>
+      <text class="fig-label" x="100" y="172" dy="4" style="font-size:11px">🩳 Calção</text>
+
+      <!-- Pernas / Meias -->
+      <rect class="fig-zone" x="75" y="195" width="20" height="65" rx="6" fill="${colorZone('eq_meias')}" stroke="${strokeZone('eq_meias')}" stroke-width="2" onclick="goToPeca('corrida','eq_meias')"/>
+      <rect class="fig-zone" x="105" y="195" width="20" height="65" rx="6" fill="${colorZone('eq_meias')}" stroke="${strokeZone('eq_meias')}" stroke-width="2" onclick="goToPeca('corrida','eq_meias')"/>
+      <text class="fig-label" x="85" y="232" dy="4">🧦</text>
+      <text class="fig-label" x="115" y="232" dy="4">🧦</text>
+
+      <!-- Casaco (overlay sobre tronco e braços, dashed) -->
+      <rect class="fig-zone" x="38" y="60" width="124" height="92" rx="12" fill="none" stroke="${strokeZone('eq_casaco')}" stroke-width="2" stroke-dasharray="${has('eq_casaco')?'0':'5 4'}" onclick="goToPeca('corrida','eq_casaco')" opacity="0.6"/>
+      <text class="fig-label" x="100" y="62" dy="-4" style="font-size:9px">🧥 Casaco</text>
+
+      <!-- Fato CRI (overlay total) -->
+      <rect class="fig-zone" x="58" y="58" width="84" height="208" rx="14" fill="none" stroke="${strokeZone('eq_cri')}" stroke-width="2" stroke-dasharray="${has('eq_cri')?'0':'3 5'}" onclick="goToPeca('corrida','eq_cri')" opacity="0.5"/>
+      <text class="fig-label" x="100" y="275" dy="0" style="font-size:9px">🏁 CRI</text>
+
+      <!-- Sapatos -->
+      <ellipse cx="85" cy="270" rx="15" ry="8" fill="var(--gray-bg)" stroke="var(--border2)" stroke-width="1"/>
+      <ellipse cx="115" cy="270" rx="15" ry="8" fill="var(--gray-bg)" stroke="var(--border2)" stroke-width="1"/>
+    </svg>
+    <div style="text-align:center;font-size:11px;color:var(--hint);margin-top:.5rem">Clica numa zona para ir à peça</div>
+
+    <div class="figura-total">
+      <div class="ft-val" id="fig-total">—</div>
+      <div class="ft-lbl">Total equipamento ${DB.epoca_atual}</div>
+      <div class="ft-breakdown">
+        <div class="ft-item"><div class="ft-item-val" style="color:var(--green)" id="fig-pago">—</div><div class="ft-item-lbl">Pago</div></div>
+        <div class="ft-item"><div class="ft-item-val" style="color:var(--amber)" id="fig-pendente">—</div><div class="ft-item-lbl">Pendente</div></div>
+        <div class="ft-item"><div class="ft-item-val" id="fig-itens">—</div><div class="ft-item-lbl">Itens</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function goToPeca(secao, pecaId) {
+  const row = document.getElementById(`row-${secao}-${pecaId}`);
+  if(row) {
+    row.scrollIntoView({behavior:'smooth', block:'center'});
+    row.style.background = 'var(--blue-bg)';
+    setTimeout(()=>row.style.background='', 800);
+  } else {
+    // peça não está na tabela - abrir modal para adicionar
+    openAddPecaModal('corrida', pecaId);
+  }
+}
+
+// ============================================================
+// TABELA DE EQUIPAMENTO
+// ============================================================
+function renderTabelaSecao(secao, titulo, icone) {
+  const a = DB.atletas.find(x=>x.id===CURRENT_ATHLETE);
+  const ep = a.epocas[DB.epoca_atual];
+  const catalogo = secao==='corrida' ? EQUIPAMENTOS_DB.catalogo_corrida : EQUIPAMENTOS_DB.catalogo_casual;
+  const atr = EQUIPAMENTOS_DB.atribuicoes[CURRENT_ATHLETE]?.[secao] || {};
+
+  const pecasAtribuidas = Object.keys(atr);
+  const pecasDisponiveis = catalogo.filter(p=>!pecasAtribuidas.includes(p.id));
+
+  let rows = '';
+  if(!pecasAtribuidas.length) {
+    rows = `<tr class="row-empty"><td colspan="5">Nenhuma peça atribuída ainda</td></tr>`;
+  } else {
+    pecasAtribuidas.forEach(pecaId=>{
+      const peca = EQUIPAMENTOS_DB.getPeca(secao, pecaId);
+      if(!peca) return;
+      const d = atr[pecaId];
+      const gama = EQUIPAMENTOS_DB.getGama(secao, pecaId, d.gama);
+      const sugerido = EQUIPAMENTOS_DB.sugerirTamanho(CURRENT_ATHLETE, pecaId);
+
+      const precoAtual = EQUIPAMENTOS_DB.getPreco(gama, d.fornecedorId);
+      const melhor = EQUIPAMENTOS_DB.getMelhorPreco(gama);
+      const isMelhor = melhor && d.fornecedorId === melhor.fornecedorId;
+      const fornAtual = EQUIPAMENTOS_DB.getFornecedor(d.fornecedorId);
+
+      rows += `<tr id="row-${secao}-${pecaId}">
+        <td><div class="peca-name"><span class="peca-ico">${peca.icone}</span>${peca.nome}${peca.obrigatorio?' <span class=\"badge b-danger\" style=\"font-size:9px\">obrig.</span>':''}</div></td>
+        <td><div class="size-pills">
+          ${EQUIPAMENTOS_DB.TAMANHOS.map(t=>`<div class="size-pill${d.tamanho===t?' active':''}${sugerido===t&&d.tamanho!==t?' suggested':''}" onclick="setTamanho('${secao}','${pecaId}','${t}')" title="${sugerido===t?'Sugerido (ano anterior)':''}">${t}</div>`).join('')}
+        </div></td>
+        <td><div class="gama-select">
+          ${peca.gamas.map(g=>`<div class="gama-pill gama-${g.id}${d.gama===g.id?' active':''}" onclick="setGama('${secao}','${pecaId}','${g.id}')" title="${g.desc||''}">${g.nome.replace('Gama ','')}</div>`).join('')}
+        </div></td>
+        <td>
+          <select class="fi" style="font-size:11px;padding:3px 6px" onchange="setFornecedor('${secao}','${pecaId}',this.value)">
+            ${EQUIPAMENTOS_DB.getFornecedoresGama(gama).map(p=>{
+              const f = EQUIPAMENTOS_DB.getFornecedor(p.fornecedorId);
+              const isM = melhor && p.fornecedorId===melhor.fornecedorId;
+              return `<option value="${p.fornecedorId}" ${d.fornecedorId===p.fornecedorId?'selected':''}>${f.nome} — ${fmtEur(p.preco)}${isM?' 🏆':''}</option>`;
+            }).join('')}
+          </select>
+        </td>
+        <td style="text-align:right"><strong style="${isMelhor?'color:var(--green)':''}">${fmtEur(precoAtual)}</strong>${isMelhor?' <span title="Melhor preço" style="font-size:11px">🏆</span>':''}</td>
+        <td style="text-align:center"><div class="pay-toggle${d.pago?' paid':''}" onclick="togglePago('${secao}','${pecaId}')" title="${d.pago?'Pago':'Marcar como pago'}">${d.pago?'✓':''}</div></td>
+        <td style="text-align:right"><span class="remove-btn" onclick="removePeca('${secao}','${pecaId}')" title="Remover">✕</span></td>
+      </tr>`;
+    });
+  }
+
+  return `
+  <div class="eq-section">
+    <div class="eq-section-hd">
+      <div class="eq-section-title">${icone} ${titulo}</div>
+      <button class="btn-sm" onclick="openAddPecaModal('${secao}')" ${!pecasDisponiveis.length?'disabled style="opacity:.4;cursor:not-allowed"':''}>+ Adicionar peça</button>
+    </div>
+    <table>
+      <colgroup><col style="width:18%"><col style="width:22%"><col style="width:14%"><col style="width:22%"><col style="width:10%"><col style="width:6%"><col style="width:6%"></colgroup>
+      <thead><tr><th>Peça</th><th>Tamanho</th><th>Gama</th><th>Fornecedor</th><th style="text-align:right">Preço</th><th style="text-align:center">Pago</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+// ============================================================
+// RENDER ATLETA CONTENT
+// ============================================================
+function renderAthleteContent() {
+  const a = DB.atletas.find(x=>x.id===CURRENT_ATHLETE);
+  if(!a) return;
+  const ep = a.epocas[DB.epoca_atual];
+  const gamaSugerida = EQUIPAMENTOS_DB.gamaSugeridaEscalao(ep.escalao);
+  const gamaSugeridaNome = {baixa:'Baixa',media:'Média',alta:'Alta'}[gamaSugerida];
+
+  const html = `
+  <div class="sugestao-box">
+    💡 Para o escalão <strong>${escalaoFull(ep)}</strong>, a gama habitual é <strong>${gamaSugeridaNome}</strong> — mas a escolha final é sempre do treinador, por peça.
+  </div>
+  <div class="eq-layout">
+    <div>${renderFigura()}</div>
+    <div>
+      ${renderTabelaSecao('corrida', 'Equipamento de Corrida', '🚴')}
+      ${renderTabelaSecao('casual', 'Roupa Casual', '🎒')}
+    </div>
+  </div>`;
+
+  document.getElementById('athlete-content').innerHTML = html;
+  updateFiguraTotal();
+}
+
+function updateFiguraTotal() {
+  const t = EQUIPAMENTOS_DB.totalAtleta(CURRENT_ATHLETE);
+  const figTotal = document.getElementById('fig-total');
+  if(!figTotal) return;
+  figTotal.textContent = fmtEur(t.total);
+  document.getElementById('fig-pago').textContent = fmtEur(t.pago);
+  document.getElementById('fig-pendente').textContent = fmtEur(t.pendente);
+  document.getElementById('fig-itens').textContent = t.itens;
+}
+
+// ============================================================
+// AÇÕES TABELA
+// ============================================================
+function setTamanho(secao, pecaId, tamanho) {
+  const atr = EQUIPAMENTOS_DB.atribuicoes[CURRENT_ATHLETE][secao][pecaId];
+  atr.tamanho = tamanho;
+  renderAthleteContent();
+}
+
+function setGama(secao, pecaId, gamaId) {
+  const atr = EQUIPAMENTOS_DB.atribuicoes[CURRENT_ATHLETE][secao][pecaId];
+  atr.gama = gamaId;
+  // ao mudar de gama, escolher automaticamente o fornecedor mais barato dessa gama
+  const novaGama = EQUIPAMENTOS_DB.getGama(secao, pecaId, gamaId);
+  const melhor = EQUIPAMENTOS_DB.getMelhorPreco(novaGama);
+  if(melhor) atr.fornecedorId = melhor.fornecedorId;
+  renderAthleteContent();
+  toast('Gama atualizada','ok');
+}
+
+function setFornecedor(secao, pecaId, fornecedorId) {
+  const atr = EQUIPAMENTOS_DB.atribuicoes[CURRENT_ATHLETE][secao][pecaId];
+  atr.fornecedorId = fornecedorId;
+  renderAthleteContent();
+  const f = EQUIPAMENTOS_DB.getFornecedor(fornecedorId);
+  toast('Fornecedor: '+f.nome,'ok');
+}
+
+function togglePago(secao, pecaId) {
+  const atr = EQUIPAMENTOS_DB.atribuicoes[CURRENT_ATHLETE][secao][pecaId];
+  atr.pago = !atr.pago;
+  renderAthleteContent();
+  toast(atr.pago?'Marcado como pago':'Marcado como pendente', atr.pago?'ok':'');
+}
+
+function removePeca(secao, pecaId) {
+  EQUIPAMENTOS_DB.setAtribuicao(CURRENT_ATHLETE, secao, pecaId, null);
+  renderAthleteContent();
+  toast('Peça removida');
+}
+
+// ============================================================
+// MODAL ADICIONAR PEÇA
+// ============================================================
+function openAddPecaModal(secao, pecaIdPreSel) {
+  const a = DB.atletas.find(x=>x.id===CURRENT_ATHLETE);
+  const ep = a.epocas[DB.epoca_atual];
+  const catalogo = secao==='corrida' ? EQUIPAMENTOS_DB.catalogo_corrida : EQUIPAMENTOS_DB.catalogo_casual;
+  const atr = EQUIPAMENTOS_DB.atribuicoes[CURRENT_ATHLETE]?.[secao] || {};
+  const disponiveis = catalogo.filter(p=>!atr[p.id]);
+
+  if(!disponiveis.length) { toast('Todas as peças já foram atribuídas'); return; }
+
+  ADD_PECA_CONTEXT = {secao};
+  document.getElementById('add-peca-title').textContent = secao==='corrida' ? 'Adicionar peça de corrida' : 'Adicionar roupa casual';
+
+  const gamaSugerida = EQUIPAMENTOS_DB.gamaSugeridaEscalao(ep.escalao);
+
+  document.getElementById('add-peca-body').innerHTML = `
+    <div class="fg">
+      <label class="fl2">Peça</label>
+      <select class="fi" id="add-peca-select" onchange="updateAddPecaPreview()">
+        ${disponiveis.map(p=>`<option value="${p.id}" ${p.id===pecaIdPreSel?'selected':''}>${p.icone} ${p.nome}${p.obrigatorio?' (obrigatório)':''}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fg">
+      <label class="fl2">Tamanho</label>
+      <div class="size-pills" id="add-peca-tamanhos">
+        ${EQUIPAMENTOS_DB.TAMANHOS.map((t,i)=>`<div class="size-pill${i===2?' active':''}" data-tamanho="${t}" onclick="selectAddTamanho(this)">${t}</div>`).join('')}
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl2">Gama</label>
+      <div class="gama-select" id="add-peca-gamas"></div>
+    </div>
+    <div class="fg">
+      <label class="fl2">Fornecedor</label>
+      <select class="fi" id="add-peca-fornecedor"></select>
+    </div>
+    <div class="info-box ib-blue" id="add-peca-info"></div>
+  `;
+  updateAddPecaPreview();
+  openModal('modal-add-peca');
+}
+
+function selectAddTamanho(el) {
+  el.parentElement.querySelectorAll('.size-pill').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function updateAddPecaPreview() {
+  const pecaId = document.getElementById('add-peca-select').value;
+  const peca = EQUIPAMENTOS_DB.getPeca(ADD_PECA_CONTEXT.secao, pecaId);
+  const a = DB.atletas.find(x=>x.id===CURRENT_ATHLETE);
+  const ep = a.epocas[DB.epoca_atual];
+  const gamaSugerida = EQUIPAMENTOS_DB.gamaSugeridaEscalao(ep.escalao);
+
+  const gamasHtml = peca.gamas.map((g,i)=>{
+    const isSug = g.id===gamaSugerida || (i===0);
+    return `<div class="gama-pill gama-${g.id}${isSug?' active':''}" data-gama="${g.id}" onclick="selectAddGama(this)" title="${g.desc||''}">${g.nome.replace('Gama ','')}</div>`;
+  }).join('');
+  document.getElementById('add-peca-gamas').innerHTML = gamasHtml;
+  updateAddPecaFornecedores();
+
+  // sugestão de tamanho
+  const sugerido = EQUIPAMENTOS_DB.sugerirTamanho(CURRENT_ATHLETE, pecaId);
+  const info = document.getElementById('add-peca-info');
+  if(sugerido) {
+    info.innerHTML = `💡 No ano anterior usou tamanho <strong>${sugerido}</strong> para esta peça.`;
+    info.style.display='block';
+    // pré-selecionar
+    document.querySelectorAll('#add-peca-tamanhos .size-pill').forEach(s=>{
+      s.classList.toggle('active', s.dataset.tamanho===sugerido);
+    });
+  } else {
+    info.style.display='none';
+  }
+}
+
+function selectAddGama(el) {
+  el.parentElement.querySelectorAll('.gama-pill').forEach(g=>g.classList.remove('active'));
+  el.classList.add('active');
+  updateAddPecaFornecedores();
+}
+
+function updateAddPecaFornecedores() {
+  const pecaId = document.getElementById('add-peca-select').value;
+  const gamaEl = document.querySelector('#add-peca-gamas .gama-pill.active');
+  if(!gamaEl) return;
+  const gama = EQUIPAMENTOS_DB.getGama(ADD_PECA_CONTEXT.secao, pecaId, gamaEl.dataset.gama);
+  const fornecedores = EQUIPAMENTOS_DB.getFornecedoresGama(gama);
+  const melhor = EQUIPAMENTOS_DB.getMelhorPreco(gama);
+  document.getElementById('add-peca-fornecedor').innerHTML = fornecedores.map(p=>{
+    const f = EQUIPAMENTOS_DB.getFornecedor(p.fornecedorId);
+    const isM = melhor && p.fornecedorId===melhor.fornecedorId;
+    return `<option value="${p.fornecedorId}">${f.nome} — ${fmtEur(p.preco)}${isM?' 🏆 mais barato':''}</option>`;
+  }).join('');
+}
+
+function confirmAddPeca() {
+  const pecaId = document.getElementById('add-peca-select').value;
+  const tamanhoEl = document.querySelector('#add-peca-tamanhos .size-pill.active');
+  const gamaEl = document.querySelector('#add-peca-gamas .gama-pill.active');
+  const fornecedorId = document.getElementById('add-peca-fornecedor').value;
+  if(!tamanhoEl || !gamaEl) { toast('Seleciona tamanho e gama'); return; }
+
+  EQUIPAMENTOS_DB.setAtribuicao(CURRENT_ATHLETE, ADD_PECA_CONTEXT.secao, pecaId, {
+    tamanho: tamanhoEl.dataset.tamanho,
+    gama: gamaEl.dataset.gama,
+    fornecedorId: fornecedorId,
+    pago: false
+  });
+  closeModal('modal-add-peca');
+  renderAthleteContent();
+  toast('Peça adicionada!','ok');
+}
+
+// ============================================================
+// VISTA CATÁLOGO
+// ============================================================
+function renderCatalogo() {
+  const html = `
+  <div class="info-box ib-blue" style="margin-bottom:1rem">⚙️ Gestão do catálogo — define as gamas e preços disponíveis para cada peça. Estas opções aparecem para todos os atletas.</div>
+
+  <div class="eq-section">
+    <div class="eq-section-hd"><div class="eq-section-title">🚴 Equipamento de Corrida</div></div>
+    <div style="padding:1rem"><div class="cat-grid">
+      ${EQUIPAMENTOS_DB.catalogo_corrida.map(p=>`
+        <div class="cat-card">
+          <div class="cat-card-hd">
+            <div class="cat-card-ico">${p.icone}</div>
+            <div style="flex:1">
+              <div class="cat-card-name">${p.nome}</div>
+              <div style="font-size:11px;color:var(--muted)">${p.obrigatorio?'<span class="badge b-danger">Obrigatório</span>':'<span class="badge b-gray">Opcional</span>'}</div>
+            </div>
+          </div>
+          ${p.gamas.map(g=>{
+            const melhor = EQUIPAMENTOS_DB.getMelhorPreco(g);
+            const fornsTxt = EQUIPAMENTOS_DB.getFornecedoresGama(g).map(x=>EQUIPAMENTOS_DB.getFornecedor(x.fornecedorId).nome.split(' ')[0]+': '+fmtEur(x.preco)).join(' · ');
+            return `
+            <div class="cat-gama-row" style="flex-direction:column;align-items:flex-start;gap:2px">
+              <div style="display:flex;justify-content:space-between;width:100%">
+                <div>${g.nome}${g.desc?` <span style="color:var(--hint)">— ${g.desc}</span>`:''}</div>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <strong style="color:var(--green)">${fmtEur(melhor?melhor.preco:0)}</strong>
+                  <span class="btn-ghost btn-sm" style="padding:2px 6px;cursor:pointer" onclick="openEditCat('corrida','${p.id}','${g.id}')">✏️</span>
+                </div>
+              </div>
+              <div style="font-size:10px;color:var(--hint)">${fornsTxt}</div>
+            </div>`;}).join('')}
+          <div style="text-align:right;margin-top:.5rem"><button class="btn-sm" onclick="toast('Adicionar nova gama em breve')">+ gama</button></div>
+        </div>`).join('')}
+    </div></div>
+  </div>
+
+  <div class="eq-section">
+    <div class="eq-section-hd"><div class="eq-section-title">🎒 Roupa Casual</div></div>
+    <div style="padding:1rem"><div class="cat-grid">
+      ${EQUIPAMENTOS_DB.catalogo_casual.map(p=>`
+        <div class="cat-card">
+          <div class="cat-card-hd">
+            <div class="cat-card-ico">${p.icone}</div>
+            <div style="flex:1"><div class="cat-card-name">${p.nome}</div></div>
+          </div>
+          ${p.gamas.map(g=>{
+            const melhor = EQUIPAMENTOS_DB.getMelhorPreco(g);
+            const fornsTxt = EQUIPAMENTOS_DB.getFornecedoresGama(g).map(x=>EQUIPAMENTOS_DB.getFornecedor(x.fornecedorId).nome.split(' ')[0]+': '+fmtEur(x.preco)).join(' · ');
+            return `
+            <div class="cat-gama-row" style="flex-direction:column;align-items:flex-start;gap:2px">
+              <div style="display:flex;justify-content:space-between;width:100%">
+                <div>${g.nome}${g.desc?` <span style="color:var(--hint)">— ${g.desc}</span>`:''}</div>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <strong style="color:var(--green)">${fmtEur(melhor?melhor.preco:0)}</strong>
+                  <span class="btn-ghost btn-sm" style="padding:2px 6px;cursor:pointer" onclick="openEditCat('casual','${p.id}','${g.id}')">✏️</span>
+                </div>
+              </div>
+              <div style="font-size:10px;color:var(--hint)">${fornsTxt}</div>
+            </div>`;}).join('')}
+          <div style="text-align:right;margin-top:.5rem"><button class="btn-sm" onclick="toast('Adicionar nova gama em breve')">+ gama</button></div>
+        </div>`).join('')}
+    </div></div>
+  </div>`;
+
+  document.getElementById('view-catalogo').innerHTML = html;
+}
+
+function openEditCat(secao, pecaId, gamaId) {
+  const gama = EQUIPAMENTOS_DB.getGama(secao, pecaId, gamaId);
+  const peca = EQUIPAMENTOS_DB.getPeca(secao, pecaId);
+  EDIT_CAT_CONTEXT = {secao, pecaId, gamaId};
+
+  // Mapa fornecedorId -> preço atual (ou vazio)
+  const precosMap = {};
+  gama.precos.forEach(p=>precosMap[p.fornecedorId]=p.preco);
+
+  document.getElementById('edit-cat-body').innerHTML = `
+    <div class="fg"><label class="fl2">Peça</label><input class="fi" value="${peca.icone} ${peca.nome}" disabled></div>
+    <div class="fg"><label class="fl2">Nome da gama</label><input class="fi" id="edit-cat-nome" value="${gama.nome}"></div>
+    <div class="fg"><label class="fl2">Descrição</label><input class="fi" id="edit-cat-desc" value="${gama.desc||''}" placeholder="Ex: Escolas, SUB17..."></div>
+    <div class="fg">
+      <label class="fl2">Preços por fornecedor (€) — deixa vazio se não vende esta peça</label>
+      ${EQUIPAMENTOS_DB.fornecedores.map(f=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div style="flex:1;font-size:13px">${f.nome}</div>
+          <input class="fi" type="number" step="0.5" style="width:100px" id="edit-cat-preco-${f.id}" value="${precosMap[f.id] !== undefined ? precosMap[f.id] : ''}" placeholder="—">
+        </div>`).join('')}
+    </div>
+  `;
+  openModal('modal-edit-cat');
+}
+
+function confirmEditCat() {
+  const {secao, pecaId, gamaId} = EDIT_CAT_CONTEXT;
+  const gama = EQUIPAMENTOS_DB.getGama(secao, pecaId, gamaId);
+  gama.nome = document.getElementById('edit-cat-nome').value;
+  gama.desc = document.getElementById('edit-cat-desc').value;
+
+  const novosPrecos = [];
+  EQUIPAMENTOS_DB.fornecedores.forEach(f=>{
+    const val = document.getElementById('edit-cat-preco-'+f.id).value;
+    if(val !== '') novosPrecos.push({fornecedorId:f.id, preco:parseFloat(val)||0});
+  });
+  gama.precos = novosPrecos;
+
+  closeModal('modal-edit-cat');
+  renderCatalogo();
+  toast('Gama atualizada!','ok');
+}
+
+
+// ============================================================
+// VISTA MAPA COMPARATIVO DE FORNECEDORES
+// ============================================================
+function renderComparativo() {
+  function tabelaCatalogo(catalogo, titulo, icone, secaoId) {
+    let rows = '';
+    catalogo.forEach(peca=>{
+      peca.gamas.forEach(gama=>{
+        const fornecedores = EQUIPAMENTOS_DB.getFornecedoresGama(gama);
+        const melhor = EQUIPAMENTOS_DB.getMelhorPreco(gama);
+        rows += `<tr>
+          <td><div class="peca-name"><span class="peca-ico">${peca.icone}</span>${peca.nome}</div></td>
+          <td>${gama.nome}${gama.desc?` <span style="color:var(--hint);font-size:11px">— ${gama.desc}</span>`:''}</td>
+          ${EQUIPAMENTOS_DB.fornecedores.map(f=>{
+            const p = fornecedores.find(x=>x.fornecedorId===f.id);
+            if(!p) return `<td style="text-align:center;color:var(--hint)">—</td>`;
+            const isMelhor = melhor && p.fornecedorId===melhor.fornecedorId;
+            return `<td style="text-align:center;${isMelhor?'color:var(--green);font-weight:700;background:var(--green-bg)':''}">${fmtEur(p.preco)}${isMelhor?' 🏆':''}</td>`;
+          }).join('')}
+        </tr>`;
+      });
+    });
+    return `
+    <div class="eq-section">
+      <div class="eq-section-hd"><div class="eq-section-title">${icone} ${titulo}</div></div>
+      <table>
+        <thead><tr>
+          <th>Peça</th><th>Gama</th>
+          ${EQUIPAMENTOS_DB.fornecedores.map(f=>`<th style="text-align:center">${f.nome}</th>`).join('')}
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }
+
+  const html = `
+  <div class="info-box ib-blue" style="margin-bottom:1rem">📊 Mapa comparativo de preços entre fornecedores. 🏆 indica o preço mais baixo para cada peça/gama.</div>
+
+  <div class="eq-section">
+    <div class="eq-section-hd"><div class="eq-section-title">🏢 Fornecedores</div></div>
+    <table>
+      <thead><tr><th>Fornecedor</th><th>Contacto</th><th>Email</th><th>Notas</th></tr></thead>
+      <tbody>
+        ${EQUIPAMENTOS_DB.fornecedores.map(f=>`<tr>
+          <td><div class="peca-name">🏢 ${f.nome}</div></td>
+          <td>${f.contacto}</td>
+          <td>${f.email}</td>
+          <td style="color:var(--muted);font-size:12px">${f.notas}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  ${tabelaCatalogo(EQUIPAMENTOS_DB.catalogo_corrida, 'Equipamento de Corrida', '🚴')}
+  ${tabelaCatalogo(EQUIPAMENTOS_DB.catalogo_casual, 'Roupa Casual', '🎒')}
+  `;
+
+  document.getElementById('view-comparativo').innerHTML = html;
+}
+
+// ============================================================
+// VISTA ENCOMENDA
+// ============================================================
+function renderEncomenda() {
+  // Agregar todas as atribuições por peça+tamanho+gama+fornecedor
+  const agregado = {};
+  const porFornecedor = {}; // fornecedorId -> {count, total}
+  let totalGeral = 0, totalPago = 0, totalPendente = 0;
+
+  Object.entries(EQUIPAMENTOS_DB.atribuicoes).forEach(([atletaId, atr])=>{
+    ['corrida','casual'].forEach(secao=>{
+      Object.entries(atr[secao]||{}).forEach(([pecaId,d])=>{
+        const gama = EQUIPAMENTOS_DB.getGama(secao, pecaId, d.gama);
+        if(!gama) return;
+        const preco = EQUIPAMENTOS_DB.getPreco(gama, d.fornecedorId);
+        const key = `${secao}|${pecaId}|${d.tamanho}|${d.gama}|${d.fornecedorId}`;
+        if(!agregado[key]) agregado[key] = {secao, pecaId, tamanho:d.tamanho, gama:d.gama, fornecedorId:d.fornecedorId, count:0, preco};
+        agregado[key].count++;
+        totalGeral += preco;
+        if(d.pago) totalPago += preco; else totalPendente += preco;
+
+        if(!porFornecedor[d.fornecedorId]) porFornecedor[d.fornecedorId] = {count:0, total:0};
+        porFornecedor[d.fornecedorId].count++;
+        porFornecedor[d.fornecedorId].total += preco;
+      });
+    });
+  });
+
+  const linhas = Object.values(agregado).sort((a,b)=>{
+    if(a.secao!==b.secao) return a.secao==='corrida'?-1:1;
+    if(a.pecaId!==b.pecaId) return a.pecaId.localeCompare(b.pecaId);
+    return (a.fornecedorId||'').localeCompare(b.fornecedorId||'');
+  });
+
+  const html = `
+  <div class="info-box ib-blue" style="margin-bottom:1rem">📦 Resumo de encomenda — agrega todas as peças, tamanhos, gamas e fornecedores atribuídos a todos os atletas ativos.</div>
+
+  <div class="encomenda-summary">
+    <div class="enc-card"><div class="enc-val">${linhas.reduce((a,l)=>a+l.count,0)}</div><div class="enc-lbl">Itens totais</div></div>
+    <div class="enc-card"><div class="enc-val">${fmtEur(totalGeral)}</div><div class="enc-lbl">Valor total</div></div>
+    <div class="enc-card"><div class="enc-val" style="color:var(--green)">${fmtEur(totalPago)}</div><div class="enc-lbl">Já pago</div></div>
+    <div class="enc-card"><div class="enc-val" style="color:var(--amber)">${fmtEur(totalPendente)}</div><div class="enc-lbl">Pendente</div></div>
+  </div>
+
+  <div class="eq-section">
+    <div class="eq-section-hd"><div class="eq-section-title">🏢 Encomenda por fornecedor</div></div>
+    <table>
+      <thead><tr><th>Fornecedor</th><th>Contacto</th><th style="text-align:center">Itens</th><th style="text-align:right">Total a encomendar</th></tr></thead>
+      <tbody>
+        ${Object.entries(porFornecedor).map(([fid,d])=>{
+          const f = EQUIPAMENTOS_DB.getFornecedor(fid);
+          return `<tr>
+            <td><div class="peca-name">🏢 ${f?f.nome:'Sem fornecedor'}</div></td>
+            <td style="color:var(--muted);font-size:12px">${f?f.contacto+' · '+f.email:'—'}</td>
+            <td style="text-align:center;font-weight:600">${d.count}</td>
+            <td style="text-align:right;font-weight:600">${fmtEur(d.total)}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="eq-section">
+    <div class="eq-section-hd">
+      <div class="eq-section-title">📋 Lista de encomenda detalhada</div>
+      <button class="btn-sm btn-teal" onclick="toast('Exportação para Excel em breve')">📤 Exportar</button>
+    </div>
+    <table>
+      <thead><tr><th>Secção</th><th>Peça</th><th>Tamanho</th><th>Gama</th><th>Fornecedor</th><th style="text-align:center">Qtd.</th><th style="text-align:right">Preço unit.</th><th style="text-align:right">Subtotal</th></tr></thead>
+      <tbody>
+        ${linhas.map(l=>{
+          const peca = EQUIPAMENTOS_DB.getPeca(l.secao, l.pecaId);
+          const gama = EQUIPAMENTOS_DB.getGama(l.secao, l.pecaId, l.gama);
+          const forn = EQUIPAMENTOS_DB.getFornecedor(l.fornecedorId);
+          return `<tr>
+            <td><span class="badge ${l.secao==='corrida'?'b-info':'b-purple'}">${l.secao==='corrida'?'Corrida':'Casual'}</span></td>
+            <td><div class="peca-name"><span class="peca-ico">${peca.icone}</span>${peca.nome}</div></td>
+            <td><span class="badge b-gray">${l.tamanho}</span></td>
+            <td>${gama.nome}</td>
+            <td>${forn?forn.nome:'—'}</td>
+            <td style="text-align:center;font-weight:600">${l.count}</td>
+            <td style="text-align:right">${fmtEur(l.preco)}</td>
+            <td style="text-align:right;font-weight:600">${fmtEur(l.preco*l.count)}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>`;
+
+  document.getElementById('view-encomenda').innerHTML = html;
+}
+
+// ============================================================
+// VIEW SWITCHING
+// ============================================================
+function setView(v) {
+  ['atleta','catalogo','comparativo','encomenda'].forEach(x=>{
+    document.getElementById('vt-'+x).classList.toggle('active', x===v);
+    document.getElementById('view-'+x).style.display = x===v?'block':'none';
+  });
+  if(v==='catalogo') renderCatalogo();
+  if(v==='comparativo') renderComparativo();
+  if(v==='encomenda') renderEncomenda();
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg,type=''){
+  const el=document.getElementById('toast-el');
+  el.textContent=msg;el.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+populateAthleteSelect();
+renderAthleteContent();
+</script>
+</body>
+</html>
