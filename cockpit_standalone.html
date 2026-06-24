@@ -164,16 +164,16 @@ button:hover,.btn:hover{background:var(--bg)}
     <div class="nav-sec">Principal</div>
     <a class="nav-item active" href="#">⬡ Cockpit</a>
     <div class="nav-sec">Equipa</div>
-    <a class="nav-item" href="atletas_standalone.html">👥 Atletas</a>
-    <a class="nav-item" href="staff_standalone.html">🪪 Staff</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/atletas_standalone.html">👥 Atletas</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/staff_standalone.html">🪪 Staff</a>
     <div class="nav-sec">Desportivo</div>
-    <a class="nav-item" href="calendario_standalone.html">📅 Calendário</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/calendario_standalone.html">📅 Calendário</a>
     <a class="nav-item" href="#" onclick="toast('Em construção')">🏆 Resultados</a>
     <div class="nav-sec">Gestão</div>
-    <a class="nav-item" href="equipamentos_standalone.html">🚐 Logística</a>
-    <a class="nav-item" href="financeira_standalone.html">💰 Financeira</a>
-    <a class="nav-item" href="patrocinadores_standalone.html">🤝 Patrocinadores</a>
-    <a class="nav-item" href="comunicacoes_standalone.html">📢 Comunicações</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/equipamentos_standalone.html">🚐 Logística</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/financeira_standalone.html">💰 Financeira</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/patrocinadores_standalone.html">🤝 Patrocinadores</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/comunicacoes_standalone.html">📢 Comunicações</a>
   </nav>
   <div class="sb-foot">
     <div class="ua">JP</div>
@@ -191,8 +191,8 @@ button:hover,.btn:hover{background:var(--bg)}
     </div>
   </div>
   <div class="tb-actions">
-    <a href="comunicacoes_standalone.html" class="btn btn-sm">📢 Comunicar</a>
-    <a href="atletas_standalone.html" class="btn btn-primary btn-sm">+ Novo atleta</a>
+    <a href="/escolaciclismomatoscheirinhos/comunicacoes_standalone.html" class="btn btn-sm">📢 Comunicar</a>
+    <a href="/escolaciclismomatoscheirinhos/atletas_standalone.html" class="btn btn-primary btn-sm">+ Novo atleta</a>
   </div>
 </div>
 
@@ -1460,7 +1460,7 @@ function renderCockpit() {
     <span style="font-weight:600">Aniversário${todosAnivHoje.length>1?'s':''} hoje:</span>
     ${todosAnivHoje.map(p=>`<span class="badge b-danger">${p.nome.split(' ')[0]} — ${calcAge(p.nasc)} anos</span>`).join('')}
     <div style="flex:1"></div>
-    <a href="comunicacoes_standalone.html" class="btn btn-wa btn-sm">🎂 Enviar parabéns</a>
+    <a href="/escolaciclismomatoscheirinhos/comunicacoes_standalone.html" class="btn btn-wa btn-sm">🎂 Enviar parabéns</a>
   </div>` : ''}
 
   <!-- ALERTAS CRÍTICOS -->
@@ -1468,63 +1468,63 @@ function renderCockpit() {
     ${mensAtraso.length ? `<div class="alerta-strip as-danger">
       ⚠️ <strong>${mensAtraso.length} atleta(s)</strong> com mensalidades em atraso
       <div style="flex:1"></div>
-      <a href="financeira_standalone.html" class="btn btn-sm">Ver →</a>
+      <a href="/escolaciclismomatoscheirinhos/financeira_standalone.html" class="btn btn-sm">Ver →</a>
     </div>` : ''}
     ${semConvocatoria.length ? `<div class="alerta-strip as-warn">
       🏁 <strong>${semConvocatoria.length} corrida(s)</strong> sem convocatória definida
       <div style="flex:1"></div>
-      <a href="calendario_standalone.html" class="btn btn-sm">Ver →</a>
+      <a href="/escolaciclismomatoscheirinhos/calendario_standalone.html" class="btn btn-sm">Ver →</a>
     </div>` : ''}
     ${patsSemContacto.length ? `<div class="alerta-strip as-warn">
       🤝 <strong>${patsSemContacto.length} patrocinador(es)</strong> sem contacto há mais de 60 dias
       <div style="flex:1"></div>
-      <a href="patrocinadores_standalone.html" class="btn btn-sm">Ver →</a>
+      <a href="/escolaciclismomatoscheirinhos/patrocinadores_standalone.html" class="btn btn-sm">Ver →</a>
     </div>` : ''}
     ${certAlertas.length ? `<div class="alerta-strip as-warn">
       🪪 <strong>${certAlertas.length} certificação(ões)</strong> de staff expiradas ou a vencer
       <div style="flex:1"></div>
-      <a href="staff_standalone.html" class="btn btn-sm">Ver →</a>
+      <a href="/escolaciclismomatoscheirinhos/staff_standalone.html" class="btn btn-sm">Ver →</a>
     </div>` : ''}
     ${docsEmFalta.length ? `<div class="alerta-strip as-warn">
       📄 <strong>${docsEmFalta.length} atleta(s)</strong> com documentos em falta
       <div style="flex:1"></div>
-      <a href="atletas_standalone.html" class="btn btn-sm">Ver →</a>
+      <a href="/escolaciclismomatoscheirinhos/atletas_standalone.html" class="btn btn-sm">Ver →</a>
     </div>` : ''}
   </div>
 
   <!-- MÉTRICAS PRINCIPAIS -->
   <div class="metrics-grid">
-    <a href="atletas_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+    <a href="/escolaciclismomatoscheirinhos/atletas_standalone.html" class="metric" style="text-decoration:none;color:inherit">
       <div class="metric-ico">👥</div>
       <div class="metric-val">${atletas.length}</div>
       <div class="metric-lbl">Atletas ativos</div>
       <div class="metric-sub" style="color:var(--muted)">${cedidos.length} cedido(s)</div>
     </a>
-    <a href="financeira_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+    <a href="/escolaciclismomatoscheirinhos/financeira_standalone.html" class="metric" style="text-decoration:none;color:inherit">
       <div class="metric-ico">💰</div>
       <div class="metric-val" style="color:${saldo>=0?'var(--green)':'var(--red)'}; font-size:18px">${fmtEur(Math.abs(saldo))}</div>
       <div class="metric-lbl">Saldo época</div>
       <div class="metric-sub" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'▲ Positivo':'▼ Negativo'}</div>
     </a>
-    <a href="financeira_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+    <a href="/escolaciclismomatoscheirinhos/financeira_standalone.html" class="metric" style="text-decoration:none;color:inherit">
       <div class="metric-ico">⚠️</div>
       <div class="metric-val" style="color:${mensAtraso.length?'var(--red)':'var(--green)'}">${mensAtraso.length}</div>
       <div class="metric-lbl">Mensalidades em atraso</div>
       <div class="metric-sub" style="color:var(--muted)">atletas</div>
     </a>
-    <a href="calendario_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+    <a href="/escolaciclismomatoscheirinhos/calendario_standalone.html" class="metric" style="text-decoration:none;color:inherit">
       <div class="metric-ico">📅</div>
       <div class="metric-val">${proximas.length}</div>
       <div class="metric-lbl">Próximas corridas</div>
       <div class="metric-sub" style="color:var(--muted)">${proximas[0]?fmtDate(proximas[0].data):'—'}</div>
     </a>
-    <a href="patrocinadores_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+    <a href="/escolaciclismomatoscheirinhos/patrocinadores_standalone.html" class="metric" style="text-decoration:none;color:inherit">
       <div class="metric-ico">🤝</div>
       <div class="metric-val">${patsAtivos.length}</div>
       <div class="metric-lbl">Patrocinadores ativos</div>
       <div class="metric-sub" style="color:${patsApoioPend.length?'var(--amber)':'var(--muted)'}">${patsApoioPend.length} apoio(s) pendente(s)</div>
     </a>
-    <a href="staff_standalone.html" class="metric" style="text-decoration:none;color:inherit">
+    <a href="/escolaciclismomatoscheirinhos/staff_standalone.html" class="metric" style="text-decoration:none;color:inherit">
       <div class="metric-ico">🪪</div>
       <div class="metric-val">${STAFF_DB.getAtivos().length}</div>
       <div class="metric-lbl">Staff ativo</div>
@@ -1537,7 +1537,7 @@ function renderCockpit() {
     <div class="card">
       <div class="card-hd">
         <div class="card-title">📅 Próximas corridas</div>
-        <a href="calendario_standalone.html" class="btn btn-ghost btn-sm">Ver todas →</a>
+        <a href="/escolaciclismomatoscheirinhos/calendario_standalone.html" class="btn btn-ghost btn-sm">Ver todas →</a>
       </div>
       <div class="card-body">
         ${!proximas.length ? '<div class="card-empty">Sem corridas próximas</div>' :
@@ -1562,7 +1562,7 @@ function renderCockpit() {
     <div class="card">
       <div class="card-hd">
         <div class="card-title">⚠️ Mensalidades em atraso</div>
-        <a href="financeira_standalone.html" class="btn btn-ghost btn-sm">Ver todas →</a>
+        <a href="/escolaciclismomatoscheirinhos/financeira_standalone.html" class="btn btn-ghost btn-sm">Ver todas →</a>
       </div>
       <div class="card-body">
         ${!mensAtraso.length ? '<div class="card-empty" style="color:var(--green)">✓ Sem atrasos!</div>' :
@@ -1586,7 +1586,7 @@ function renderCockpit() {
     <div class="card">
       <div class="card-hd">
         <div class="card-title">💰 Financeira ${ano}</div>
-        <a href="financeira_standalone.html" class="btn btn-ghost btn-sm">Detalhe →</a>
+        <a href="/escolaciclismomatoscheirinhos/financeira_standalone.html" class="btn btn-ghost btn-sm">Detalhe →</a>
       </div>
       <div class="card-body">
         <div class="saldo-bar" style="border:none;padding:0;background:transparent">
@@ -1616,7 +1616,7 @@ function renderCockpit() {
     <div class="card">
       <div class="card-hd">
         <div class="card-title">🤝 Patrocinadores</div>
-        <a href="patrocinadores_standalone.html" class="btn btn-ghost btn-sm">Ver →</a>
+        <a href="/escolaciclismomatoscheirinhos/patrocinadores_standalone.html" class="btn btn-ghost btn-sm">Ver →</a>
       </div>
       <div class="card-body">
         ${patsAtivos.map(p=>{
@@ -1644,7 +1644,7 @@ function renderCockpit() {
     <div class="card">
       <div class="card-hd">
         <div class="card-title">🪪 Staff</div>
-        <a href="staff_standalone.html" class="btn btn-ghost btn-sm">Ver →</a>
+        <a href="/escolaciclismomatoscheirinhos/staff_standalone.html" class="btn btn-ghost btn-sm">Ver →</a>
       </div>
       <div class="card-body">
         ${STAFF_DB.getAtivos().map(m=>{
@@ -1666,31 +1666,31 @@ function renderCockpit() {
   <!-- MÓDULOS -->
   <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem">Módulos</div>
   <div class="modulos-grid">
-    <a href="atletas_standalone.html" class="modulo-btn">
+    <a href="/escolaciclismomatoscheirinhos/atletas_standalone.html" class="modulo-btn">
       <div class="mod-ico m-blue">👥</div>
       <div><div class="mod-nome">Atletas</div><div class="mod-sub">${atletas.length} ativos</div></div>
     </a>
-    <a href="calendario_standalone.html" class="modulo-btn">
+    <a href="/escolaciclismomatoscheirinhos/calendario_standalone.html" class="modulo-btn">
       <div class="mod-ico m-teal">📅</div>
       <div><div class="mod-nome">Calendário</div><div class="mod-sub">${proximas.length} próximas</div></div>
     </a>
-    <a href="equipamentos_standalone.html" class="modulo-btn">
+    <a href="/escolaciclismomatoscheirinhos/equipamentos_standalone.html" class="modulo-btn">
       <div class="mod-ico m-amber">🚐</div>
       <div><div class="mod-nome">Logística</div><div class="mod-sub">Equipamentos</div></div>
     </a>
-    <a href="financeira_standalone.html" class="modulo-btn">
+    <a href="/escolaciclismomatoscheirinhos/financeira_standalone.html" class="modulo-btn">
       <div class="mod-ico m-green">💰</div>
       <div><div class="mod-nome">Financeira</div><div class="mod-sub">${fmtEur(saldo)} saldo</div></div>
     </a>
-    <a href="patrocinadores_standalone.html" class="modulo-btn">
+    <a href="/escolaciclismomatoscheirinhos/patrocinadores_standalone.html" class="modulo-btn">
       <div class="mod-ico m-purple">🤝</div>
       <div><div class="mod-nome">Patrocinadores</div><div class="mod-sub">${patsAtivos.length} ativos</div></div>
     </a>
-    <a href="comunicacoes_standalone.html" class="modulo-btn">
+    <a href="/escolaciclismomatoscheirinhos/comunicacoes_standalone.html" class="modulo-btn">
       <div class="mod-ico m-red">📢</div>
       <div><div class="mod-nome">Comunicações</div><div class="mod-sub">WhatsApp</div></div>
     </a>
-    <a href="staff_standalone.html" class="modulo-btn">
+    <a href="/escolaciclismomatoscheirinhos/staff_standalone.html" class="modulo-btn">
       <div class="mod-ico m-gray">🪪</div>
       <div><div class="mod-nome">Staff</div><div class="mod-sub">${STAFF_DB.getAtivos().length} membros</div></div>
     </a>
