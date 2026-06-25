@@ -152,12 +152,29 @@ button:hover,.btn:hover{background:var(--bg)}
 <div class="app">
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="sb-logo">
-    <div class="sb-logo-row">
-      <img src="/escolaciclismomatoscheirinhos/ESCOLA_ciclismo_logo_v02_50.png" alt="Escola de Ciclismo" style="width:160px;height:auto;display:block;margin:0 auto .4rem">
-    </div>
-    <div class="sb-season" id="sb-season" style="text-align:center;padding-left:0">Época 2026</div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo" style="padding:.8rem .75rem;border-bottom:.5px solid var(--border);text-align:center">
+    <img src="/escolaciclismomatoscheirinhos/ESCOLA_ciclismo_logo_v02_50.png" alt="Escola de Ciclismo Matos-Cheirinhos" style="width:170px;height:auto;display:block;margin:0 auto">
+    <div style="font-size:11px;color:var(--hint);margin-top:4px">Época 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Principal</div>
+    <a class="nav-item active" href="#">⬡ Cockpit</a>
+    <div class="nav-sec">Equipa</div>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/atletas_standalone.html">👥 Atletas</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/staff_standalone.html">🪪 Staff</a>
+    <div class="nav-sec">Desportivo</div>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/calendario_standalone.html">📅 Calendário</a>
+    <a class="nav-item" href="#" onclick="toast('Em construção')">🏆 Resultados</a>
+    <div class="nav-sec">Gestão</div>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/equipamentos_standalone.html">🚐 Logística</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/financeira_standalone.html">💰 Financeira</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/patrocinadores_standalone.html">🤝 Patrocinadores</a>
+    <a class="nav-item" href="/escolaciclismomatoscheirinhos/comunicacoes_standalone.html">📢 Comunicações</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="ua">JP</div>
+    <div><div style="font-size:12px;font-weight:500">João Paulo Serra</div><div style="font-size:11px;color:var(--muted)">Treinador</div></div>
   </div>
 </aside>
 
