@@ -255,144 +255,48 @@ select:focus,input:focus,textarea:focus{border-color:var(--blue)}
 // ============================================================
 
 const STAFF_DB = {
-
   membros: [
-    {
-      id: 's1',
-      nome: 'João Paulo Serra',
-      apelidos: 'Serra Rodrigues',
-      nasc: '1975-06-20',
-      genero: 'Masculino',
-      foto: null,
-      funcao: 'treinador',
-      funcao_desc: 'Treinador Principal',
-      email: 'jp.serra@escolaciclismo.pt',
-      tel: '912 111 222',
-      tel2: '',
-      morada: 'R. das Flores, 5 — Cascais',
-      estado: 'ativo',
-      perfil_acesso: 'treinador',
-      escaloes: ['escolas','sub17','sub19','sub23','paraciclismo'],
-      // Certificações
-      certs: [
-        {nome:'Licença Treinador Grau III FPC', validade:'2027-12-31', estado:'valida'},
-        {nome:'Primeiros Socorros', validade:'2026-12-31', estado:'valida'},
-        {nome:'Carta de Condução Cat. D', validade:'2028-06-20', estado:'valida'},
-      ],
-      disponibilidade: 'Todos os dias',
-      notas: 'Treinador de referência. Conhece todos os atletas individualmente.',
-      desde: '2018',
-      aniversario_clube: '',
-    },
-    {
-      id: 's2',
-      nome: 'Manuel Costa',
-      apelidos: 'Costa Ferreira',
-      nasc: '1968-09-14',
-      genero: 'Masculino',
-      foto: null,
-      funcao: 'diretor',
-      funcao_desc: 'Diretor Desportivo',
-      email: 'manuel.costa@escolaciclismo.pt',
-      tel: '913 222 333',
-      tel2: '214 555 666',
-      morada: 'Av. Central, 22 — Sintra',
-      estado: 'ativo',
-      perfil_acesso: 'admin',
-      escaloes: ['sub19','sub23'],
-      certs: [
-        {nome:'Licença Diretor Desportivo FPC', validade:'2027-06-30', estado:'valida'},
-        {nome:'Carta de Condução Cat. D', validade:'2026-09-14', estado:'renovar'},
-      ],
-      disponibilidade: 'Fins de semana e corridas',
-      notas: 'Responsável pela logística e contacto com a FPC.',
-      desde: '2015',
-      aniversario_clube: '',
-    },
-    {
-      id: 's3',
-      nome: 'Carlos Reis',
-      apelidos: 'Reis Alves',
-      nasc: '1980-11-03',
-      genero: 'Masculino',
-      foto: null,
-      funcao: 'mecanico',
-      funcao_desc: 'Mecânico',
-      email: 'carlos.reis@escolaciclismo.pt',
-      tel: '914 333 444',
-      tel2: '',
-      morada: 'R. Nova, 8 — Oeiras',
-      estado: 'ativo',
-      perfil_acesso: 'treinador',
-      escaloes: ['escolas','sub17','sub19','sub23','paraciclismo'],
-      certs: [
-        {nome:'Mecânico Ciclismo Nível 2 FPC', validade:'2028-03-31', estado:'valida'},
-      ],
-      disponibilidade: 'Corridas e estágios',
-      notas: 'Especialista em bicicletas de estrada e BTT. Disponível com 48h de antecedência.',
-      desde: '2020',
-      aniversario_clube: '',
-    },
-    {
-      id: 's4',
-      nome: 'Ana Sousa',
-      apelidos: 'Sousa Martins',
-      nasc: '1985-03-28',
-      genero: 'Feminino',
-      foto: null,
-      funcao: 'delegada',
-      funcao_desc: 'Delegada de Equipa',
-      email: 'ana.sousa@escolaciclismo.pt',
-      tel: '915 444 555',
-      tel2: '',
-      morada: 'Tv. das Acácias, 3 — Cascais',
-      estado: 'ativo',
-      perfil_acesso: 'treinador',
-      escaloes: ['escolas','sub17'],
-      certs: [
-        {nome:'Primeiros Socorros', validade:'2025-12-31', estado:'expirada'},
-      ],
-      disponibilidade: 'Corridas de Escolas e SUB17',
-      notas: 'Responsável pelas inscrições e documentação nas corridas.',
-      desde: '2021',
-      aniversario_clube: '',
-    },
+    // TREINADORES
+    {id:'s1',nome:'Álvaro Gonçalves',apelidos:'Gonçalves',nasc:'',genero:'Masculino',foto:null,funcao:'treinador',funcao_desc:'Treinador Grau 2',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['escolas','sub17','sub19','sub23','paraciclismo'],certs:[{nome:'Licença Treinador Grau 2 FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'',notas:'',desde:'2026'},
+    {id:'s2',nome:'André Rodrigues',apelidos:'Rodrigues',nasc:'',genero:'Masculino',foto:null,funcao:'treinador',funcao_desc:'Treinador Estagiário Grau 2',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['escolas','sub17'],certs:[{nome:'Licença Treinador Estagiário Grau 2 FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'',notas:'',desde:'2026'},
+    {id:'s3',nome:'João Serra',apelidos:'Serra',nasc:'1975-06-20',genero:'Masculino',foto:null,funcao:'treinador',funcao_desc:'Treinador Grau 1',email:'jp.serra@escolaciclismo.pt',tel:'912 000 001',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['escolas','sub17','sub19','sub23','paraciclismo'],certs:[{nome:'Licença Treinador Grau 1 FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'Todos os dias',notas:'Treinador Principal',desde:'2018'},
+    {id:'s4',nome:'Jorge Barão',apelidos:'Barão',nasc:'',genero:'Masculino',foto:null,funcao:'treinador',funcao_desc:'Treinador Grau 2',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['paraciclismo'],certs:[{nome:'Licença Treinador Grau 2 FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'',notas:'Também atleta CPT (licença 86215)',desde:'2026'},
+    {id:'s5',nome:'Romeu Patrício',apelidos:'Patrício',nasc:'',genero:'Masculino',foto:null,funcao:'treinador',funcao_desc:'Treinador Estagiário Grau 1',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['escolas'],certs:[{nome:'Licença Treinador Estagiário Grau 1 FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'',notas:'',desde:'2026'},
+    {id:'s6',nome:'Sergio Candeias',apelidos:'Candeias',nasc:'',genero:'Masculino',foto:null,funcao:'treinador',funcao_desc:'Treinador Grau 2',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['sub17','sub19'],certs:[{nome:'Licença Treinador Grau 2 FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'',notas:'',desde:'2026'},
+    // DIRIGENTES
+    {id:'s7',nome:'Alexandre Coutinho',apelidos:'Coutinho',nasc:'',genero:'Masculino',foto:null,funcao:'diretor',funcao_desc:'Diretor Desportivo',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['sub17','sub19','sub23'],certs:[{nome:'Licença Diretor Desportivo FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'Corridas e competições',notas:'',desde:'2026'},
+    {id:'s8',nome:'Audatilo Moreno',apelidos:'Moreno',nasc:'',genero:'Masculino',foto:null,funcao:'diretor',funcao_desc:'Diretor Desportivo',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['sub17','sub19'],certs:[{nome:'Licença Diretor Desportivo FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'',notas:'',desde:'2026'},
+    {id:'s9',nome:'Fernando Sabido',apelidos:'Sabido',nasc:'',genero:'Masculino',foto:null,funcao:'mecanico',funcao_desc:'Mecânico',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['escolas','sub17','sub19','sub23','paraciclismo'],certs:[{nome:'Licença Mecânico FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'Corridas',notas:'',desde:'2026'},
+    {id:'s10',nome:'Manuel Fonseca',apelidos:'Fonseca',nasc:'',genero:'Masculino',foto:null,funcao:'administrativo',funcao_desc:'Presidente',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'admin',escaloes:['escolas','sub17','sub19','sub23','paraciclismo'],certs:[{nome:'Licença Presidente FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'',notas:'Presidente do clube. Também atleta Pedala! (licença 86248)',desde:'2015'},
+    {id:'s11',nome:'Mário Barão',apelidos:'Barão',nasc:'',genero:'Masculino',foto:null,funcao:'diretor',funcao_desc:'Diretor Desportivo',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['sub23','paraciclismo'],certs:[{nome:'Licença Diretor Desportivo FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'',notas:'Também atleta CPT (licença 63057)',desde:'2026'},
+    {id:'s12',nome:'Vitalino Costa',apelidos:'Costa',nasc:'',genero:'Masculino',foto:null,funcao:'mecanico',funcao_desc:'Mecânico',email:'',tel:'',tel2:'',morada:'',estado:'ativo',perfil_acesso:'treinador',escaloes:['escolas','sub17','sub19','sub23','paraciclismo'],certs:[{nome:'Licença Mecânico FPC',validade:'2027-12-31',estado:'valida'}],disponibilidade:'Corridas',notas:'',desde:'2026'},
   ],
-
-  FUNCOES: [
-    {id:'treinador', nome:'Treinador', icone:'🎽'},
-    {id:'diretor', nome:'Diretor Desportivo', icone:'📋'},
-    {id:'mecanico', nome:'Mecânico', icone:'🔧'},
-    {id:'delegada', nome:'Delegado/a de Equipa', icone:'📎'},
-    {id:'fisio', nome:'Fisioterapeuta', icone:'🏥'},
-    {id:'administrativo', nome:'Administrativo', icone:'💼'},
-    {id:'outro', nome:'Outro', icone:'👤'},
+  FUNCOES:[
+    {id:'treinador',nome:'Treinador',icone:'🎽'},
+    {id:'diretor',nome:'Diretor Desportivo',icone:'📋'},
+    {id:'mecanico',nome:'Mecânico',icone:'🔧'},
+    {id:'delegada',nome:'Delegado/a de Equipa',icone:'📎'},
+    {id:'administrativo',nome:'Administrativo / Dirigente',icone:'💼'},
+    {id:'outro',nome:'Outro',icone:'👤'},
   ],
-
-  PERFIS: [
-    {id:'admin', nome:'Administrador', desc:'Acesso total'},
-    {id:'treinador', nome:'Treinador/Diretor', desc:'Acesso operacional completo'},
-    {id:'consulta', nome:'Consulta', desc:'Só leitura'},
+  PERFIS:[
+    {id:'admin',nome:'Administrador',desc:'Acesso total'},
+    {id:'treinador',nome:'Treinador/Diretor',desc:'Acesso operacional completo'},
+    {id:'consulta',nome:'Consulta',desc:'Só leitura'},
   ],
-
-  ESCALOES_TODOS: ['escolas','sub17','sub19','sub23','paraciclismo'],
-
-  getById(id) { return this.membros.find(m=>m.id===id); },
-  getFuncao(id) { return this.FUNCOES.find(f=>f.id===id); },
-  getAtivos() { return this.membros.filter(m=>m.estado==='ativo'); },
-
-  getCertsAlerta() {
-    const hoje = new Date();
-    const em30 = new Date(hoje); em30.setDate(hoje.getDate()+30);
-    return this.membros.flatMap(m=>
-      m.certs.filter(c=>{
-        if(c.estado==='expirada') return true;
-        const v = new Date(c.validade);
-        return v <= em30;
-      }).map(c=>({membro:m, cert:c}))
-    );
+  ESCALOES_TODOS:['escolas','sub17','sub19','sub23','paraciclismo'],
+  getById(id){return this.membros.find(m=>m.id===id)},
+  getFuncao(id){return this.FUNCOES.find(f=>f.id===id)},
+  getAtivos(){return this.membros.filter(m=>m.estado==='ativo')},
+  getCertsAlerta(){
+    const hoje=new Date();const em30=new Date(hoje);em30.setDate(hoje.getDate()+30);
+    return this.membros.flatMap(m=>m.certs.filter(c=>{
+      if(c.estado==='expirada')return true;
+      const v=new Date(c.validade);return v<=em30;
+    }).map(c=>({membro:m,cert:c})));
   },
 };
+
 
 </script>
 <script>

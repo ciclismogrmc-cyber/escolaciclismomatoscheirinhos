@@ -719,413 +719,56 @@ textarea.fi{resize:vertical;min-height:80px}
 
 const DB = {
   epoca_atual: 2026,
-
   atletas: [
-    {
-      id: 1,
-      // Dados permanentes
-      nome: 'Afonso Ferreira',
-      apelidos: 'Ferreira Costa',
-      nasc: '2009-06-12',
-      genero: 'Masculino',
-      cc: '12345678 9 ZZ4',
-      cc_validade: '2028-06-12',
-      nif: '234567890',
-      email: 'afonso@email.com',
-      tel: '912 345 678',
-      tel2: '',
-      morada: 'R. das Flores, 12, 2º Dt.',
-      local: 'Cascais',
-      cp: '2750-123',
-      distrito: 'Lisboa',
-      concelho: 'Cascais',
-      // Filiação
-      pai_nome: 'Carlos Ferreira',
-      pai_tel: '913 456 789',
-      pai_email: 'carlos.f@email.com',
-      pai_enc: true,
-      mae_nome: 'Ana Ferreira',
-      mae_tel: '914 567 890',
-      mae_email: 'ana.f@email.com',
-      mae_enc: false,
-      // Tutor
-      tutor_nome: '',
-      tutor_cc: '',
-      tutor_email: '',
-      tutor_tel: '',
-      // Emergência
-      emerg_nome: 'Carlos Ferreira',
-      emerg_tel: '913 456 789',
-      // Escolar
-      escola: 'EB 2,3 de Cascais',
-      curso: '9º ano',
-      // Documentos
-      doc_imagem: true,
-      doc_seguro: true,
-      doc_medico: false,
-      // Épocas
-      epocas: {
-        2025: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2025-00412', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom resultado na volta a Cascais.' },
-        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00847', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 39', estado:'ativo', obs:'Bom atleta, muito dedicado.' }
-      }
-    },
-    {
-      id: 2,
-      nome: 'Maria Santos',
-      apelidos: 'Santos Rodrigues',
-      nasc: '2011-03-22',
-      genero: 'Feminino',
-      cc: '23456789 1 AB2',
-      cc_validade: '2029-03-22',
-      nif: '345678901',
-      email: '',
-      tel: '',
-      tel2: '',
-      morada: 'Av. Central, 45',
-      local: 'Sintra',
-      cp: '2710-001',
-      distrito: 'Lisboa',
-      concelho: 'Sintra',
-      pai_nome: 'Rui Santos',
-      pai_tel: '915 234 567',
-      pai_email: 'rui.s@email.com',
-      pai_enc: true,
-      mae_nome: 'Sofia Santos',
-      mae_tel: '916 345 678',
-      mae_email: 'sofia.s@email.com',
-      mae_enc: false,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Rui Santos',
-      emerg_tel: '915 234 567',
-      escola: 'EB1 de Sintra',
-      curso: '6º ano',
-      doc_imagem: true, doc_seguro: true, doc_medico: true,
-      epocas: {
-        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2026-00312', mensalidade:'atraso', equipamento:'Jersey S · Calções S · Meias 36', estado:'ativo', obs:'' }
-      }
-    },
-    {
-      id: 3,
-      nome: 'Rui Fonseca',
-      apelidos: 'Fonseca Matos',
-      nasc: '2007-09-05',
-      genero: 'Masculino',
-      cc: '98765432 1 ZZ2',
-      cc_validade: '2027-09-05',
-      nif: '456789012',
-      email: 'rui.f@email.com',
-      tel: '918 567 890',
-      tel2: '',
-      morada: 'R. Nova, 8',
-      local: 'Oeiras',
-      cp: '2780-010',
-      distrito: 'Lisboa',
-      concelho: 'Oeiras',
-      pai_nome: 'António Fonseca',
-      pai_tel: '917 456 789',
-      pai_email: 'ant.f@email.com',
-      pai_enc: true,
-      mae_nome: '',
-      mae_tel: '',
-      mae_email: '',
-      mae_enc: false,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'António Fonseca',
-      emerg_tel: '917 456 789',
-      escola: '', curso: '',
-      doc_imagem: true, doc_seguro: true, doc_medico: true,
-      epocas: {
-        2026: { tipo:'cedido', escalao:'sub19', subescalao:'', clube_origem:'GD Oeiras', licenca:'2026-GD-089', mensalidade:'definir', equipamento:'Jersey M · Calções M', estado:'ativo', obs:'Cedido para 3 corridas em 2026.' }
-      }
-    },
-    {
-      id: 4,
-      nome: 'João Silva',
-      apelidos: 'Silva Pereira',
-      nasc: '2010-11-18',
-      genero: 'Masculino',
-      cc: '',
-      cc_validade: '',
-      nif: '',
-      email: '',
-      tel: '',
-      tel2: '',
-      morada: 'R. do Pinheiro, 3',
-      local: 'Cascais',
-      cp: '2750-456',
-      distrito: 'Lisboa',
-      concelho: 'Cascais',
-      pai_nome: 'Manuel Silva',
-      pai_tel: '919 678 901',
-      pai_email: 'man.s@email.com',
-      pai_enc: true,
-      mae_nome: 'Lúcia Silva',
-      mae_tel: '910 789 012',
-      mae_email: 'lucia.s@email.com',
-      mae_enc: true,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Manuel Silva',
-      emerg_tel: '919 678 901',
-      escola: 'Colégio São José', curso: '7º ano',
-      doc_imagem: true, doc_seguro: false, doc_medico: false,
-      epocas: {
-        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'', mensalidade:'atraso', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'Licença a renovar com urgência. Seguro em falta.' }
-      }
-    },
-    {
-      id: 5,
-      nome: 'Dinis Dias',
-      apelidos: 'Dias Cunha',
-      nasc: '2016-06-13',
-      genero: 'Masculino',
-      cc: '',
-      cc_validade: '',
-      nif: '',
-      email: '',
-      tel: '',
-      tel2: '',
-      morada: 'Tv. das Rosas, 2',
-      local: 'Matos Cheirinhos',
-      cp: '2775-001',
-      distrito: 'Lisboa',
-      concelho: 'Cascais',
-      pai_nome: 'Pedro Dias',
-      pai_tel: '911 890 123',
-      pai_email: 'pedro.d@email.com',
-      pai_enc: true,
-      mae_nome: 'Carla Dias',
-      mae_tel: '912 901 234',
-      mae_email: 'carla.d@email.com',
-      mae_enc: false,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Pedro Dias',
-      emerg_tel: '911 890 123',
-      escola: 'EB1 de Matos Cheirinhos', curso: '4º ano',
-      doc_imagem: true, doc_seguro: true, doc_medico: true,
-      epocas: {
-        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub11', clube_origem:'', licenca:'2026-00123', mensalidade:'pago', equipamento:'Jersey XS · Calções XS · Meias 32', estado:'ativo', obs:'Aniversário hoje! 🎂' }
-      }
-    },
-    {
-      id: 6,
-      nome: 'Ana Costa',
-      apelidos: 'Costa Mendes',
-      nasc: '2010-06-15',
-      genero: 'Feminino',
-      cc: '11223344 5 AB6',
-      cc_validade: '2028-06-15',
-      nif: '567890123',
-      email: 'ana.c@email.com',
-      tel: '915 234 567',
-      tel2: '',
-      morada: 'Av. das Flores, 22',
-      local: 'Cascais',
-      cp: '2750-200',
-      distrito: 'Lisboa',
-      concelho: 'Cascais',
-      pai_nome: 'Jorge Costa',
-      pai_tel: '913 012 345',
-      pai_email: 'jorge.c@email.com',
-      pai_enc: false,
-      mae_nome: 'Beatriz Costa',
-      mae_tel: '914 123 456',
-      mae_email: 'bea.c@email.com',
-      mae_enc: true,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Beatriz Costa',
-      emerg_tel: '914 123 456',
-      escola: 'ES de Cascais', curso: '7º ano',
-      doc_imagem: true, doc_seguro: true, doc_medico: true,
-      epocas: {
-        2025: { tipo:'proprio', escalao:'escolas', subescalao:'sub15', clube_origem:'', licenca:'2025-00211', mensalidade:'pago', equipamento:'Jersey S · Calções S', estado:'ativo', obs:'' },
-        2026: { tipo:'proprio', escalao:'sub17', subescalao:'', clube_origem:'', licenca:'2026-00634', mensalidade:'pago', equipamento:'Jersey S · Calções S · Meias 37', estado:'ativo', obs:'Subiu de escalão em 2026.' }
-      }
-    },
-    {
-      id: 7,
-      nome: 'Marco Silva',
-      apelidos: 'Silva Rodrigues',
-      nasc: '2005-06-14',
-      genero: 'Masculino',
-      cc: '22334455 6 CD7',
-      cc_validade: '2027-06-14',
-      nif: '678901234',
-      email: 'marco.s@email.com',
-      tel: '917 456 789',
-      tel2: '',
-      morada: 'R. do Lago, 7',
-      local: 'Sintra',
-      cp: '2710-100',
-      distrito: 'Lisboa',
-      concelho: 'Sintra',
-      pai_nome: '', pai_tel: '', pai_email: '', pai_enc: false,
-      mae_nome: '', mae_tel: '', mae_email: '', mae_enc: false,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Clara Silva',
-      emerg_tel: '916 345 678',
-      escola: '', curso: '',
-      doc_imagem: true, doc_seguro: true, doc_medico: true,
-      epocas: {
-        2026: { tipo:'proprio', escalao:'sub23', subescalao:'', clube_origem:'', licenca:'2026-00789', mensalidade:'pago', equipamento:'Jersey L · Calções L · Meias 42', estado:'ativo', obs:'Maior de 18 anos.' }
-      }
-    },
-    {
-      id: 8,
-      nome: 'Sofia Lopes',
-      apelidos: 'Lopes Ferreira',
-      nasc: '2012-08-30',
-      genero: 'Feminino',
-      cc: '',
-      cc_validade: '',
-      nif: '',
-      email: '',
-      tel: '',
-      tel2: '',
-      morada: 'R. das Acácias, 15',
-      local: 'Cascais',
-      cp: '2750-300',
-      distrito: 'Lisboa',
-      concelho: 'Cascais',
-      pai_nome: 'Nuno Lopes',
-      pai_tel: '918 567 890',
-      pai_email: 'nuno.l@email.com',
-      pai_enc: true,
-      mae_nome: 'Rita Lopes',
-      mae_tel: '919 678 901',
-      mae_email: 'rita.l@email.com',
-      mae_enc: false,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Nuno Lopes',
-      emerg_tel: '918 567 890',
-      escola: 'EB 2,3 de Alcabideche', curso: '5º ano',
-      doc_imagem: true, doc_seguro: true, doc_medico: false,
-      epocas: {
-        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub13', clube_origem:'', licenca:'2026-00456', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
-      }
-    },
-    {
-      id: 9,
-      nome: 'Tomás Oliveira',
-      apelidos: 'Oliveira Santos',
-      nasc: '2014-01-20',
-      genero: 'Masculino',
-      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
-      morada: 'R. do Mar, 5', local: 'Cascais', cp: '2750-500',
-      distrito: 'Lisboa', concelho: 'Cascais',
-      pai_nome: 'Carlos Oliveira', pai_tel: '920 123 456', pai_email: 'c.oli@email.com', pai_enc: true,
-      mae_nome: 'Marta Oliveira', mae_tel: '921 234 567', mae_email: 'm.oli@email.com', mae_enc: false,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Carlos Oliveira', emerg_tel: '920 123 456',
-      escola: 'EB1 de Cascais', curso: '3º ano',
-      doc_imagem: true, doc_seguro: true, doc_medico: true,
-      epocas: {
-        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00234', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
-      }
-    },
-    {
-      id: 10,
-      nome: 'Inês Martins',
-      apelidos: 'Martins Faria',
-      nasc: '2015-05-10',
-      genero: 'Feminino',
-      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
-      morada: 'Av. Nova, 33', local: 'Sintra', cp: '2710-200',
-      distrito: 'Lisboa', concelho: 'Sintra',
-      pai_nome: 'Luís Martins', pai_tel: '922 345 678', pai_email: 'l.mar@email.com', pai_enc: false,
-      mae_nome: 'Vera Martins', mae_tel: '923 456 789', mae_email: 'v.mar@email.com', mae_enc: true,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Vera Martins', emerg_tel: '923 456 789',
-      escola: 'EB1 de Sintra', curso: '2º ano',
-      doc_imagem: false, doc_seguro: true, doc_medico: true,
-      epocas: {
-        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub9', clube_origem:'', licenca:'2026-00567', mensalidade:'isento', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'Autorização de imagem pendente.' }
-      }
-    },
-    {
-      id: 11,
-      nome: 'Rodrigo Pinto',
-      apelidos: 'Pinto Alves',
-      nasc: '2008-04-03',
-      genero: 'Masculino',
-      cc: '33445566 7 EF8', cc_validade: '2026-04-03', nif: '789012345',
-      email: 'r.pinto@email.com', tel: '924 567 890', tel2: '',
-      morada: 'R. das Palmeiras, 18', local: 'Oeiras', cp: '2780-100',
-      distrito: 'Lisboa', concelho: 'Oeiras',
-      pai_nome: 'Fernando Pinto', pai_tel: '925 678 901', pai_email: 'f.pin@email.com', pai_enc: true,
-      mae_nome: 'Helena Pinto', mae_tel: '926 789 012', mae_email: 'h.pin@email.com', mae_enc: false,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Fernando Pinto', emerg_tel: '925 678 901',
-      escola: 'ES de Oeiras', curso: '8º ano',
-      doc_imagem: true, doc_seguro: true, doc_medico: true,
-      epocas: {
-        2026: { tipo:'proprio', escalao:'sub19', subescalao:'', clube_origem:'', licenca:'2026-00901', mensalidade:'pago', equipamento:'Jersey M · Calções M · Meias 40', estado:'ativo', obs:'CC a renovar — expirou em Abril.' }
-      }
-    },
-    {
-      id: 12,
-      nome: 'Beatriz Ferreira',
-      apelidos: 'Ferreira Nunes',
-      nasc: '2017-11-25',
-      genero: 'Feminino',
-      cc: '', cc_validade: '', nif: '', email: '', tel: '', tel2: '',
-      morada: 'R. dos Pinheiros, 9', local: 'Cascais', cp: '2750-600',
-      distrito: 'Lisboa', concelho: 'Cascais',
-      pai_nome: 'Ricardo Ferreira', pai_tel: '927 890 123', pai_email: 'r.fer@email.com', pai_enc: true,
-      mae_nome: 'Sandra Ferreira', mae_tel: '928 901 234', mae_email: 's.fer@email.com', mae_enc: false,
-      tutor_nome: '', tutor_cc: '', tutor_email: '', tutor_tel: '',
-      emerg_nome: 'Ricardo Ferreira', emerg_tel: '927 890 123',
-      escola: 'EB1 de Cascais', curso: '2º ano',
-      doc_imagem: true, doc_seguro: true, doc_medico: true,
-      epocas: {
-        2026: { tipo:'proprio', escalao:'escolas', subescalao:'sub7', clube_origem:'', licenca:'2026-00678', mensalidade:'pago', equipamento:'Jersey XS · Calções XS', estado:'ativo', obs:'' }
-      }
-    }
+    {id:1,nome:'Bernardo Costa',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub7',clube_origem:'',licenca:'98877',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:2,nome:'Eduardo Simas',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub7',clube_origem:'',licenca:'96498',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:3,nome:'Raul Dias',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub7',clube_origem:'',licenca:'99506',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:4,nome:'Manuel Fonseca',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub7',clube_origem:'',licenca:'86248',mensalidade:'pago',equipamento:'',estado:'ativo',obs:'Pedala!'}}},
+    {id:5,nome:'Dinis Dias',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub11',clube_origem:'',licenca:'75529',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:6,nome:'Santiago Caeiro',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub11',clube_origem:'',licenca:'99035',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:7,nome:'Tiago Fernandes',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub11',clube_origem:'',licenca:'99268',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:8,nome:'Benjamin Dias',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub13',clube_origem:'',licenca:'98878',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:9,nome:'Diogo Broco',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub13',clube_origem:'',licenca:'65578',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:10,nome:'Guilherme Correia',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub13',clube_origem:'',licenca:'91278',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:11,nome:'Lourenço Patricio',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub13',clube_origem:'',licenca:'65401',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:12,nome:'Santiago Lopes',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub13',clube_origem:'',licenca:'95756',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:13,nome:'Tiago Cecilio',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub13',clube_origem:'',licenca:'97900',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:14,nome:'Afonso Calha',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub15',clube_origem:'',licenca:'97328',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:15,nome:'João Barros',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub15',clube_origem:'',licenca:'94723',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:16,nome:'Lourenço Ferreira',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub15',clube_origem:'',licenca:'74649',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:17,nome:'Maria Caeiro',nasc:'',genero:'Feminino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'escolas',subescalao:'sub15',clube_origem:'',licenca:'99641',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:18,nome:'Afonso Ferreira',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub17',subescalao:'',clube_origem:'',licenca:'74648',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:19,nome:'António Lourenço',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub17',subescalao:'',clube_origem:'',licenca:'58043',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:20,nome:'Baltazar Dias',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub17',subescalao:'',clube_origem:'',licenca:'98606',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:21,nome:'Gonçalo Fernandes',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub17',subescalao:'',clube_origem:'',licenca:'56972',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:22,nome:'Guilherme Candeias',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub17',subescalao:'',clube_origem:'',licenca:'70026',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:23,nome:'Guilherme Lopes',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub17',subescalao:'',clube_origem:'',licenca:'90024',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:24,nome:'Santiago Oliveira',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub17',subescalao:'',clube_origem:'',licenca:'98795',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:25,nome:'Sebastian Horne',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub17',subescalao:'',clube_origem:'',licenca:'90664',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:26,nome:'Vicente Ramos',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub17',subescalao:'',clube_origem:'',licenca:'99464',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:27,nome:'Gabriel Barros',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub19',subescalao:'',clube_origem:'',licenca:'95300',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:28,nome:'Guilherme Serra',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub19',subescalao:'',clube_origem:'',licenca:'78176',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:29,nome:'João Vaz',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub19',subescalao:'',clube_origem:'',licenca:'57842',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:30,nome:'Mateus Nazaré',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub19',subescalao:'',clube_origem:'',licenca:'93107',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:31,nome:'Rodrigo Oliveira',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub19',subescalao:'',clube_origem:'',licenca:'90804',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:32,nome:'Rui Melo',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub19',subescalao:'',clube_origem:'',licenca:'76974',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:33,nome:'Tomas Branco',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub19',subescalao:'',clube_origem:'',licenca:'98043',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:34,nome:'Tomás Simão',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub19',subescalao:'',clube_origem:'',licenca:'92078',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:35,nome:'Flavio Lopes',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub23',subescalao:'',clube_origem:'',licenca:'90553',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:36,nome:'Marta Figueiredo',nasc:'',genero:'Feminino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'sub23',subescalao:'',clube_origem:'',licenca:'62462',mensalidade:'pago',equipamento:'',estado:'ativo',obs:''}}},
+    {id:37,nome:'André Soares',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'paraciclismo',subescalao:'',clube_origem:'',licenca:'57891',mensalidade:'pago',equipamento:'',estado:'ativo',obs:'Paraciclismo'}}},
+    {id:38,nome:'Pedro Garcia',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'paraciclismo',subescalao:'',clube_origem:'',licenca:'35549',mensalidade:'pago',equipamento:'',estado:'ativo',obs:'Paraciclismo'}}},
+    {id:39,nome:'Jorge Barão',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'paraciclismo',subescalao:'',clube_origem:'',licenca:'86215',mensalidade:'pago',equipamento:'',estado:'ativo',obs:'Ciclista CPT'}}},
+    {id:40,nome:'Mário Barão',nasc:'',genero:'Masculino',cc:'',cc_validade:'',nif:'',email:'',tel:'',tel2:'',morada:'',local:'',cp:'',distrito:'',concelho:'',pai_nome:'',pai_tel:'',pai_email:'',pai_enc:true,mae_nome:'',mae_tel:'',mae_email:'',mae_enc:false,tutor_nome:'',tutor_cc:'',tutor_email:'',tutor_tel:'',emerg_nome:'',emerg_tel:'',escola:'',curso:'',doc_imagem:false,doc_seguro:false,doc_medico:false,epocas:{2026:{tipo:'proprio',escalao:'paraciclismo',subescalao:'',clube_origem:'',licenca:'63057',mensalidade:'pago',equipamento:'',estado:'ativo',obs:'Ciclista CPT'}}},
   ],
-
-  // Atletas inativos
-  atletas_inativos: [
-    { id:101, nome:'Pedro Carvalho', nasc:'2008-07-14', escalao:'sub19', tipo:'proprio', estado:'inativo', motivo:'Mudou de clube', epoca_saida: 2025 },
-    { id:102, nome:'Clara Mendes', nasc:'2012-02-28', escalao:'escolas', tipo:'proprio', estado:'inativo', motivo:'Deixou o ciclismo', epoca_saida: 2025 }
-  ],
-
-  getAtletasAtivos() {
-    return this.atletas.filter(a => {
-      const ep = a.epocas[this.epoca_atual];
-      return ep && ep.estado === 'ativo';
-    });
-  },
-
-  getEpocaAtleta(id) {
-    const a = this.atletas.find(x => x.id === id);
-    return a ? (a.epocas[this.epoca_atual] || null) : null;
-  },
-
-  getAniversariosHoje() {
-    const hoje = new Date();
-    return this.atletas.filter(a => {
-      const d = new Date(a.nasc);
-      return d.getMonth() === hoje.getMonth() && d.getDate() === hoje.getDate();
-    });
-  },
-
-  getAniversariosSemana() {
-    const hoje = new Date();
-    const semana = new Date(hoje); semana.setDate(hoje.getDate() + 7);
-    return this.atletas.filter(a => {
-      const d = new Date(a.nasc);
-      const esteAno = new Date(hoje.getFullYear(), d.getMonth(), d.getDate());
-      return esteAno > hoje && esteAno <= semana;
-    });
-  },
-
-  getAlertas() {
-    return this.atletas.filter(a => {
-      const ep = a.epocas[this.epoca_atual];
-      if (!ep || ep.estado !== 'ativo') return false;
-      return ep.mensalidade === 'atraso' || !a.doc_seguro || !a.doc_medico || ep.licenca === '' || ep.licenca === 'renovar';
-    });
-  }
+  atletas_inativos:[],
+  getAtletasAtivos(){return this.atletas.filter(a=>{const ep=a.epocas[this.epoca_atual];return ep&&ep.estado==='ativo'})},
+  getEpocaAtleta(id){const a=this.atletas.find(x=>x.id===id);return a?(a.epocas[this.epoca_atual]||null):null},
+  getAniversariosHoje(){const hoje=new Date();return this.atletas.filter(a=>{if(!a.nasc)return false;const d=new Date(a.nasc);return d.getMonth()===hoje.getMonth()&&d.getDate()===hoje.getDate()})},
+  getAniversariosSemana(){const hoje=new Date();const semana=new Date(hoje);semana.setDate(hoje.getDate()+7);return this.atletas.filter(a=>{if(!a.nasc)return false;const d=new Date(a.nasc);const esteAno=new Date(hoje.getFullYear(),d.getMonth(),d.getDate());return esteAno>hoje&&esteAno<=semana})},
+  getAlertas(){return this.atletas.filter(a=>{const ep=a.epocas[this.epoca_atual];if(!ep||ep.estado!=='ativo')return false;return!a.doc_seguro||!a.doc_medico||ep.mensalidade==='atraso'})}
 };
+
 
 </script>
 <script>
