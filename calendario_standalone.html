@@ -324,8 +324,8 @@ select:focus{border-color:var(--blue)}
   <div class="top-controls">
     <div class="view-toggle">
       <button class="vt-btn active" id="vt-mes" onclick="setView('mes')">📅 Mensal</button>
-      <button class="vt-btn" id="vt-sem" onclick="setView('semana')">🔍 Semanal</button>
-      <button class="vt-btn" id="vt-tab" onclick="setView('tabela')">📋 Tabela</button>
+      <button class="vt-btn" id="vt-semana" onclick="setView('semana')">🔍 Semanal</button>
+      <button class="vt-btn" id="vt-tabela" onclick="setView('tabela')">📋 Tabela</button>
     </div>
 
     <div class="nav-month">
@@ -663,7 +663,7 @@ let FILT_ESC = 'todos';
 let CUR_DATE = new Date();
 CUR_DATE.setDate(1);
 let PANEL_PROVA = null;
-let PANEL_TAB = 'info';
+let CAL_PANEL_TAB = 'info';
 
 // Atletas mock (simplificado)
 const ATLETAS_MOCK = {
@@ -1395,7 +1395,7 @@ function openPanel(id, e) {
   const todas=[...CALENDARIO.escola_provas,...CALENDARIO.provas_2027,...(CALENDARIO.provas_fpc_2026||[])];
   PANEL_PROVA=todas.find(p=>p.id==id||p.id===id);
   if(!PANEL_PROVA) return;
-  PANEL_TAB='info';
+  CAL_PANEL_TAB='info';
   document.querySelectorAll('.pt').forEach((t,i)=>t.classList.toggle('active',i===0));
   renderPanel();
   document.getElementById('panel').classList.add('open');
@@ -1411,7 +1411,7 @@ function closePanel(){closeSeatPicker();document.getElementById('panel').classLi
 function setPanelTab(el,tab){
   closeSeatPicker();
   document.querySelectorAll('.pt').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active'); PANEL_TAB=tab; renderPanel();
+  el.classList.add('active'); CAL_PANEL_TAB=tab; renderPanel();
 }
 
 function renderPanel() {
@@ -1420,7 +1420,7 @@ function renderPanel() {
   const body=document.getElementById('panel-body');
   const multiDia=p.etapas>1;
 
-  if(PANEL_TAB==='info') {
+  if(CAL_PANEL_TAB==='info') {
     const etapasDias=[];
     if(multiDia){
       const ini=new Date(p.data+'T00:00:00');
@@ -1471,7 +1471,7 @@ function renderPanel() {
 
     ${p.obs?`<div class="sec"><div class="sec-t">Observações</div><div style="font-size:13px;color:var(--muted);font-style:italic">${p.obs}</div></div>`:''}`;
 
-  } else if(PANEL_TAB==='conv') {
+  } else if(CAL_PANEL_TAB==='conv') {
     const conv=p.convocados||{};
     const temConv=Object.values(conv).some(v=>v.length>0);
     body.innerHTML=`
@@ -1500,7 +1500,7 @@ function renderPanel() {
       }).join('')}
     </div>`;
 
-  } else if(PANEL_TAB==='staff') {
+  } else if(CAL_PANEL_TAB==='staff') {
     const staffAloc = getStaffProva(p.id);
     body.innerHTML=`
     <div class="prova-hd">
@@ -1531,7 +1531,7 @@ function renderPanel() {
       </div>
     </div>`;
 
-  } else if(PANEL_TAB==='outros') {
+  } else if(CAL_PANEL_TAB==='outros') {
     const outros = getOutrosProva(p.id);
     body.innerHTML=`
     <div class="prova-hd">
@@ -1567,7 +1567,7 @@ function renderPanel() {
         </div>`).join(''):'<div style="font-size:12px;color:var(--hint)">Sem outras pessoas adicionadas</div>'}
     </div>`;
 
-  } else if(PANEL_TAB==='logistica') {
+  } else if(CAL_PANEL_TAB==='logistica') {
     const paragens=p.paragens||[];
     const totalKm=paragens.reduce((a,pg)=>a+pg.km,0);
     const viaturasAloc = getViaturasProva(p.id);
@@ -1664,10 +1664,10 @@ function renderPanel() {
       </div>
     </div>`;
 
-  } else if(PANEL_TAB==='lugares') {
+  } else if(CAL_PANEL_TAB==='lugares') {
     renderLugares();
     return;
-  } else if(PANEL_TAB==='folha') {
+  } else if(CAL_PANEL_TAB==='folha') {
     const p2=PANEL_PROVA;
     const conv=p2.convocados||{};
     const paragens=p2.paragens||[];

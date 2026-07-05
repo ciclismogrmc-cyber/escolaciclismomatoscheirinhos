@@ -1076,21 +1076,37 @@ function renderFicha() {
   const ep = a.epocas[DB.epoca_atual];
   const body = document.getElementById('fp-body');
 
+  // Helper: campo editável inline
+  function field(label, key, val, type='text', opts=null) {
+    const inputId = 'ef-'+key;
+    let input;
+    if(opts) {
+      input = `<select class="fv-input" id="${inputId}" style="display:${editMode?'block':'none'};width:100%;padding:4px 7px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:inherit">
+        ${opts.map(o=>`<option value="${o.v}" ${val===o.v?'selected':''}>${o.l}</option>`).join('')}
+      </select>`;
+    } else {
+      input = `<input type="${type}" class="fv-input" id="${inputId}" value="${(val||'').replace(/"/g,'&quot;')}" style="display:${editMode?'block':'none'};width:100%;padding:4px 7px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:inherit">`;
+    }
+    return `<div>
+      <div class="fl">${label}</div>
+      <div class="fv" style="${editMode?'display:none':''}"> ${val||'<span style="color:var(--hint)">—</span>'}</div>
+      ${input}
+    </div>`;
+  }
+
   if(fichaTab==='ficha') {
     const epocasKeys = Object.keys(a.epocas).sort((x,y)=>y-x);
-
     body.innerHTML = `
     <div class="fp-hd">
       <div class="av-lg">${initials(a.nome)}</div>
       <div style="flex:1">
         <div class="fp-name">${a.nome}</div>
-        <div class="fp-sub">Nascido a ${fmtDate(a.nasc)} · ${calcAge(a.nasc)} anos</div>
+        <div class="fp-sub">${a.nasc?'Nascido a '+fmtDate(a.nasc)+' · '+calcAge(a.nasc)+' anos':'Data de nascimento não definida'}</div>
         <div class="fp-badges">
           ${bTipo(ep?.tipo||'')}
           <span class="badge b-info">${escalaoFull(ep)}</span>
           ${ep?.estado==='ativo'?'<span class="badge b-ok">Ativo '+DB.epoca_atual+'</span>':''}
           ${bLic(ep)}
-          ${ep?.tipo==='cedido'?`<span class="badge b-purple">Clube: ${ep.clube_origem}</span>`:''}
         </div>
       </div>
     </div>
@@ -1108,50 +1124,67 @@ function renderFicha() {
         <div><div class="fl">Licença FPC</div><div class="fv">${ep?.licenca||'<span class="badge b-danger">Em falta</span>'}</div></div>
         <div><div class="fl">Mensalidade</div><div class="fv">${bMens(ep?.mensalidade)}</div></div>
         <div style="grid-column:span 2"><div class="fl">Equipamento</div><div class="fv">${ep?.equipamento||'—'}</div></div>
-        ${ep?.obs?`<div style="grid-column:span 2"><div class="fl">Observações</div><div class="fv" style="font-style:italic;color:var(--muted)">${ep.obs}</div></div>`:''}
+        ${ep?.obs?`<div style="grid-column:span 2"><div class="fl">Obs.</div><div class="fv" style="font-style:italic;color:var(--muted)">${ep.obs}</div></div>`:''}
       </div>
     </div>
 
     <div class="secao">
-      <div class="sec-t">Dados pessoais</div>
+      <div class="sec-t">Dados pessoais ${editMode?'<span style="color:var(--blue);font-size:10px;font-weight:400">(a editar)</span>':''}</div>
       <div class="fields">
-        <div><div class="fl">Nome completo</div><div class="fv">${a.nome}</div></div>
-        <div><div class="fl">Data de nascimento</div><div class="fv">${fmtDate(a.nasc)}</div></div>
-        ${a.cc?`<div><div class="fl">Cartão Cidadão</div><div class="fv">${a.cc}</div></div>`:''}
-        ${a.cc_validade?`<div><div class="fl">Validade CC</div><div class="fv">${fmtDateShort(a.cc_validade)}</div></div>`:''}
-        ${a.nif?`<div><div class="fl">Nº Contribuinte</div><div class="fv">${a.nif}</div></div>`:''}
-        ${a.email?`<div><div class="fl">Email</div><div class="fv">${a.email}</div></div>`:''}
-        ${a.tel?`<div><div class="fl">Telemóvel</div><div class="fv">${a.tel}</div></div>`:''}
-        ${a.morada?`<div style="grid-column:span 2"><div class="fl">Morada</div><div class="fv">${a.morada}, ${a.local} · ${a.cp}</div></div>`:''}
+        ${field('Nome próprio', 'nome', a.nome)}
+        ${field('Data de nascimento', 'nasc', a.nasc, 'date')}
+        ${field('Género', 'genero', a.genero, 'text', [{v:'Masculino',l:'Masculino'},{v:'Feminino',l:'Feminino'}])}
+        ${field('Cartão Cidadão', 'cc', a.cc)}
+        ${field('Validade CC', 'cc_validade', a.cc_validade, 'date')}
+        ${field('Nº Contribuinte', 'nif', a.nif)}
+        ${field('Email', 'email', a.email, 'email')}
+        ${field('Telemóvel', 'tel', a.tel, 'tel')}
+        ${field('Telefone', 'tel2', a.tel2, 'tel')}
+        <div style="grid-column:span 2">${field('Morada', 'morada', a.morada)}</div>
+        ${field('Localidade', 'local', a.local)}
+        ${field('Código postal', 'cp', a.cp)}
+        ${field('Distrito', 'distrito', a.distrito)}
+        ${field('Concelho', 'concelho', a.concelho)}
       </div>
     </div>
 
     <div class="secao">
       <div class="sec-t">Filiação e contactos</div>
       <div class="fields">
-        ${a.pai_nome?`<div><div class="fl">Pai — nome</div><div class="fv">${a.pai_nome} ${a.pai_enc?'<span class="badge b-info" style="font-size:10px">Enc.</span>':''}</div></div>`:''}
-        ${a.pai_tel?`<div><div class="fl">Pai — telemóvel</div><div class="fv">${a.pai_tel}</div></div>`:''}
-        ${a.pai_email?`<div><div class="fl">Pai — email</div><div class="fv">${a.pai_email}</div></div>`:''}
-        ${a.mae_nome?`<div><div class="fl">Mãe — nome</div><div class="fv">${a.mae_nome} ${a.mae_enc?'<span class="badge b-info" style="font-size:10px">Enc.</span>':''}</div></div>`:''}
-        ${a.mae_tel?`<div><div class="fl">Mãe — telemóvel</div><div class="fv">${a.mae_tel}</div></div>`:''}
-        ${a.mae_email?`<div><div class="fl">Mãe — email</div><div class="fv">${a.mae_email}</div></div>`:''}
-        ${a.tutor_nome?`<div><div class="fl">Tutor legal</div><div class="fv">${a.tutor_nome}</div></div>`:''}
-        ${a.tutor_tel?`<div><div class="fl">Tutor — tel.</div><div class="fv">${a.tutor_tel}</div></div>`:''}
-        <div><div class="fl">Emergência</div><div class="fv">${a.emerg_nome} · ${a.emerg_tel}</div></div>
+        ${field('Pai — nome', 'pai_nome', a.pai_nome)}
+        ${field('Pai — telemóvel', 'pai_tel', a.pai_tel, 'tel')}
+        ${field('Pai — email', 'pai_email', a.pai_email, 'email')}
+        ${field('Mãe — nome', 'mae_nome', a.mae_nome)}
+        ${field('Mãe — telemóvel', 'mae_tel', a.mae_tel, 'tel')}
+        ${field('Mãe — email', 'mae_email', a.mae_email, 'email')}
+        ${field('Contacto emergência', 'emerg_nome', a.emerg_nome)}
+        ${field('Tel. emergência', 'emerg_tel', a.emerg_tel, 'tel')}
       </div>
     </div>
 
-    ${a.escola?`<div class="secao"><div class="sec-t">Dados escolares</div><div class="fields">
-      <div><div class="fl">Estabelecimento</div><div class="fv">${a.escola}</div></div>
-      <div><div class="fl">Ano / Curso</div><div class="fv">${a.curso}</div></div>
-    </div></div>`:''}
+    <div class="secao">
+      <div class="sec-t">Dados escolares</div>
+      <div class="fields">
+        ${field('Estabelecimento', 'escola', a.escola)}
+        ${field('Ano / Curso', 'curso', a.curso)}
+      </div>
+    </div>
 
     <div class="secao">
       <div class="sec-t">Documentos</div>
       <div class="docs-row">
-        <div class="doc-item">🖼️ Imagem ${a.doc_imagem?'<span class="badge b-ok">OK</span>':'<span class="badge b-danger">Em falta</span>'}</div>
-        <div class="doc-item">🛡️ Seguro ${a.doc_seguro?'<span class="badge b-ok">OK</span>':'<span class="badge b-danger">Em falta</span>'}</div>
-        <div class="doc-item">🏥 Declaração médica ${a.doc_medico?'<span class="badge b-ok">OK</span>':'<span class="badge b-warn">Em falta</span>'}</div>
+        <div class="doc-item" style="cursor:pointer" onclick="toggleDoc('doc_imagem')">
+          🖼️ Imagem ${a.doc_imagem?'<span class="badge b-ok">OK</span>':'<span class="badge b-danger">Em falta</span>'}
+          ${editMode?'<span style="font-size:10px;color:var(--blue);margin-left:4px">clica</span>':''}
+        </div>
+        <div class="doc-item" style="cursor:pointer" onclick="toggleDoc('doc_seguro')">
+          🛡️ Seguro ${a.doc_seguro?'<span class="badge b-ok">OK</span>':'<span class="badge b-danger">Em falta</span>'}
+          ${editMode?'<span style="font-size:10px;color:var(--blue);margin-left:4px">clica</span>':''}
+        </div>
+        <div class="doc-item" style="cursor:pointer" onclick="toggleDoc('doc_medico')">
+          🏥 Declaração médica ${a.doc_medico?'<span class="badge b-ok">OK</span>':'<span class="badge b-warn">Em falta</span>'}
+          ${editMode?'<span style="font-size:10px;color:var(--blue);margin-left:4px">clica</span>':''}
+        </div>
       </div>
     </div>`;
 
@@ -1163,24 +1196,22 @@ function renderFicha() {
       <div><div class="fp-name">${a.nome}</div><div class="fp-sub">Histórico de épocas</div></div>
     </div>
     ${epocasKeys.map(y=>{
-      const ep=a.epocas[y];
+      const epY=a.epocas[y];
       return `<div class="ep-card">
         <div class="ep-card-t">Época ${y}</div>
         <div class="ep-grid">
-          <div><div class="fl">Escalão</div><div class="fv">${escalaoFull(ep)}</div></div>
-          <div><div class="fl">Tipo</div><div class="fv">${ep.tipo==='cedido'?'Cedido — '+ep.clube_origem:'Próprio'}</div></div>
-          <div><div class="fl">Licença</div><div class="fv">${ep.licenca||'—'}</div></div>
-          <div><div class="fl">Mensalidade</div><div class="fv">${bMens(ep.mensalidade)}</div></div>
-          <div style="grid-column:span 2"><div class="fl">Equipamento</div><div class="fv">${ep.equipamento||'—'}</div></div>
-          ${ep.obs?`<div style="grid-column:span 2"><div class="fl">Observações</div><div class="fv" style="font-style:italic;color:var(--muted)">${ep.obs}</div></div>`:''}
+          <div><div class="fl">Escalão</div><div class="fv">${escalaoFull(epY)}</div></div>
+          <div><div class="fl">Tipo</div><div class="fv">${epY.tipo==='cedido'?'Cedido — '+epY.clube_origem:'Próprio'}</div></div>
+          <div><div class="fl">Licença</div><div class="fv">${epY.licenca||'—'}</div></div>
+          <div><div class="fl">Mensalidade</div><div class="fv">${bMens(epY.mensalidade)}</div></div>
+          ${epY.obs?`<div style="grid-column:span 2"><div class="fl">Obs.</div><div class="fv" style="font-style:italic;color:var(--muted)">${epY.obs}</div></div>`:''}
         </div>
       </div>`;
     }).join('')}`;
 
   } else if(fichaTab==='pag') {
-    const ep = a.epocas[DB.epoca_atual];
-    const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    const mesAtual = new Date().getMonth();
+    const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const mesAtual=new Date().getMonth();
     body.innerHTML = `
     <div class="fp-hd">
       <div class="av-lg">${initials(a.nome)}</div>
@@ -1190,17 +1221,16 @@ function renderFicha() {
       <div class="ep-card-t">Estado atual</div>
       <div style="display:flex;gap:12px;align-items:center">
         <div style="font-size:24px;font-weight:600">${bMens(ep?.mensalidade)}</div>
-        <div style="font-size:12px;color:var(--muted)">${ep?.mensalidade==='atraso'?'Mensalidade em atraso — contactar encarregado':ep?.mensalidade==='isento'?'Atleta isento de mensalidade':ep?.mensalidade==='definir'?'Valor a definir (atleta cedido)':'Pagamentos em dia'}</div>
       </div>
     </div>
     <div class="sec-t" style="margin-bottom:.7rem">Mensalidades ${DB.epoca_atual}</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
       ${meses.map((m,i)=>{
-        const passado = i <= mesAtual;
-        const pago = ep?.mensalidade==='pago'||ep?.mensalidade==='isento';
-        const isento = ep?.mensalidade==='isento';
-        const emAtraso = ep?.mensalidade==='atraso' && passado;
-        let bg='var(--bg)', border='var(--border)', txt='var(--muted)', ico='—';
+        const passado=i<=mesAtual;
+        const pago=ep?.mensalidade==='pago'||ep?.mensalidade==='isento';
+        const isento=ep?.mensalidade==='isento';
+        const emAtraso=ep?.mensalidade==='atraso'&&passado;
+        let bg='var(--bg)',border='var(--border)',txt='var(--muted)',ico='—';
         if(isento){bg='var(--gray-bg)';txt='var(--gray)';ico='I'}
         else if(pago&&passado){bg='var(--green-bg)';border='var(--green-border)';txt='var(--green)';ico='✓'}
         else if(emAtraso){bg='var(--red-bg)';border='var(--red-border)';txt='var(--red)';ico='!'}
@@ -1210,13 +1240,10 @@ function renderFicha() {
           <div style="font-size:14px;font-weight:600;color:${txt}">${ico}</div>
         </div>`;
       }).join('')}
-    </div>
-    <div style="margin-top:1rem">
-      <div class="sec-t" style="margin-bottom:.6rem">Equipamento ${DB.epoca_atual}</div>
-      <div style="font-size:13px;color:var(--text)">${ep?.equipamento||'Sem registo'}</div>
     </div>`;
   }
 }
+
 
 function changeEpoca(el, year) {
   document.querySelectorAll('.ep-btn').forEach(b=>b.classList.remove('active'));
@@ -1246,22 +1273,48 @@ function toggleEdit() {
   document.getElementById('btn-edit').style.display='none';
   document.getElementById('btn-save').style.display='';
   document.getElementById('btn-cancel').style.display='';
+  renderFicha();
   toast('Modo de edição ativo — altera os campos e guarda');
 }
+
 function saveEdit() {
+  const a = DB.atletas.find(x=>x.id===fichaId);
+  if(!a) return;
+
+  // Campos simples
+  const campos = ['nome','nasc','genero','cc','cc_validade','nif','email','tel','tel2',
+    'morada','local','cp','distrito','concelho',
+    'pai_nome','pai_tel','pai_email','mae_nome','mae_tel','mae_email',
+    'emerg_nome','emerg_tel','escola','curso'];
+
+  campos.forEach(k=>{
+    const el = document.getElementById('ef-'+k);
+    if(el) a[k] = el.value;
+  });
+
   editMode = false;
   document.getElementById('btn-edit').style.display='';
   document.getElementById('btn-save').style.display='none';
   document.getElementById('btn-cancel').style.display='none';
-  toast('Dados guardados com sucesso!', 'ok');
+  toast('Dados guardados!', 'ok');
   renderFicha();
 }
+
 function cancelEdit() {
   editMode = false;
   document.getElementById('btn-edit').style.display='';
   document.getElementById('btn-save').style.display='none';
   document.getElementById('btn-cancel').style.display='none';
   renderFicha();
+}
+
+function toggleDoc(campo) {
+  if(!editMode) return;
+  const a = DB.atletas.find(x=>x.id===fichaId);
+  if(!a) return;
+  a[campo] = !a[campo];
+  renderFicha();
+  toast(a[campo] ? 'Documento marcado como OK' : 'Documento removido', a[campo]?'ok':'warn');
 }
 
 // ============================================================

@@ -305,6 +305,7 @@ const STAFF_DB = {
 // ============================================================
 let PANEL_STAFF = null;
 let PANEL_TAB = 'ficha';
+let STAFF_EDIT = false;
 
 // ============================================================
 // UTILS
@@ -424,6 +425,16 @@ function renderPanel(){
   const body = document.getElementById('panel-body');
 
   if(PANEL_TAB==='ficha'){
+    function sf(label, key, val, type='text', opts=null) {
+      const id='sf-'+key;
+      let inp;
+      if(opts) {
+        inp=`<select id="${id}" style="display:${STAFF_EDIT?'block':'none'};width:100%;padding:4px 7px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit">${opts.map(o=>`<option value="${o.v}" ${val===o.v?'selected':''}>${o.l}</option>`).join('')}</select>`;
+      } else {
+        inp=`<input type="${type}" id="${id}" value="${(val||'').replace(/"/g,'&quot;')}" style="display:${STAFF_EDIT?'block':'none'};width:100%;padding:4px 7px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit">`;
+      }
+      return `<div><div class="fl">${label}</div><div class="fv" style="${STAFF_EDIT?'display:none':''}">${val||'<span style=\'color:var(--hint)\'>—</span>'}</div>${inp}</div>`;
+    }
     body.innerHTML=`
     <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:.5px solid var(--border)">
       <div class="staff-av ${avClass(m)}" style="width:52px;height:52px;font-size:18px">${initials(m.nome)}</div>
@@ -433,6 +444,7 @@ function renderPanel(){
         <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap">
           ${perfilBadge(m.perfil_acesso)}
           ${m.estado==='ativo'?'<span class="badge b-ok">Ativo</span>':'<span class="badge b-gray">Inativo</span>'}
+          ${STAFF_EDIT?'<span class="badge b-info">A editar</span>':''}
         </div>
       </div>
     </div>
@@ -440,33 +452,36 @@ function renderPanel(){
     <div class="sec">
       <div class="sec-t">Dados pessoais</div>
       <div class="fields">
-        <div><div class="fl">Data de nascimento</div><div class="fv">${fmtDateLong(m.nasc)} · ${calcAge(m.nasc)} anos</div></div>
-        <div><div class="fl">Género</div><div class="fv">${m.genero}</div></div>
-        <div><div class="fl">Telemóvel</div><div class="fv">${m.tel}</div></div>
-        ${m.tel2?`<div><div class="fl">Telefone</div><div class="fv">${m.tel2}</div></div>`:''}
-        <div><div class="fl">Email</div><div class="fv">${m.email}</div></div>
-        <div><div class="fl">Morada</div><div class="fv">${m.morada||'—'}</div></div>
+        ${sf('Nome completo','nome',m.nome)}
+        ${sf('Data de nascimento','nasc',m.nasc,'date')}
+        ${sf('Género','genero',m.genero,'text',[{v:'Masculino',l:'Masculino'},{v:'Feminino',l:'Feminino'}])}
+        ${sf('Telemóvel','tel',m.tel,'tel')}
+        ${sf('Telefone','tel2',m.tel2,'tel')}
+        ${sf('Email','email',m.email,'email')}
+        <div style="grid-column:span 2">${sf('Morada','morada',m.morada)}</div>
       </div>
     </div>
 
     <div class="sec">
       <div class="sec-t">Função e disponibilidade</div>
       <div class="fields">
-        <div><div class="fl">Função</div><div class="fv">${f?.icone||''} ${m.funcao_desc}</div></div>
-        <div><div class="fl">Disponibilidade</div><div class="fv">${m.disponibilidade||'—'}</div></div>
+        ${sf('Função descritiva','funcao_desc',m.funcao_desc)}
+        ${sf('Na escola desde','desde',m.desde)}
+        <div style="grid-column:span 2">${sf('Disponibilidade','disponibilidade',m.disponibilidade)}</div>
+        <div style="grid-column:span 2">${sf('Observações','notas',m.notas)}</div>
       </div>
       <div style="margin-top:.6rem">
         <div class="fl">Escalões associados</div>
         <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px">
-          ${m.escaloes.map(e=>`<span class="badge b-info">${e.toUpperCase()}</span>`).join('')}
+          ${STAFF_DB.ESCALOES_TODOS.map(e=>{
+            const sel=m.escaloes.includes(e);
+            return STAFF_EDIT
+              ? `<span style="font-size:12px;padding:3px 10px;border-radius:20px;border:.5px solid ${sel?'var(--blue)':'var(--border)'};background:${sel?'var(--blue-bg)':'var(--bg)'};color:${sel?'var(--blue)':'var(--muted)'};cursor:pointer;font-weight:${sel?500:400}" onclick="toggleEscalaoStaff('${m.id}','${e}',this)">${e.toUpperCase()}</span>`
+              : sel ? `<span class="badge b-info">${e.toUpperCase()}</span>` : '';
+          }).join('')}
         </div>
       </div>
-    </div>
-
-    ${m.notas?`<div class="sec">
-      <div class="sec-t">Observações</div>
-      <div style="font-size:13px;color:var(--muted);font-style:italic;padding:.6rem;background:var(--bg);border-radius:var(--rs)">${m.notas}</div>
-    </div>`:''}`;
+    </div>`;
 
   } else if(PANEL_TAB==='certs'){
     body.innerHTML=`
@@ -597,6 +612,56 @@ function confirmarNovoMembro(){
   closeModal('modal-staff');
   toast('Membro adicionado!','ok');
   renderMain();
+}
+
+
+function editarMembro() {
+  STAFF_EDIT = true;
+  document.getElementById('panel-foot').innerHTML = `
+    <button class="btn-sm btn-green" onclick="saveStaff()">✓ Guardar</button>
+    <button class="btn-sm btn-ghost" onclick="cancelStaff()">Cancelar</button>
+    <div style="flex:1"></div>
+    <button class="btn-sm btn-ghost" id="btn-toggle-estado" onclick="toggleEstado()">${PANEL_STAFF.estado==='ativo'?'Inativar':'Ativar'}</button>
+  `;
+  renderPanel();
+}
+
+function saveStaff() {
+  const m = PANEL_STAFF;
+  const campos = ['nome','nasc','genero','tel','tel2','email','morada','funcao_desc','desde','disponibilidade','notas'];
+  campos.forEach(k=>{ const el=document.getElementById('sf-'+k); if(el) m[k]=el.value; });
+  STAFF_EDIT = false;
+  restoreStaffFoot();
+  toast('Dados guardados!','ok');
+  renderPanel(); renderMain();
+}
+
+function cancelStaff() {
+  STAFF_EDIT = false;
+  restoreStaffFoot();
+  renderPanel();
+}
+
+function restoreStaffFoot() {
+  document.getElementById('panel-foot').innerHTML = `
+    <button class="btn-sm" onclick="editarMembro()">✏️ Editar</button>
+    <button class="btn-wa btn-sm" onclick="contactarWA()">📱 WhatsApp</button>
+    <div style="flex:1"></div>
+    <button class="btn-sm btn-ghost" id="btn-toggle-estado" onclick="toggleEstado()">${PANEL_STAFF?.estado==='ativo'?'Inativar':'Ativar'}</button>
+  `;
+}
+
+function toggleEscalaoStaff(id, esc, el) {
+  const m = STAFF_DB.getById(id);
+  if(!m) return;
+  const idx = m.escaloes.indexOf(esc);
+  if(idx>=0) m.escaloes.splice(idx,1);
+  else m.escaloes.push(esc);
+  const sel = m.escaloes.includes(esc);
+  el.style.background = sel?'var(--blue-bg)':'var(--bg)';
+  el.style.color = sel?'var(--blue)':'var(--muted)';
+  el.style.borderColor = sel?'var(--blue)':'var(--border)';
+  el.style.fontWeight = sel?'500':'400';
 }
 
 function openModal(id){ document.getElementById(id).classList.add('open'); initModal(); }
