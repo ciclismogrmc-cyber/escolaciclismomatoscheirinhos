@@ -1683,30 +1683,46 @@ init();
 async function lookupCP() {
   const cpEl = document.getElementById('ef-cp');
   if(!cpEl) return;
-  const raw = cpEl.value.replace(/\D/g,'');
+  const raw = cpEl.value.replace(/[^0-9]/g,'');
   if(raw.length < 7) { document.getElementById('cp-status').textContent='⚠️ CP incompleto (####-###)'; return; }
   const cp4 = raw.slice(0,4), cp3 = raw.slice(4,7);
-  // Formatar input
   cpEl.value = cp4+'-'+cp3;
   const status = document.getElementById('cp-status');
   status.textContent = '🔄 A pesquisar...';
+  status.style.color = 'var(--muted)';
   try {
-    const r = await fetch(`https://json.geoapi.pt/cp/${cp4}-${cp3}`);
-    if(!r.ok) throw new Error('não encontrado');
+    const r = await fetch('https://www.cttcodigopostal.pt/api/v1/' + cp4 + cp3 + '/json');
+    if(!r.ok) throw new Error('erro');
     const d = await r.json();
-    const concelho = d.Municipio||d.concelho||'';
-    const distrito = d.Distrito||d.distrito||'';
-    const local = d.Localidade||d.localidade||'';
+    const arr = Array.isArray(d) ? d : [d];
+    if(!arr.length) throw new Error('vazio');
+    const item = arr[0];
+    const concelho = item.municipio||item.concelho||'';
+    const distrito = item.distrito||'';
+    const local = item.localidade||item.desig_postal||'';
     if(concelho) { const el=document.getElementById('ef-concelho'); if(el) el.value=concelho; }
     if(distrito) { const el=document.getElementById('ef-distrito'); if(el) el.value=distrito; }
-    if(local && !document.getElementById('ef-local')?.value) {
-      const el=document.getElementById('ef-local'); if(el) el.value=local;
-    }
-    status.textContent = '✓ '+concelho+(distrito?' · '+distrito:'');
+    if(local) { const el=document.getElementById('ef-local'); if(el && !el.value) el.value=local; }
+    status.textContent = '✓ '+(local||concelho)+(distrito?' · '+distrito:'');
     status.style.color = 'var(--green)';
   } catch(e) {
-    status.textContent = '⚠️ CP não encontrado';
-    status.style.color = 'var(--amber)';
+    // fallback geoapi.pt
+    try {
+      const r2 = await fetch('https://json.geoapi.pt/cp/'+cp4+'-'+cp3);
+      if(!r2.ok) throw new Error();
+      const d2 = await r2.json();
+      const c = d2.Municipio||d2.municipio||d2.concelho||'';
+      const di = d2.Distrito||d2.distrito||'';
+      const lo = d2.Localidade||d2.localidade||'';
+      if(c){const el=document.getElementById('ef-concelho');if(el)el.value=c;}
+      if(di){const el=document.getElementById('ef-distrito');if(el)el.value=di;}
+      if(lo){const el=document.getElementById('ef-local');if(el&&!el.value)el.value=lo;}
+      status.textContent = '✓ '+c+(di?' · '+di:'');
+      status.style.color = 'var(--green)';
+    } catch(e2) {
+      status.textContent = '⚠️ CP não encontrado — preenche manualmente';
+      status.style.color = 'var(--amber)';
+    }
   }
 }
 

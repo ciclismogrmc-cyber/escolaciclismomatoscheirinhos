@@ -143,8 +143,8 @@ td{padding:8px 12px;vertical-align:middle;font-size:13px}
 /* CONFIG */
 .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .mes-toggle{display:flex;gap:5px;flex-wrap:wrap}
-.mes-pill{font-size:12px;padding:4px 10px;border-radius:20px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .12s}
-.mes-pill.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);font-weight:500}
+.mes-pill{font-size:12px;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .15s;font-weight:500}
+.mes-pill.active{background:#185FA5;color:#fff;border-color:#185FA5;font-weight:600;box-shadow:0 2px 6px rgba(24,95,165,.3)}
 
 /* MODAL */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center}
@@ -419,48 +419,7 @@ const FINANCEIRA_DB = {
   },
 
   // Mensalidades registadas: {atletaId: [{mes, ano, valor, pago, dataPagamento, metodo, obs}]}
-  mensalidades: {
-    1: [ // Afonso Ferreira (SUB17)
-      {mes:1, ano:2026, valor:35, pago:true, dataPagamento:'2026-01-08', metodo:'transferencia', obs:''},
-      {mes:2, ano:2026, valor:35, pago:true, dataPagamento:'2026-02-06', metodo:'mbway', obs:''},
-      {mes:3, ano:2026, valor:35, pago:true, dataPagamento:'2026-03-10', metodo:'mbway', obs:''},
-      {mes:4, ano:2026, valor:35, pago:true, dataPagamento:'2026-04-07', metodo:'transferencia', obs:''},
-      {mes:5, ano:2026, valor:35, pago:true, dataPagamento:'2026-05-09', metodo:'mbway', obs:''},
-      {mes:6, ano:2026, valor:35, pago:true, dataPagamento:'2026-06-05', metodo:'mbway', obs:''},
-    ],
-    2: [ // Maria Santos (Escolas) - em atraso
-      {mes:1, ano:2026, valor:25, pago:true, dataPagamento:'2026-01-15', metodo:'numerario', obs:''},
-      {mes:2, ano:2026, valor:25, pago:true, dataPagamento:'2026-02-12', metodo:'numerario', obs:''},
-      {mes:3, ano:2026, valor:25, pago:true, dataPagamento:'2026-03-14', metodo:'numerario', obs:''},
-      {mes:4, ano:2026, valor:25, pago:false, dataPagamento:'', metodo:'', obs:''},
-      {mes:5, ano:2026, valor:25, pago:false, dataPagamento:'', metodo:'', obs:''},
-      {mes:6, ano:2026, valor:25, pago:false, dataPagamento:'', metodo:'', obs:''},
-    ],
-    4: [ // João Silva - 2 meses em atraso
-      {mes:1, ano:2026, valor:35, pago:true, dataPagamento:'2026-01-10', metodo:'mbway', obs:''},
-      {mes:2, ano:2026, valor:35, pago:true, dataPagamento:'2026-02-09', metodo:'mbway', obs:''},
-      {mes:3, ano:2026, valor:35, pago:true, dataPagamento:'2026-03-11', metodo:'mbway', obs:''},
-      {mes:4, ano:2026, valor:35, pago:true, dataPagamento:'2026-04-08', metodo:'mbway', obs:''},
-      {mes:5, ano:2026, valor:35, pago:false, dataPagamento:'', metodo:'', obs:''},
-      {mes:6, ano:2026, valor:35, pago:false, dataPagamento:'', metodo:'', obs:'Em contacto com o pai'},
-    ],
-    5: [ // Dinis Dias (Escolas)
-      {mes:1, ano:2026, valor:25, pago:true, dataPagamento:'2026-01-07', metodo:'transferencia', obs:''},
-      {mes:2, ano:2026, valor:25, pago:true, dataPagamento:'2026-02-05', metodo:'transferencia', obs:''},
-      {mes:3, ano:2026, valor:25, pago:true, dataPagamento:'2026-03-06', metodo:'transferencia', obs:''},
-      {mes:4, ano:2026, valor:25, pago:true, dataPagamento:'2026-04-04', metodo:'transferencia', obs:''},
-      {mes:5, ano:2026, valor:25, pago:true, dataPagamento:'2026-05-07', metodo:'transferencia', obs:''},
-      {mes:6, ano:2026, valor:25, pago:true, dataPagamento:'2026-06-04', metodo:'transferencia', obs:''},
-    ],
-    7: [ // Marco Silva (SUB23)
-      {mes:1, ano:2026, valor:40, pago:true, dataPagamento:'2026-01-05', metodo:'transferencia', obs:''},
-      {mes:2, ano:2026, valor:40, pago:true, dataPagamento:'2026-02-04', metodo:'transferencia', obs:''},
-      {mes:3, ano:2026, valor:40, pago:true, dataPagamento:'2026-03-05', metodo:'transferencia', obs:''},
-      {mes:4, ano:2026, valor:40, pago:true, dataPagamento:'2026-04-03', metodo:'transferencia', obs:''},
-      {mes:5, ano:2026, valor:40, pago:true, dataPagamento:'2026-05-05', metodo:'transferencia', obs:''},
-      {mes:6, ano:2026, valor:40, pago:true, dataPagamento:'2026-06-03', metodo:'transferencia', obs:''},
-    ],
-  },
+  mensalidades: {},
 
   // Despesas: [{id, data, tipo, descricao, valor, provaId, provaNome, comprovativo, obs}]
   despesas: [
@@ -552,9 +511,19 @@ const FINANCEIRA_DB = {
     return rec.total - desp;
   },
 
+  UTILIZADORES: [
+    {id:'jp_serra', nome:'João Paulo Serra'},
+    {id:'m_fonseca', nome:'Manuel Fonseca'},
+    {id:'a_coutinho', nome:'Alexandre Coutinho'},
+    {id:'j_barao', nome:'Jorge Barão'},
+    {id:'a_moreno', nome:'Audatilo Moreno'},
+    {id:'outro', nome:'Outro'},
+  ],
+
   getMetodo(id) { return this.METODOS.find(m=>m.id===id); },
   getTipoDespesa(id) { return this.TIPOS_DESPESA.find(t=>t.id===id); },
   getTipoReceita(id) { return this.TIPOS_RECEITA.find(t=>t.id===id); },
+  getUtilizador(id) { return this.UTILIZADORES.find(u=>u.id===id); },
 };
 
 </script>
@@ -823,7 +792,7 @@ function renderMensDetalhe() {
         return `<div class="mes-card ${m.pago?'pago':'pendente'}">
           <div class="mes-name">${nome} ${ano}</div>
           <div class="mes-valor" style="color:${m.pago?'var(--green)':'var(--red)'}">${fmtEur(val)}</div>
-          ${m.pago?`<div class="mes-info">✓ ${fmtDate(m.dataPagamento)}<br>${FINANCEIRA_DB.getMetodo(m.metodo)?.icone||''} ${FINANCEIRA_DB.getMetodo(m.metodo)?.nome||m.metodo}</div>`
+          ${m.pago?`<div class="mes-info">✓ ${fmtDate(m.dataPagamento)}<br>${FINANCEIRA_DB.getMetodo(m.metodo)?.icone||''} ${FINANCEIRA_DB.getMetodo(m.metodo)?.nome||m.metodo}${m.registadoPor?'<br><span style="color:var(--muted);font-size:10px">por '+m.registadoPor+'</span>':''}</div>`
           :`<div class="mes-info">⚠️ Por pagar</div>`}
           ${m.obs?`<div class="mes-info" style="font-style:italic">${m.obs}</div>`:''}
           <div class="mes-btn">
@@ -862,6 +831,11 @@ function openModalPagamento(atletaId, mes, ano, valor) {
         ${FINANCEIRA_DB.METODOS.map(m=>`<option value="${m.id}">${m.icone} ${m.nome}</option>`).join('')}
       </select>
     </div>
+    <div class="fg"><label class="fl2">Registado por *</label>
+      <select class="fi" id="pag-user">
+        ${FINANCEIRA_DB.UTILIZADORES.map(u=>`<option value="${u.id}">${u.nome}</option>`).join('')}
+      </select>
+    </div>
     <div class="fg"><label class="fl2">Observações</label><input type="text" class="fi" id="pag-obs" placeholder="opcional"></div>
   `;
   openModal('modal-pag');
@@ -872,11 +846,13 @@ function confirmarPagamento() {
   const data = document.getElementById('pag-data').value;
   const valor = parseFloat(document.getElementById('pag-valor').value);
   const metodo = document.getElementById('pag-metodo').value;
+  const userId = document.getElementById('pag-user')?.value || 'jp_serra';
+  const userName = FINANCEIRA_DB.getUtilizador(userId)?.nome || userId;
   const obs = document.getElementById('pag-obs').value;
 
   if(!FINANCEIRA_DB.mensalidades[atletaId]) FINANCEIRA_DB.mensalidades[atletaId] = [];
   const idx = FINANCEIRA_DB.mensalidades[atletaId].findIndex(r=>r.mes===mes&&r.ano===ano);
-  const reg = {mes, ano, valor, pago:true, dataPagamento:data, metodo, obs};
+  const reg = {mes, ano, valor, pago:true, dataPagamento:data, metodo, registadoPor:userName, obs};
   if(idx>=0) FINANCEIRA_DB.mensalidades[atletaId][idx] = reg;
   else FINANCEIRA_DB.mensalidades[atletaId].push(reg);
 

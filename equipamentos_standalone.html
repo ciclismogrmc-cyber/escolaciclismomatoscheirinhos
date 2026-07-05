@@ -243,11 +243,19 @@ td{padding:8px 12px;vertical-align:middle;font-size:13px}
 
   <!-- VISTA POR ATLETA -->
   <div id="view-atleta">
-    <div class="athlete-bar">
+    <div class="athlete-bar" style="flex-wrap:wrap;gap:6px">
       <div class="athlete-search">
         <span class="s-ico">🔍</span>
         <input type="text" placeholder="Pesquisar atleta..." id="athlete-search" oninput="filterAthletes()">
       </div>
+      <select id="escalao-filter" onchange="filterAthletes()" style="padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--surface)">
+        <option value="">Todos os escalões</option>
+        <option value="escolas">Escolas</option>
+        <option value="sub17">SUB17</option>
+        <option value="sub19">SUB19</option>
+        <option value="sub23">SUB23</option>
+        <option value="paraciclismo">Paraciclismo</option>
+      </select>
       <select id="athlete-select" onchange="selectAthlete(this.value)" style="flex:2;min-width:240px"></select>
     </div>
 
@@ -982,10 +990,16 @@ function populateAthleteSelect() {
 }
 
 function filterAthletes() {
-  const q = document.getElementById('athlete-search').value.toLowerCase();
+  const q = document.getElementById('athlete-search')?.value.toLowerCase()||'';
+  const esc = document.getElementById('escalao-filter')?.value||'';
   const sel = document.getElementById('athlete-select');
   const ativos = DB.atletas.filter(a=>{const e=a.epocas[DB.epoca_atual];return e&&e.estado==='ativo'});
-  const filtered = q ? ativos.filter(a=>a.nome.toLowerCase().includes(q)) : ativos;
+  const filtered = ativos.filter(a=>{
+    const ep=a.epocas[DB.epoca_atual];
+    if(esc && ep.escalao!==esc) return false;
+    if(q && !a.nome.toLowerCase().includes(q)) return false;
+    return true;
+  });
   sel.innerHTML = filtered.map(a=>{
     const ep = a.epocas[DB.epoca_atual];
     return `<option value="${a.id}">${a.nome} — ${escalaoFull(ep)}</option>`;
@@ -1374,7 +1388,10 @@ function renderCatalogo() {
               </div>
               <div style="font-size:10px;color:var(--hint)">${fornsTxt}</div>
             </div>`;}).join('')}
-          <div style="text-align:right;margin-top:.5rem"><button class="btn-sm" onclick="toast('Adicionar nova gama em breve')">+ gama</button></div>
+          <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:.5rem">
+            <button class="btn-sm" onclick="addGama('corrida','${p.id}')">+ gama</button>
+            <button class="btn-sm btn-ghost" onclick="toggleObrigatorio('corrida','${p.id}')">${p.obrigatorio?'Tornar opcional':'Tornar obrigatório'}</button>
+          </div>
         </div>`).join('')}
     </div></div>
   </div>
@@ -1402,9 +1419,19 @@ function renderCatalogo() {
               </div>
               <div style="font-size:10px;color:var(--hint)">${fornsTxt}</div>
             </div>`;}).join('')}
-          <div style="text-align:right;margin-top:.5rem"><button class="btn-sm" onclick="toast('Adicionar nova gama em breve')">+ gama</button></div>
+          <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:.5rem">
+            <button class="btn-sm" onclick="addGama('casual','${p.id}')">+ gama</button>
+          </div>
         </div>`).join('')}
     </div></div>
+  </div>
+
+  <div style="margin-top:.85rem;padding:.75rem 1rem;background:var(--green-bg);border:.5px solid var(--green-bd);border-radius:var(--r);display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:13px;color:var(--green);font-weight:500">➕ Adicionar nova peça ao catálogo</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn-sm btn-teal" onclick="openAddPeca('corrida')">+ Peça de corrida</button>
+      <button class="btn-sm btn-teal" onclick="openAddPeca('casual')">+ Peça casual</button>
+    </div>
   </div>`;
 
   document.getElementById('view-catalogo').innerHTML = html;
@@ -1639,6 +1666,62 @@ function toast(msg,type=''){
 // ============================================================
 populateAthleteSelect();
 renderAthleteContent();
+
+// ============================================================
+// GESTÃO DO CATÁLOGO — adicionar gama, peça, toggle obrigatório, margem
+// ============================================================
+function addGama(secao, pecaId) {
+  const nome = prompt('Nome da nova gama (ex: Gama Alta - SUB23):');
+  if(!nome) return;
+  const preco = parseFloat(prompt('Preço base (€):'));
+  if(isNaN(preco)) return;
+  const cat = secao==='corrida' ? EQUIPAMENTOS_DB.catalogo_corrida : EQUIPAMENTOS_DB.catalogo_casual;
+  const peca = cat.find(p=>p.id===pecaId);
+  if(!peca) return;
+  const novaGama = {
+    id:'g'+Date.now(), nome, desc:'',
+    precos:[{fornecedorId:'forn1', preco}]
+  };
+  peca.gamas.push(novaGama);
+  toast('Gama adicionada!','ok');
+  renderCatalogo();
+}
+
+function openAddPeca(secao) {
+  const nome = prompt('Nome da nova peça (ex: Capa de Chuva):');
+  if(!nome) return;
+  const icone = prompt('Emoji/ícone (ex: 🌧️):')||'📦';
+  const obrig = confirm('É obrigatória?');
+  const margem = obrig ? 0 : parseFloat(prompt('Margem % para o clube (peças opcionais):')||'0')||0;
+  const novaPeca = {
+    id:'p'+Date.now(), nome, icone,
+    obrigatorio:obrig, margem,
+    gamas:[{id:'g'+Date.now()+'a', nome:'Padrão', desc:'', precos:[{fornecedorId:'forn1', preco:0}]}]
+  };
+  if(secao==='corrida') EQUIPAMENTOS_DB.catalogo_corrida.push(novaPeca);
+  else EQUIPAMENTOS_DB.catalogo_casual.push(novaPeca);
+  toast('Peça adicionada ao catálogo!','ok');
+  renderCatalogo();
+}
+
+function toggleObrigatorio(secao, pecaId) {
+  const cat = secao==='corrida' ? EQUIPAMENTOS_DB.catalogo_corrida : EQUIPAMENTOS_DB.catalogo_casual;
+  const peca = cat.find(p=>p.id===pecaId);
+  if(!peca) return;
+  peca.obrigatorio = !peca.obrigatorio;
+  if(!peca.obrigatorio && !peca.margem) {
+    const m = prompt('Margem % para o clube nesta peça opcional:','0');
+    peca.margem = parseFloat(m)||0;
+  }
+  toast(peca.obrigatorio?'Marcada como obrigatória':'Marcada como opcional — peça cobrada ao atleta','ok');
+  renderCatalogo();
+}
+
+function calcPrecoComMargem(preco, margem) {
+  return preco * (1 + (margem||0)/100);
+}
+
+
 </script>
 </body>
 </html>
