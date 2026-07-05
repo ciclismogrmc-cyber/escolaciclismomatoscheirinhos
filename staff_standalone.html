@@ -200,12 +200,7 @@ select:focus,input:focus,textarea:focus{border-color:var(--blue)}
     </div>
   </div>
   <div class="panel-body" id="panel-body"></div>
-  <div class="panel-foot">
-    <button class="btn-sm" onclick="editarMembro()">✏️ Editar</button>
-    <button class="btn-wa btn-sm" onclick="contactarWA()">📱 WhatsApp</button>
-    <div style="flex:1"></div>
-    <button class="btn-sm btn-ghost" id="btn-toggle-estado" onclick="toggleEstado()">Inativar</button>
-  </div>
+  <div class="panel-foot" id="panel-foot"></div>
 </div>
 </div><!-- /panel-overlay -->
 
@@ -417,10 +412,11 @@ function openPanel(id){
   PANEL_STAFF = STAFF_DB.getById(id);
   if(!PANEL_STAFF) return;
   PANEL_TAB='ficha';
+  STAFF_EDIT = false;
   document.querySelectorAll('.pt').forEach((t,i)=>t.classList.toggle('active',i===0));
   renderPanel();
+  restoreStaffFoot();
   document.getElementById('panel-overlay').classList.add('open');
-  document.getElementById('btn-toggle-estado').textContent = PANEL_STAFF.estado==='ativo'?'Inativar':'Ativar';
 }
 function closePanel(){document.getElementById('panel-overlay').classList.remove('open');PANEL_STAFF=null}
 function setPTab(el,tab){
@@ -622,7 +618,11 @@ function confirmarNovoMembro(){
 
 
 function editarMembro() {
+  if(!PANEL_STAFF) return;
   STAFF_EDIT = true;
+  // Garantir que a overlay está aberta
+  const ov = document.getElementById('panel-overlay');
+  if(ov && !ov.classList.contains('open')) ov.classList.add('open');
   document.getElementById('panel-foot').innerHTML = `
     <button class="btn-sm btn-green" onclick="saveStaff()">✓ Guardar</button>
     <button class="btn-sm btn-ghost" onclick="cancelStaff()">Cancelar</button>
