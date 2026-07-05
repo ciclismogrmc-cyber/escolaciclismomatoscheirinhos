@@ -146,8 +146,14 @@ button:hover,.btn:hover{background:var(--bg)}
 .btn-teal:hover{background:#0a5040}
 
 /* ---- PAINEL FICHA ---- */
-.ficha-panel{position:fixed;top:0;right:0;bottom:0;width:500px;background:var(--surface);border-left:.5px solid var(--border);z-index:200;display:none;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
-.ficha-panel.open{display:flex}
+/* FICHA MODAL — centralizada, dimensionável */
+.ficha-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.ficha-overlay.open{display:flex}
+.ficha-panel{position:relative;background:var(--surface);border-radius:var(--r);width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22);resize:both;min-width:320px;min-height:400px}
+@media(max-width:640px){
+  .ficha-overlay{padding:.5rem}
+  .ficha-panel{max-width:100%;max-height:95vh;border-radius:var(--r) var(--r) 0 0;width:100%!important;min-width:0;resize:none;align-self:flex-end}
+}
 .fp-top{padding:.9rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
 .fp-tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--rs);padding:3px}
 .fp-tab{padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .11s}
@@ -255,13 +261,16 @@ textarea.fi{resize:vertical;min-height:80px}
   .sidebar{transform:translateX(-100%);transition:transform .2s}
   .sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
-  .ficha-panel{width:100%}
   .fields{grid-template-columns:1fr}
   .ep-grid{grid-template-columns:1fr}
   .metrics{grid-template-columns:repeat(2,1fr)}
   table th:nth-child(4),table td:nth-child(4),
   table th:nth-child(5),table td:nth-child(5){display:none}
 }
+
+/* Resize handle visual */
+.ficha-panel::after{content:'⠿';position:absolute;bottom:4px;right:6px;color:var(--hint);font-size:14px;line-height:1;pointer-events:none}
+@media(max-width:640px){.ficha-panel::after{display:none}}
 </style>
 </head>
 <body>
@@ -412,9 +421,10 @@ textarea.fi{resize:vertical;min-height:80px}
 <!-- ============================================================
      PAINEL FICHA
 ============================================================ -->
+<div class="ficha-overlay" id="ficha-overlay" onclick="if(event.target===this)closeFicha()">
 <div class="ficha-panel" id="ficha-panel">
-  <div class="fp-top">
-    <button class="btn-ghost btn-sm" onclick="closeFicha()">← Voltar</button>
+  <div class="fp-top" style="cursor:move;user-select:none" id="fp-drag-handle">
+    <button class="btn-ghost btn-sm" onclick="closeFicha()">✕ Fechar</button>
     <div style="flex:1"></div>
     <div class="fp-tabs">
       <div class="fp-tab active" onclick="setTab(this,'ficha')">Ficha</div>
@@ -433,6 +443,7 @@ textarea.fi{resize:vertical;min-height:80px}
     <button class="btn-sm btn-danger" onclick="toast('Confirmar antes de inativar')">Inativar</button>
   </div>
 </div>
+</div><!-- /ficha-overlay -->
 
 <!-- ============================================================
      MODAL NOVO ATLETA
@@ -1055,13 +1066,14 @@ function renderTable(data) {
 function openFicha(id) {
   fichaId = id; fichaTab = 'ficha'; editMode = false;
   renderFicha();
-  document.getElementById('ficha-panel').classList.add('open');
+  document.getElementById('ficha-overlay').classList.add('open');
+  document.getElementById('ficha-panel').style.height='';
   document.getElementById('btn-edit').style.display='';
   document.getElementById('btn-save').style.display='none';
   document.getElementById('btn-cancel').style.display='none';
 }
 function closeFicha() {
-  document.getElementById('ficha-panel').classList.remove('open');
+  document.getElementById('ficha-overlay').classList.remove('open');
   fichaId=null;
 }
 function setTab(el, tab) {
@@ -1542,6 +1554,70 @@ function toast(msg, type='') {
 // START
 // ============================================================
 init();
+
+// ============================================================
+// DRAG para mover o modal de ficha
+// ============================================================
+(function(){
+  let dragging=false, ox=0, oy=0, startX=0, startY=0;
+  function onDown(e){
+    const handle=document.getElementById('fp-drag-handle');
+    if(!handle||!handle.contains(e.target)) return;
+    if(e.target.tagName==='BUTTON') return;
+    const panel=document.getElementById('ficha-panel');
+    const ov=document.getElementById('ficha-overlay');
+    if(!panel) return;
+    dragging=true;
+    const rect=panel.getBoundingClientRect();
+    // Converter para posição absoluta dentro da overlay
+    ox=rect.left; oy=rect.top;
+    startX=(e.clientX||e.touches[0].clientX); startY=(e.clientY||e.touches[0].clientY);
+    ov.style.alignItems='flex-start';
+    ov.style.justifyContent='flex-start';
+    panel.style.position='absolute';
+    panel.style.left=ox+'px';
+    panel.style.top=oy+'px';
+    panel.style.margin='0';
+    e.preventDefault();
+  }
+  function onMove(e){
+    if(!dragging) return;
+    const panel=document.getElementById('ficha-panel');
+    if(!panel) return;
+    const cx=(e.clientX||e.touches[0].clientX);
+    const cy=(e.clientY||e.touches[0].clientY);
+    const nx=Math.max(0,Math.min(window.innerWidth-300, ox+(cx-startX)));
+    const ny=Math.max(0,Math.min(window.innerHeight-100, oy+(cy-startY)));
+    panel.style.left=nx+'px';
+    panel.style.top=ny+'px';
+  }
+  function onUp(){
+    dragging=false;
+  }
+  document.addEventListener('mousedown',onDown);
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+  document.addEventListener('touchstart',onDown,{passive:false});
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('touchend',onUp);
+
+  // Reset posição quando abre
+  const origOpen = window.openFichaPanel;
+  document.addEventListener('DOMContentLoaded',function(){
+    const ov=document.getElementById('ficha-overlay');
+    if(ov){
+      const obs=new MutationObserver(function(){
+        if(ov.classList.contains('open')){
+          const panel=document.getElementById('ficha-panel');
+          if(panel){ panel.style.position=''; panel.style.left=''; panel.style.top=''; }
+          ov.style.alignItems=''; ov.style.justifyContent='';
+        }
+      });
+      obs.observe(ov,{attributes:true,attributeFilter:['class']});
+    }
+  });
+})();
+
 </script>
 </body>
 </html>
