@@ -1047,7 +1047,10 @@ function renderTable(data) {
     return `<tr onclick="openFicha(${a.id})">
       <td><div class="cell-name">
         <div class="av av-${avColor(a)}">${initials(a.nome)}</div>
-        <div><div class="aname">${a.nome}</div><div class="asub">${calcAge(a.nasc)} anos · ${escalaoFull(ep)}</div></div>
+        <div>
+          <div class="aname">${a.nome} <span style="font-weight:700;color:var(--blue);font-size:12px">${ep.licenca||''}</span></div>
+          <div class="asub">${a.nasc?calcAge(a.nasc)+' anos · ':''} ${escalaoFull(ep)}</div>
+        </div>
       </div></td>
       <td>${escalaoLabel(ep)}</td>
       <td>${bTipo(ep.tipo)}</td>
@@ -1075,6 +1078,11 @@ function openFicha(id) {
 function closeFicha() {
   document.getElementById('ficha-overlay').classList.remove('open');
   fichaId=null;
+  // Atualizar tabela com dados mais recentes
+  const filtro = document.getElementById('search-inp');
+  const q = filtro ? filtro.value.trim().toLowerCase() : '';
+  const dados = q ? DB.atletas.filter(a=>a.nome.toLowerCase().includes(q)) : DB.atletas.filter(a=>{const ep=a.epocas[DB.epoca_atual];return ep&&ep.estado==='ativo'});
+  renderTable(dados);
 }
 function setTab(el, tab) {
   document.querySelectorAll('.fp-tab').forEach(t=>t.classList.remove('active'));
@@ -1151,26 +1159,63 @@ function renderFicha() {
         ${field('Nº Contribuinte', 'nif', a.nif)}
         ${field('Email', 'email', a.email, 'email')}
         ${field('Telemóvel', 'tel', a.tel, 'tel')}
-        ${field('Telefone', 'tel2', a.tel2, 'tel')}
-        <div style="grid-column:span 2">${field('Morada', 'morada', a.morada)}</div>
-        ${field('Localidade', 'local', a.local)}
-        ${field('Código postal', 'cp', a.cp)}
-        ${field('Distrito', 'distrito', a.distrito)}
-        ${field('Concelho', 'concelho', a.concelho)}
+        ${field('Telefone 2', 'tel2', a.tel2, 'tel')}
       </div>
     </div>
 
     <div class="secao">
-      <div class="sec-t">Filiação e contactos</div>
+      <div class="sec-t">Morada</div>
       <div class="fields">
-        ${field('Pai — nome', 'pai_nome', a.pai_nome)}
-        ${field('Pai — telemóvel', 'pai_tel', a.pai_tel, 'tel')}
-        ${field('Pai — email', 'pai_email', a.pai_email, 'email')}
-        ${field('Mãe — nome', 'mae_nome', a.mae_nome)}
-        ${field('Mãe — telemóvel', 'mae_tel', a.mae_tel, 'tel')}
-        ${field('Mãe — email', 'mae_email', a.mae_email, 'email')}
-        ${field('Contacto emergência', 'emerg_nome', a.emerg_nome)}
-        ${field('Tel. emergência', 'emerg_tel', a.emerg_tel, 'tel')}
+        <div style="grid-column:span 2">${field('Rua / Avenida / Praçeta', 'morada', a.morada)}</div>
+        ${field('Número / Porta', 'morada_num', a.morada_num||'')}
+        ${field('Código Postal (####-###)', 'cp', a.cp)}
+        ${field('Localidade', 'local', a.local)}
+        ${field('Concelho', 'concelho', a.concelho)}
+        ${field('Distrito', 'distrito', a.distrito)}
+      </div>
+      ${editMode?`<div style="margin-top:.5rem">
+        <button class="btn-sm" onclick="lookupCP()" style="font-size:11px">🔍 Preencher concelho/distrito pelo CP</button>
+        <span id="cp-status" style="font-size:11px;color:var(--muted);margin-left:8px"></span>
+      </div>`:''}
+    </div>
+
+    <div class="secao">
+      <div class="sec-t">Filiação e contactos</div>
+
+      <div style="margin-bottom:.75rem;padding:.65rem .85rem;background:var(--bg);border-radius:var(--rs)">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem">👨 Pai</div>
+        <div class="fields" style="grid-template-columns:1fr 1fr 1fr">
+          ${field('Nome', 'pai_nome', a.pai_nome)}
+          ${field('Telemóvel', 'pai_tel', a.pai_tel, 'tel')}
+          ${field('Email', 'pai_email', a.pai_email, 'email')}
+        </div>
+      </div>
+
+      <div style="margin-bottom:.75rem;padding:.65rem .85rem;background:var(--bg);border-radius:var(--rs)">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem">👩 Mãe</div>
+        <div class="fields" style="grid-template-columns:1fr 1fr 1fr">
+          ${field('Nome', 'mae_nome', a.mae_nome)}
+          ${field('Telemóvel', 'mae_tel', a.mae_tel, 'tel')}
+          ${field('Email', 'mae_email', a.mae_email, 'email')}
+        </div>
+      </div>
+
+      <div style="margin-bottom:.75rem;padding:.65rem .85rem;background:var(--bg);border-radius:var(--rs)">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem">🧑‍⚖️ Tutor legal</div>
+        <div class="fields" style="grid-template-columns:1fr 1fr">
+          ${field('Nome', 'tutor_nome', a.tutor_nome)}
+          ${field('Cartão Cidadão', 'tutor_cc', a.tutor_cc)}
+          ${field('Email', 'tutor_email', a.tutor_email, 'email')}
+          ${field('Telefone', 'tutor_tel', a.tutor_tel, 'tel')}
+        </div>
+      </div>
+
+      <div style="padding:.65rem .85rem;background:var(--bg);border-radius:var(--rs)">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem">🚨 Contacto de emergência</div>
+        <div class="fields" style="grid-template-columns:1fr 1fr">
+          ${field('Nome', 'emerg_nome', a.emerg_nome)}
+          ${field('Telemóvel', 'emerg_tel', a.emerg_tel, 'tel')}
+        </div>
       </div>
     </div>
 
@@ -1293,16 +1338,29 @@ function saveEdit() {
   const a = DB.atletas.find(x=>x.id===fichaId);
   if(!a) return;
 
-  // Campos simples
   const campos = ['nome','nasc','genero','cc','cc_validade','nif','email','tel','tel2',
-    'morada','local','cp','distrito','concelho',
-    'pai_nome','pai_tel','pai_email','mae_nome','mae_tel','mae_email',
+    'morada','morada_num','local','cp','distrito','concelho',
+    'pai_nome','pai_tel','pai_email',
+    'mae_nome','mae_tel','mae_email',
+    'tutor_nome','tutor_cc','tutor_email','tutor_tel',
     'emerg_nome','emerg_tel','escola','curso'];
 
   campos.forEach(k=>{
     const el = document.getElementById('ef-'+k);
     if(el) a[k] = el.value;
   });
+
+  // Formatar CP automaticamente ####-###
+  if(a.cp) {
+    const digits = a.cp.replace(/\D/g,'');
+    if(digits.length===7) a.cp = digits.slice(0,4)+'-'+digits.slice(4);
+  }
+
+  // Licença ativa → seguro automático
+  const ep = a.epocas[DB.epoca_atual];
+  if(ep && ep.licenca && ep.licenca.trim() !== '') {
+    a.doc_seguro = true;
+  }
 
   editMode = false;
   document.getElementById('btn-edit').style.display='';
@@ -1617,6 +1675,46 @@ init();
     }
   });
 })();
+
+
+// ============================================================
+// CÓDIGO POSTAL — autopreenchimento e formato
+// ============================================================
+async function lookupCP() {
+  const cpEl = document.getElementById('ef-cp');
+  if(!cpEl) return;
+  const raw = cpEl.value.replace(/\D/g,'');
+  if(raw.length < 7) { document.getElementById('cp-status').textContent='⚠️ CP incompleto (####-###)'; return; }
+  const cp4 = raw.slice(0,4), cp3 = raw.slice(4,7);
+  // Formatar input
+  cpEl.value = cp4+'-'+cp3;
+  const status = document.getElementById('cp-status');
+  status.textContent = '🔄 A pesquisar...';
+  try {
+    const r = await fetch(`https://json.geoapi.pt/cp/${cp4}-${cp3}`);
+    if(!r.ok) throw new Error('não encontrado');
+    const d = await r.json();
+    const concelho = d.Municipio||d.concelho||'';
+    const distrito = d.Distrito||d.distrito||'';
+    const local = d.Localidade||d.localidade||'';
+    if(concelho) { const el=document.getElementById('ef-concelho'); if(el) el.value=concelho; }
+    if(distrito) { const el=document.getElementById('ef-distrito'); if(el) el.value=distrito; }
+    if(local && !document.getElementById('ef-local')?.value) {
+      const el=document.getElementById('ef-local'); if(el) el.value=local;
+    }
+    status.textContent = '✓ '+concelho+(distrito?' · '+distrito:'');
+    status.style.color = 'var(--green)';
+  } catch(e) {
+    status.textContent = '⚠️ CP não encontrado';
+    status.style.color = 'var(--amber)';
+  }
+}
+
+// Formatar CP ao sair do campo
+function formatCP(el) {
+  const raw = el.value.replace(/\D/g,'');
+  if(raw.length === 7) el.value = raw.slice(0,4)+'-'+raw.slice(4);
+}
 
 </script>
 </body>
