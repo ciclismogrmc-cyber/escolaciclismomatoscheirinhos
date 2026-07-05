@@ -157,8 +157,17 @@ td{padding:9px 12px;vertical-align:middle;font-size:13px}
 .tbl-foot{padding:7px 12px;font-size:11px;color:var(--muted);border-top:.5px solid var(--border);text-align:right}
 
 /* PAINEL CORRIDA */
-.panel{position:fixed;top:0;right:0;bottom:0;width:520px;background:var(--surface);border-left:.5px solid var(--border);z-index:200;display:none;flex-direction:column;overflow:hidden;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
-.panel.open{display:flex}
+/* PAINEL CORRIDA — modal centralizada e dimensionável */
+.panel-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.panel-overlay.open{display:flex}
+.panel{position:relative;background:var(--surface);border-radius:var(--r);width:100%;max-width:720px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22);resize:both;min-width:340px;min-height:420px}
+.panel::after{content:'⠿';position:absolute;bottom:4px;right:6px;color:var(--hint);font-size:14px;pointer-events:none}
+@media(max-width:720px){
+  .panel-overlay{padding:.4rem;align-items:flex-end}
+  .panel{max-width:100%;max-height:92vh;border-radius:var(--r) var(--r) 0 0;width:100%!important;min-width:0;resize:none;align-self:flex-end}
+  .panel::after{display:none}
+  .panel-tabs{overflow-x:auto;flex-wrap:nowrap}
+}
 .panel-top{padding:.85rem 1.1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
 .panel-tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--rs);padding:3px}
 .pt{padding:4px 11px;border-radius:4px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .11s;border:none;background:transparent;font-family:inherit}
@@ -206,7 +215,7 @@ td{padding:9px 12px;vertical-align:middle;font-size:13px}
 @media print {
   .sidebar,.topbar,.panel-top,.panel-foot,.top-controls,.legenda,.no-print{display:none!important}
   .main{margin-left:0}
-  .panel{position:static;width:100%;border:none;box-shadow:none;display:flex!important}
+  .panel{position:static;width:100%!important;max-width:100%!important;border:none;box-shadow:none;display:flex!important;resize:none}
   .panel-body{overflow:visible}
   body{font-size:12px}
   .folha-viagem{display:block!important}
@@ -372,9 +381,10 @@ select:focus{border-color:var(--blue)}
 </div>
 
 <!-- PAINEL CORRIDA -->
+<div class="panel-overlay" id="panel-overlay" onclick="if(event.target===this)closePanel()">
 <div class="panel" id="panel">
-  <div class="panel-top">
-    <button class="btn-ghost btn-sm" onclick="closePanel()">← Voltar</button>
+  <div class="panel-top" id="panel-drag" style="cursor:move;user-select:none">
+    <button class="btn-ghost btn-sm" onclick="closePanel()">✕ Fechar</button>
     <div style="flex:1"></div>
     <div class="panel-tabs">
       <button class="pt active" onclick="setPanelTab(this,'info')">Informação</button>
@@ -395,6 +405,7 @@ select:focus{border-color:var(--blue)}
     <button class="btn-sm" onclick="partilharWA()">📱 WhatsApp</button>
   </div>
 </div>
+</div><!-- /panel-overlay -->
 
 <!-- MODAL ADD PROVA -->
 <div class="modal-overlay" id="modal-add" onclick="if(event.target===this)closeModal('modal-add')">
@@ -1398,7 +1409,7 @@ function openPanel(id, e) {
   CAL_PANEL_TAB='info';
   document.querySelectorAll('.pt').forEach((t,i)=>t.classList.toggle('active',i===0));
   renderPanel();
-  document.getElementById('panel').classList.add('open');
+  document.getElementById('panel-overlay').classList.add('open');
   // Actualizar botão participa
   document.getElementById('btn-participa').textContent=
     PANEL_PROVA.escola_participa?'✓ Escola participa':'+ Escola participa';
@@ -1406,7 +1417,7 @@ function openPanel(id, e) {
     PANEL_PROVA.escola_participa?'btn-teal btn-sm':'btn-sm';
 }
 
-function closePanel(){closeSeatPicker();document.getElementById('panel').classList.remove('open');PANEL_PROVA=null;}
+function closePanel(){closeSeatPicker();document.getElementById('panel-overlay').classList.remove('open');PANEL_PROVA=null;}
 
 function setPanelTab(el,tab){
   closeSeatPicker();
@@ -1982,6 +1993,49 @@ function toast(msg,type=''){
 // Ir para o mês actual com provas
 CUR_DATE=new Date(2026,2,1); // Março 2026 que tem provas
 render();
+
+// Drag modal corrida
+(function(){
+  let drag=false,ox=0,oy=0,sx=0,sy=0;
+  function dn(e){
+    const h=document.getElementById('panel-drag');
+    if(!h||!h.contains(e.target)||e.target.tagName==='BUTTON'||e.target.tagName==='SELECT') return;
+    const p=document.getElementById('panel'),ov=document.getElementById('panel-overlay');
+    if(!p||window.innerWidth<=720) return;
+    drag=true;
+    const r=p.getBoundingClientRect();
+    ox=r.left; oy=r.top;
+    sx=(e.clientX||e.touches[0].clientX); sy=(e.clientY||e.touches[0].clientY);
+    ov.style.alignItems='flex-start'; ov.style.justifyContent='flex-start';
+    p.style.position='absolute'; p.style.margin='0';
+    p.style.left=ox+'px'; p.style.top=oy+'px';
+    e.preventDefault();
+  }
+  function mv(e){
+    if(!drag) return;
+    const p=document.getElementById('panel'); if(!p) return;
+    const cx=(e.clientX||e.touches[0].clientX), cy=(e.clientY||e.touches[0].clientY);
+    p.style.left=Math.max(0,Math.min(window.innerWidth-340,ox+(cx-sx)))+'px';
+    p.style.top=Math.max(0,Math.min(window.innerHeight-100,oy+(cy-sy)))+'px';
+  }
+  function up(){drag=false;}
+  document.addEventListener('mousedown',dn); document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
+  document.addEventListener('touchstart',dn,{passive:false}); document.addEventListener('touchmove',mv,{passive:false}); document.addEventListener('touchend',up);
+  // Reset posição ao abrir
+  const origOpen=window.openPanel;
+  document.addEventListener('DOMContentLoaded',function(){
+    const ov=document.getElementById('panel-overlay');
+    if(!ov) return;
+    new MutationObserver(function(){
+      if(ov.classList.contains('open')){
+        const p=document.getElementById('panel');
+        if(p){p.style.position='';p.style.left='';p.style.top='';p.style.margin='';}
+        ov.style.alignItems=''; ov.style.justifyContent='';
+      }
+    }).observe(ov,{attributes:true,attributeFilter:['class']});
+  });
+})();
+
 </script>
 </body>
 </html>
