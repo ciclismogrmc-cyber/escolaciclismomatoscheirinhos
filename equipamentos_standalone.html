@@ -235,6 +235,7 @@ td{padding:8px 12px;vertical-align:middle;font-size:13px}
       <button class="vt-btn" id="vt-catalogo" onclick="setView('catalogo')">📋 Catálogo</button>
       <button class="vt-btn" id="vt-comparativo" onclick="setView('comparativo')">📊 Comparar Fornecedores</button>
       <button class="vt-btn" id="vt-encomenda" onclick="setView('encomenda')">📦 Encomenda</button>
+      <button class="vt-btn" id="vt-fornecedores" onclick="setView('fornecedores')">🏢 Fornecedores</button>
     </div>
   </div>
 </div>
@@ -273,6 +274,7 @@ td{padding:8px 12px;vertical-align:middle;font-size:13px}
 
   <!-- VISTA ENCOMENDA -->
   <div id="view-encomenda" style="display:none"></div>
+  <div id="view-fornecedores" style="display:none"></div>
 
 </div>
 </div>
@@ -742,6 +744,25 @@ const EQUIPAMENTOS_DB = {
 
   getFornecedor(id) { return this.fornecedores.find(f=>f.id===id); },
 
+  // Registo de encomendas
+  encomendas: [],
+  _proximoNumEncomenda: 1,
+  novaEncomenda(fornecedorId, itens) {
+    const num = this._proximoNumEncomenda++;
+    const enc = {
+      id: 'enc'+Date.now(),
+      numero: num,
+      ref: 'ENC-'+String(num).padStart(4,'0'),
+      fornecedorId,
+      data: new Date().toISOString().split('T')[0],
+      itens: itens||[],
+      estado: 'aberta', // 'aberta' | 'fechada'
+      obs: '',
+    };
+    this.encomendas.push(enc);
+    return enc;
+  },
+
 
   // Catálogo — peças de corrida
   catalogo_corrida: [
@@ -812,13 +833,13 @@ const EQUIPAMENTOS_DB = {
   atribuicoes: {
     1: { // Afonso Ferreira
       corrida: {
-        eq_jersey: {tamanho:'M', gama:'media', fornecedorId:'forn1', pago:true},
-        eq_calcao: {tamanho:'M', gama:'media', fornecedorId:'forn1', pago:true},
-        eq_meias:  {tamanho:'M', gama:'unica', fornecedorId:'forn2', pago:true},
+        eq_jersey: {tamanho:'M', gama:'media', fornecedorId:'forn1', pago:false},
+        eq_calcao: {tamanho:'M', gama:'media', fornecedorId:'forn1', pago:false},
+        eq_meias:  {tamanho:'M', gama:'unica', fornecedorId:'forn2', pago:false},
         eq_luvas:  {tamanho:'M', gama:'baixa', fornecedorId:'forn2', pago:false},
       },
       casual: {
-        cas_polo: {tamanho:'M', gama:'baixa', fornecedorId:'forn2', pago:true}
+        cas_polo: {tamanho:'M', gama:'baixa', fornecedorId:'forn2', pago:false}
       }
     },
     2: { // Maria Santos
@@ -831,16 +852,16 @@ const EQUIPAMENTOS_DB = {
     },
     7: { // Marco Silva (SUB23)
       corrida: {
-        eq_jersey: {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:true},
-        eq_calcao: {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:true},
-        eq_meias:  {tamanho:'L', gama:'unica', fornecedorId:'forn2', pago:true},
-        eq_luvas:  {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:true},
+        eq_jersey: {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:false},
+        eq_calcao: {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:false},
+        eq_meias:  {tamanho:'L', gama:'unica', fornecedorId:'forn2', pago:false},
+        eq_luvas:  {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:false},
         eq_casaco: {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:false},
         eq_cri:    {tamanho:'L', gama:'alta', fornecedorId:'forn3', pago:false},
       },
       casual: {
-        cas_polo: {tamanho:'L', gama:'alta', fornecedorId:'forn1', pago:true},
-        cas_mochila: {tamanho:'XL', gama:'unica', fornecedorId:'forn1', pago:true}
+        cas_polo: {tamanho:'L', gama:'alta', fornecedorId:'forn1', pago:false},
+        cas_mochila: {tamanho:'XL', gama:'unica', fornecedorId:'forn1', pago:false}
       }
     }
   },
@@ -1637,7 +1658,7 @@ function renderEncomenda() {
 // VIEW SWITCHING
 // ============================================================
 function setView(v) {
-  ['atleta','catalogo','comparativo','encomenda'].forEach(x=>{
+  ['atleta','catalogo','comparativo','encomenda','fornecedores'].forEach(x=>{
     document.getElementById('vt-'+x).classList.toggle('active', x===v);
     document.getElementById('view-'+x).style.display = x===v?'block':'none';
   });
@@ -1721,6 +1742,314 @@ function calcPrecoComMargem(preco, margem) {
   return preco * (1 + (margem||0)/100);
 }
 
+
+
+// ============================================================
+// MELHORIA 1 — renderFornecedores (CRUD completo)
+// ============================================================
+function renderFornecedores() {
+  const forns = EQUIPAMENTOS_DB.fornecedores;
+  document.getElementById('view-fornecedores').innerHTML = `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem">
+    <div style="font-size:14px;font-weight:600">🏢 Fornecedores</div>
+    <button class="btn-primary btn-sm" onclick="openAddFornecedor()">+ Novo fornecedor</button>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    ${forns.map(f=>`
+    <div style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem 1rem" id="forn-row-${f.id}">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="font-size:22px;flex-shrink:0">🏢</div>
+        <div style="flex:1" id="forn-view-${f.id}">
+          <div style="font-size:14px;font-weight:600">${f.nome}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">📞 ${f.contacto||'—'} · 📧 ${f.email||'—'}</div>
+          ${f.notas?`<div style="font-size:12px;color:var(--muted);font-style:italic;margin-top:2px">${f.notas}</div>`:''}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn-sm" onclick="editarFornecedor('${f.id}')">✏️ Editar</button>
+          <button class="btn-sm btn-ghost" style="color:var(--red)" onclick="eliminarFornecedor('${f.id}')">🗑️</button>
+        </div>
+      </div>
+      <div id="forn-edit-${f.id}" style="display:none;margin-top:.75rem;padding-top:.75rem;border-top:.5px solid var(--border)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Nome *</label>
+            <input type="text" id="fi-nome-${f.id}" value="${f.nome}" style="width:100%;padding:6px 8px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px"></div>
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Contacto</label>
+            <input type="tel" id="fi-tel-${f.id}" value="${f.contacto||''}" style="width:100%;padding:6px 8px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px"></div>
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Email</label>
+            <input type="email" id="fi-email-${f.id}" value="${f.email||''}" style="width:100%;padding:6px 8px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px"></div>
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Notas</label>
+            <input type="text" id="fi-notas-${f.id}" value="${f.notas||''}" style="width:100%;padding:6px 8px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px"></div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm btn-green" onclick="guardarFornecedor('${f.id}')">✓ Guardar</button>
+          <button class="btn-sm btn-ghost" onclick="cancelarFornecedor('${f.id}')">Cancelar</button>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function editarFornecedor(id) {
+  document.getElementById('forn-view-'+id).style.display='none';
+  document.getElementById('forn-edit-'+id).style.display='block';
+}
+
+function cancelarFornecedor(id) {
+  document.getElementById('forn-view-'+id).style.display='';
+  document.getElementById('forn-edit-'+id).style.display='none';
+}
+
+function guardarFornecedor(id) {
+  const f = EQUIPAMENTOS_DB.getFornecedor(id);
+  if(!f) return;
+  f.nome = document.getElementById('fi-nome-'+id)?.value.trim() || f.nome;
+  f.contacto = document.getElementById('fi-tel-'+id)?.value.trim() || '';
+  f.email = document.getElementById('fi-email-'+id)?.value.trim() || '';
+  f.notas = document.getElementById('fi-notas-'+id)?.value.trim() || '';
+  toast('Fornecedor guardado!','ok');
+  renderFornecedores();
+}
+
+function eliminarFornecedor(id) {
+  const f = EQUIPAMENTOS_DB.getFornecedor(id);
+  if(!f) return;
+  if(!confirm('Eliminar fornecedor "'+f.nome+'"? Esta ação não pode ser desfeita.')) return;
+  EQUIPAMENTOS_DB.fornecedores = EQUIPAMENTOS_DB.fornecedores.filter(x=>x.id!==id);
+  toast('Fornecedor eliminado','warn');
+  renderFornecedores();
+}
+
+function openAddFornecedor() {
+  const nome = prompt('Nome do fornecedor *:');
+  if(!nome || !nome.trim()) return;
+  const tel = prompt('Contacto (telefone):') || '';
+  const email = prompt('Email:') || '';
+  const notas = prompt('Notas:') || '';
+  EQUIPAMENTOS_DB.fornecedores.push({
+    id:'forn'+Date.now(), nome:nome.trim(),
+    contacto:tel, email, notas
+  });
+  toast('Fornecedor adicionado!','ok');
+  renderFornecedores();
+}
+
+// ============================================================
+// MELHORIAS 2+3+4 — obrigatório=clube / opcional=atleta com margem
+// ============================================================
+function getPrecoCobrado(secao, pecaId, gamaId, fornecedorId) {
+  const peca = EQUIPAMENTOS_DB.getPeca(secao, pecaId);
+  const gama = EQUIPAMENTOS_DB.getGama(secao, pecaId, gamaId);
+  if(!peca || !gama) return 0;
+  const precoBase = EQUIPAMENTOS_DB.getPreco(gama, fornecedorId);
+  if(peca.obrigatorio) return 0; // clube paga — atleta não é cobrado
+  return parseFloat((precoBase * (1 + (peca.margem||0)/100)).toFixed(2));
+}
+
+function getPendentesAtleta(atletaId) {
+  const atr = EQUIPAMENTOS_DB.atribuicoes[atletaId];
+  if(!atr) return [];
+  const pendentes = [];
+  ['corrida','casual'].forEach(secao=>{
+    Object.entries(atr[secao]||{}).forEach(([pecaId,d])=>{
+      const peca = EQUIPAMENTOS_DB.getPeca(secao, pecaId);
+      if(!peca || peca.obrigatorio) return; // obrigatório = clube, não aparece
+      if(d.pago) return;
+      const valor = getPrecoCobrado(secao, pecaId, d.gama, d.fornecedorId);
+      pendentes.push({secao, pecaId, nome:peca.nome, icone:peca.icone, valor, tamanho:d.tamanho});
+    });
+  });
+  return pendentes;
+}
+
+// ============================================================
+// MELHORIA 5 — Encomendas sequenciais com editar/fechar
+// ============================================================
+function renderEncomenda() {
+  const agregado = {};
+  const porFornecedor = {};
+  let totalGeral=0, totalClube=0, totalAtleta=0;
+
+  Object.entries(EQUIPAMENTOS_DB.atribuicoes).forEach(([atletaId,atr])=>{
+    ['corrida','casual'].forEach(secao=>{
+      Object.entries(atr[secao]||{}).forEach(([pecaId,d])=>{
+        const peca = EQUIPAMENTOS_DB.getPeca(secao, pecaId);
+        const gama = EQUIPAMENTOS_DB.getGama(secao, pecaId, d.gama);
+        if(!gama||!peca) return;
+        const preco = EQUIPAMENTOS_DB.getPreco(gama, d.fornecedorId);
+        const precoCobrado = getPrecoCobrado(secao, pecaId, d.gama, d.fornecedorId);
+        const key = secao+'|'+pecaId+'|'+d.tamanho+'|'+d.gama+'|'+d.fornecedorId;
+        if(!agregado[key]) agregado[key]={secao,pecaId,peca,tamanho:d.tamanho,gama:d.gama,gamaObj:gama,fornecedorId:d.fornecedorId,count:0,preco,precoCobrado,obrigatorio:peca.obrigatorio};
+        agregado[key].count++;
+        totalGeral+=preco;
+        if(peca.obrigatorio) totalClube+=preco; else totalAtleta+=precoCobrado;
+        if(!porFornecedor[d.fornecedorId]) porFornecedor[d.fornecedorId]={count:0,total:0};
+        porFornecedor[d.fornecedorId].count++;
+        porFornecedor[d.fornecedorId].total+=preco;
+      });
+    });
+  });
+
+  const linhas = Object.values(agregado).sort((a,b)=>a.obrigatorio===b.obrigatorio?0:a.obrigatorio?-1:1);
+  const encomendas = EQUIPAMENTOS_DB.encomendas;
+
+  document.getElementById('view-encomenda').innerHTML = `
+  <div class="encomenda-summary">
+    <div class="enc-card"><div class="enc-val">${linhas.reduce((s,l)=>s+l.count,0)}</div><div class="enc-lbl">Itens totais</div></div>
+    <div class="enc-card"><div class="enc-val" style="color:var(--blue)">${fmtEur(totalGeral)}</div><div class="enc-lbl">Custo total clube</div></div>
+    <div class="enc-card"><div class="enc-val" style="color:var(--amber)">${fmtEur(totalAtleta)}</div><div class="enc-lbl">A cobrar atletas</div></div>
+    <div class="enc-card"><div class="enc-val">${encomendas.length}</div><div class="enc-lbl">Encomendas</div></div>
+  </div>
+
+  <div class="eq-section">
+    <div class="eq-section-hd">
+      <div class="eq-section-title">📋 Itens por encomendar</div>
+      <button class="btn-sm btn-primary" onclick="criarEncomenda()">+ Nova encomenda</button>
+    </div>
+    <table>
+      <thead><tr><th>Peça</th><th>Tamanho</th><th>Gama</th><th>Fornecedor</th><th>Encargo</th><th style="text-align:center">Qtd.</th><th style="text-align:right">P.Unit.</th><th style="text-align:right">Cobrado atleta</th><th style="text-align:right">Subtotal</th></tr></thead>
+      <tbody>
+        ${linhas.map(l=>{
+          const forn=EQUIPAMENTOS_DB.getFornecedor(l.fornecedorId);
+          return `<tr>
+            <td><div class="peca-name"><span class="peca-ico">${l.peca.icone}</span>${l.peca.nome}</div></td>
+            <td><span class="badge b-gray">${l.tamanho||'—'}</span></td>
+            <td>${l.gamaObj.nome}</td>
+            <td style="font-size:12px">${forn?forn.nome:'—'}</td>
+            <td>${l.obrigatorio?'<span class="badge b-info">Clube</span>':'<span class="badge b-warn">Atleta</span>'}</td>
+            <td style="text-align:center;font-weight:600">${l.count}</td>
+            <td style="text-align:right">${fmtEur(l.preco)}</td>
+            <td style="text-align:right;color:${l.obrigatorio?'var(--muted)':'var(--amber)'}">${l.obrigatorio?'—':fmtEur(l.precoCobrado)}</td>
+            <td style="text-align:right;font-weight:600">${fmtEur(l.preco*l.count)}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="eq-section">
+    <div class="eq-section-hd"><div class="eq-section-title">📦 Registo de encomendas</div></div>
+    ${!encomendas.length?'<div style="text-align:center;padding:2rem;color:var(--hint)">Sem encomendas registadas — clica em "+ Nova encomenda"</div>':
+    encomendas.slice().reverse().map(enc=>{
+      const forn=EQUIPAMENTOS_DB.getFornecedor(enc.fornecedorId);
+      const fechada=enc.estado==='fechada';
+      return `<div style="background:var(--surface);border:.5px solid ${fechada?'var(--green-bd)':'var(--border)'};border-radius:var(--r);padding:.9rem 1rem;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="font-size:13px;font-weight:700;color:var(--blue);min-width:90px">${enc.ref}</div>
+          <div style="flex:1">
+            <div style="font-weight:500">${forn?forn.nome:'Sem fornecedor'} · ${enc.data}</div>
+            <div style="font-size:12px;color:var(--muted)">${enc.itens.length} linha(s) · ${fmtEur(enc.itens.reduce((s,i)=>s+(i.preco*i.count),0))}</div>
+            ${enc.obs?`<div style="font-size:12px;color:var(--muted);font-style:italic">${enc.obs}</div>`:''}
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="badge ${fechada?'b-ok':'b-warn'}">${fechada?'Fechada':'Em aberto'}</span>
+            ${!fechada?`<button class="btn-sm" onclick="editarEncomenda('${enc.id}')">✏️ Editar</button>
+            <button class="btn-sm btn-teal" onclick="fecharEncomenda('${enc.id}')">🔒 Fechar</button>`:''}
+          </div>
+        </div>
+        ${enc._editando?`<div style="margin-top:.75rem;padding-top:.75rem;border-top:.5px solid var(--border)">
+          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Observações</label>
+              <input type="text" id="enc-obs-${enc.id}" value="${enc.obs||''}" placeholder="Notas para o fornecedor..." style="width:100%;padding:6px 8px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px"></div>
+          </div>
+          <table style="width:100%;font-size:12px;margin-bottom:8px">
+            <thead><tr style="background:var(--bg)"><th style="padding:4px 8px;text-align:left">Peça</th><th style="padding:4px 8px;text-align:center">Tam.</th><th style="padding:4px 8px;text-align:center">Qtd.</th><th style="padding:4px 8px;text-align:right">P.Unit.</th><th style="padding:4px 8px"></th></tr></thead>
+            <tbody>
+              ${enc.itens.map((it,idx)=>`<tr>
+                <td style="padding:4px 8px">${it.nome}</td>
+                <td style="padding:4px 8px;text-align:center">${it.tamanho}</td>
+                <td style="padding:4px 8px;text-align:center"><input type="number" min="0" value="${it.count}" style="width:55px;padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px" onchange="updateItemEncomenda('${enc.id}',${idx},this.value)"></td>
+                <td style="padding:4px 8px;text-align:right">${fmtEur(it.preco)}</td>
+                <td style="padding:4px 8px;text-align:center"><button class="btn-sm btn-ghost" style="color:var(--red);padding:2px 6px;font-size:11px" onclick="removeItemEncomenda('${enc.id}',${idx})">✕</button></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm btn-green" onclick="guardarEncomenda('${enc.id}')">✓ Guardar</button>
+            <button class="btn-sm btn-ghost" onclick="cancelarEdicaoEncomenda('${enc.id}')">Cancelar</button>
+          </div>
+        </div>`:''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function criarEncomenda() {
+  const fids = EQUIPAMENTOS_DB.fornecedores.map(f=>'['+f.id+'] '+f.nome).join('\n');
+  const escolha = prompt('Qual o fornecedor?\n\n'+fids+'\n\nEscreve o ID (ex: forn1):');
+  if(!escolha) return;
+  const forn = EQUIPAMENTOS_DB.getFornecedor(escolha.trim());
+  if(!forn) { toast('Fornecedor não encontrado'); return; }
+
+  // Agregar itens para este fornecedor
+  const itens = [];
+  Object.entries(EQUIPAMENTOS_DB.atribuicoes).forEach(([aid,atr])=>{
+    ['corrida','casual'].forEach(secao=>{
+      Object.entries(atr[secao]||{}).forEach(([pecaId,d])=>{
+        if(d.fornecedorId!==escolha.trim()) return;
+        const peca=EQUIPAMENTOS_DB.getPeca(secao,pecaId);
+        const gama=EQUIPAMENTOS_DB.getGama(secao,pecaId,d.gama);
+        if(!peca||!gama) return;
+        const preco=EQUIPAMENTOS_DB.getPreco(gama,d.fornecedorId);
+        const key=pecaId+'|'+d.tamanho+'|'+d.gama;
+        const ex=itens.find(i=>i.key===key);
+        if(ex) ex.count++;
+        else itens.push({key,nome:peca.nome,tamanho:d.tamanho,gama:d.gama,preco,count:1});
+      });
+    });
+  });
+
+  if(!itens.length) { toast('Sem itens atribuídos para este fornecedor','warn'); return; }
+  const enc = EQUIPAMENTOS_DB.novaEncomenda(escolha.trim(), itens);
+  toast('Encomenda '+enc.ref+' criada!','ok');
+  renderEncomenda();
+}
+
+function editarEncomenda(id) {
+  const enc = EQUIPAMENTOS_DB.encomendas.find(e=>e.id===id);
+  if(!enc || enc.estado==='fechada') return;
+  enc._editando = true;
+  renderEncomenda();
+}
+
+function cancelarEdicaoEncomenda(id) {
+  const enc = EQUIPAMENTOS_DB.encomendas.find(e=>e.id===id);
+  if(!enc) return;
+  enc._editando = false;
+  renderEncomenda();
+}
+
+function guardarEncomenda(id) {
+  const enc = EQUIPAMENTOS_DB.encomendas.find(e=>e.id===id);
+  if(!enc) return;
+  const obsEl = document.getElementById('enc-obs-'+id);
+  if(obsEl) enc.obs = obsEl.value;
+  enc._editando = false;
+  toast('Encomenda guardada!','ok');
+  renderEncomenda();
+}
+
+function fecharEncomenda(id) {
+  const enc = EQUIPAMENTOS_DB.encomendas.find(e=>e.id===id);
+  if(!enc) return;
+  if(!confirm('Fechar a encomenda '+enc.ref+'? Depois de fechada não poderá ser editada.')) return;
+  enc.estado = 'fechada';
+  enc._editando = false;
+  toast('Encomenda '+enc.ref+' fechada!','ok');
+  renderEncomenda();
+}
+
+function updateItemEncomenda(encId, idx, val) {
+  const enc = EQUIPAMENTOS_DB.encomendas.find(e=>e.id===encId);
+  if(!enc) return;
+  enc.itens[idx].count = parseInt(val)||0;
+}
+
+function removeItemEncomenda(encId, idx) {
+  const enc = EQUIPAMENTOS_DB.encomendas.find(e=>e.id===encId);
+  if(!enc) return;
+  enc.itens.splice(idx,1);
+  renderEncomenda();
+}
 
 </script>
 </body>
