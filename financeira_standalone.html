@@ -709,14 +709,26 @@ function renderDashboard() {
 // ============================================================
 function renderMensalidades() {
   const ano = FINANCEIRA_DB.epoca_atual;
-  const atletas = DB.atletas.filter(a=>{const e=a.epocas[ano];return e&&e.estado==='ativo'});
-  if(!CURRENT_ATLETA_MENS) CURRENT_ATLETA_MENS = atletas[0]?.id || null;
+  const allAtivos = DB.atletas.filter(a=>{const e=a.epocas[ano];return e&&e.estado==='ativo'});
+  const escFilt = document.getElementById('mens-esc-filter')?.value||'';
+  const atletas = escFilt ? allAtivos.filter(a=>a.epocas[ano]?.escalao===escFilt) : allAtivos;
+  if(!CURRENT_ATLETA_MENS || !atletas.find(a=>a.id===CURRENT_ATLETA_MENS)) CURRENT_ATLETA_MENS = atletas[0]?.id || null;
 
   document.getElementById('content-mensalidades').innerHTML = `
   <div class="mens-grid">
     <div>
       <div class="sec" style="margin-bottom:0">
-        <div class="sec-hd"><div class="sec-title">👥 Atletas</div></div>
+        <div class="sec-hd">
+          <div class="sec-title">👥 Atletas</div>
+          <select id="mens-esc-filter" onchange="renderMensalidades()" style="padding:3px 6px;border:.5px solid var(--border);border-radius:var(--rs);font-size:11px">
+            <option value="">Todos</option>
+            <option value="escolas" ${escFilt==='escolas'?'selected':''}>Escolas</option>
+            <option value="sub17" ${escFilt==='sub17'?'selected':''}>SUB17</option>
+            <option value="sub19" ${escFilt==='sub19'?'selected':''}>SUB19</option>
+            <option value="sub23" ${escFilt==='sub23'?'selected':''}>SUB23</option>
+            <option value="paraciclismo" ${escFilt==='paraciclismo'?'selected':''}>Para</option>
+          </select>
+        </div>
         <div class="atleta-list">
           ${atletas.map(a=>{
             const t = FINANCEIRA_DB.totalMensalidadesAtleta(a.id, ano);
@@ -737,9 +749,71 @@ function renderMensalidades() {
     <div id="mens-detalhe">
       <div style="text-align:center;padding:3rem;color:var(--muted)">Seleciona um atleta</div>
     </div>
+  </div>
+
+  <!-- MODO TABELA -->
+  <div style="margin-top:1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+      <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">📊 Tabela resumo — todos os atletas</div>
+    </div>
+    ${renderTabelaMensalidades(atletas, ano)}
   </div>`;
 
   if(CURRENT_ATLETA_MENS) renderMensDetalhe();
+}
+
+function renderTabelaMensalidades(atletas, ano) {
+  const cfg = FINANCEIRA_DB.getConfigEpoca(ano);
+  const nomes = FINANCEIRA_DB.getMeses();
+  const meses = cfg.meses_ativos;
+
+  return `<div style="overflow-x:auto;background:var(--surface);border:.5px solid var(--border);border-radius:var(--r)">
+    <table style="width:100%;border-collapse:collapse;font-size:11px;min-width:600px">
+      <thead>
+        <tr style="background:var(--bg)">
+          <th style="padding:7px 10px;text-align:left;border-bottom:.5px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);position:sticky;left:0;background:var(--bg)">Atleta</th>
+          ${meses.map(m=>`<th style="padding:7px 8px;text-align:center;border-bottom:.5px solid var(--border);font-size:11px;font-weight:600;color:var(--muted)">${nomes[m-1]}</th>`).join('')}
+          <th style="padding:7px 10px;text-align:right;border-bottom:.5px solid var(--border);font-size:11px;font-weight:600;color:var(--muted)">Total</th>
+          <th style="padding:7px 10px;text-align:right;border-bottom:.5px solid var(--border);font-size:11px;font-weight:600;color:var(--green)">Pago</th>
+          <th style="padding:7px 10px;text-align:right;border-bottom:.5px solid var(--border);font-size:11px;font-weight:600;color:var(--red)">Pendente</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${atletas.map(a=>{
+          const ep = a.epocas[ano];
+          const regs = FINANCEIRA_DB.getMensalidadesAtleta(a.id, ano);
+          const t = FINANCEIRA_DB.totalMensalidadesAtleta(a.id, ano);
+          const cfg2 = FINANCEIRA_DB.getConfigEpoca(ano);
+          const valorBase = cfg2.valores_escalao[ep.escalao]||0;
+          return `<tr style="border-bottom:.5px solid var(--border);cursor:pointer" onclick="selectAtleta(${a.id});document.getElementById('content-mensalidades').scrollTop=0" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+            <td style="padding:6px 10px;font-weight:500;white-space:nowrap;position:sticky;left:0;background:var(--surface)">${a.nome}</td>
+            ${meses.map(mes=>{
+              const reg = regs.find(r=>r.mes===mes);
+              if(reg?.pago) return `<td style="padding:6px 8px;text-align:center" title="${reg.registadoPor?'por '+reg.registadoPor:''}
+${reg.dataPagamento||''}"><span style="color:var(--green);font-size:13px">✓</span></td>`;
+              return `<td style="padding:6px 8px;text-align:center" title="Clica para registar"><span style="color:var(--red);font-size:11px;cursor:pointer" onclick="event.stopPropagation();openModalPagamento(${a.id},${mes},${ano},${valorBase})">€</span></td>`;
+            }).join('')}
+            <td style="padding:6px 10px;text-align:right;color:var(--muted)">${fmtEur(t.total)}</td>
+            <td style="padding:6px 10px;text-align:right;color:var(--green);font-weight:600">${fmtEur(t.pago)}</td>
+            <td style="padding:6px 10px;text-align:right;color:${t.pendente>0?'var(--red)':'var(--muted)'};font-weight:${t.pendente>0?'600':'400'}">${fmtEur(t.pendente)}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+      <tfoot>
+        <tr style="background:var(--bg);font-weight:600;border-top:.5px solid var(--border2)">
+          <td style="padding:7px 10px;font-size:12px">Total</td>
+          ${meses.map(mes=>{
+            const pagas = atletas.filter(a=>{const regs=FINANCEIRA_DB.getMensalidadesAtleta(a.id,ano);return regs.find(r=>r.mes===mes&&r.pago);}).length;
+            const cor = pagas===atletas.length?'var(--green)':pagas===0?'var(--muted)':'var(--amber)';
+            return `<td style="padding:7px 8px;text-align:center;font-size:11px;color:${cor}">${pagas}/${atletas.length}</td>`;
+          }).join('')}
+          <td style="padding:7px 10px;text-align:right;font-size:12px">${fmtEur(atletas.reduce((s,a)=>s+FINANCEIRA_DB.totalMensalidadesAtleta(a.id,ano).total,0))}</td>
+          <td style="padding:7px 10px;text-align:right;font-size:12px;color:var(--green)">${fmtEur(atletas.reduce((s,a)=>s+FINANCEIRA_DB.totalMensalidadesAtleta(a.id,ano).pago,0))}</td>
+          <td style="padding:7px 10px;text-align:right;font-size:12px;color:var(--red)">${fmtEur(atletas.reduce((s,a)=>s+FINANCEIRA_DB.totalMensalidadesAtleta(a.id,ano).pendente,0))}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>`;
 }
 
 function selectAtleta(id) {
@@ -1011,10 +1085,14 @@ function renderConfig() {
           ${nomes.map((nome,i)=>{
             const mes = i+1;
             const ativo = cfg.meses_ativos.includes(mes);
-            return `<div class="mes-pill${ativo?' active':''}" onclick="toggleMes(${mes},this)">${nome}</div>`;
+            return `<div class="mes-pill${ativo?' active':''}" onclick="toggleMes(${mes},this)" id="mp-${mes}">${nome}</div>`;
           }).join('')}
         </div>
-        <div style="margin-top:.85rem;font-size:12px;color:var(--muted)">Meses ativos: <strong>${cfg.meses_ativos.length}</strong></div>
+        <div style="margin-top:.75rem;display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--muted)">Meses ativos: <strong id="mens-ativos-count">${cfg.meses_ativos.length}</strong></span>
+          <button class="btn-sm btn-green" onclick="guardarConfigMeses()" id="btn-guardar-meses" style="display:none">✓ Guardar configuração de meses</button>
+          <span id="cfg-meses-saved" style="font-size:11px;color:var(--green);display:none">✓ Guardado</span>
+        </div>
       </div>
     </div>
 
@@ -1061,8 +1139,25 @@ function toggleMes(mes, el) {
   else cfg.meses_ativos.push(mes);
   cfg.meses_ativos.sort((a,b)=>a-b);
   el.classList.toggle('active');
-  document.querySelector('#content-config .mes-toggle + div').textContent = 'Meses ativos: '+cfg.meses_ativos.length;
-  toast('Meses atualizados','ok');
+  const cnt = document.getElementById('mens-ativos-count');
+  if(cnt) cnt.textContent = cfg.meses_ativos.length;
+  // Mostrar botão guardar e esconder "guardado"
+  const btn = document.getElementById('btn-guardar-meses');
+  const saved = document.getElementById('cfg-meses-saved');
+  if(btn) btn.style.display='';
+  if(saved) saved.style.display='none';
+}
+
+function guardarConfigMeses() {
+  // Configuração já está guardada no FINANCEIRA_DB em memória
+  // Esconder botão e mostrar confirmação
+  const btn = document.getElementById('btn-guardar-meses');
+  const saved = document.getElementById('cfg-meses-saved');
+  if(btn) btn.style.display='none';
+  if(saved) saved.style.display='';
+  toast('Configuração de meses guardada!','ok');
+  // Actualizar a secção de mensalidades se estiver aberta
+  if(document.getElementById('content-mensalidades').style.display!=='none') renderMensalidades();
 }
 
 function updateValorEscalao(esc, val) {
