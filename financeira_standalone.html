@@ -931,6 +931,7 @@ function confirmarPagamento() {
   else FINANCEIRA_DB.mensalidades[atletaId].push(reg);
 
   closeModal('modal-pag');
+  salvarFinanceira();
   toast('Pagamento registado!','ok');
   renderMensDetalhe();
   if(CURRENT_TAB==='dashboard') renderDashboard();
@@ -940,6 +941,7 @@ function desmarcarPago(atletaId, mes, ano) {
   const regs = FINANCEIRA_DB.mensalidades[atletaId] || [];
   const idx = regs.findIndex(r=>r.mes===mes&&r.ano===ano);
   if(idx>=0) { regs[idx].pago=false; regs[idx].dataPagamento=''; regs[idx].metodo=''; }
+  salvarFinanceira();
   toast('Pagamento anulado','warn');
   renderMensDetalhe();
 }
@@ -990,17 +992,33 @@ function renderDespesas() {
       <button class="btn-primary btn-sm" onclick="openModalDespesa()">+ Despesa</button>
     </div>
     <table>
-      <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Corrida</th><th>Comp.</th><th style="text-align:right">Valor</th></tr></thead>
+      <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Corrida</th><th>Comp.</th><th style="text-align:right">Valor</th><th></th></tr></thead>
       <tbody>
         ${FINANCEIRA_DB.despesas.sort((a,b)=>b.data.localeCompare(a.data)).map(d=>{
           const t = FINANCEIRA_DB.getTipoDespesa(d.tipo);
-          return `<tr>
+          const isEdit = DESP_EDIT_ID===d.id;
+          return isEdit ? `<tr style="background:var(--blue-bg)">
+            <td><input type="date" value="${d.data}" id="de-data" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;width:120px"></td>
+            <td><input type="text" value="${d.descricao}" id="de-desc" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;width:100%"></td>
+            <td><select id="de-tipo" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px">${FINANCEIRA_DB.TIPOS_DESPESA.map(t2=>`<option value="${t2.id}" ${d.tipo===t2.id?'selected':''}>${t2.icone} ${t2.nome}</option>`).join('')}</select></td>
+            <td><input type="text" value="${d.provaNome||''}" id="de-prova" placeholder="Corrida..." style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;width:100%"></td>
+            <td style="text-align:center"><input type="checkbox" id="de-comp" ${d.comprovativo?'checked':''} title="Tem comprovativo"></td>
+            <td><input type="number" step="0.01" value="${d.valor}" id="de-valor" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;width:80px;text-align:right"></td>
+            <td style="white-space:nowrap">
+              <button class="btn-sm btn-green" onclick="saveDesp('${d.id}')">✓</button>
+              <button class="btn-sm btn-ghost" onclick="cancelDesp()">✕</button>
+            </td>
+          </tr>` : `<tr>
             <td>${fmtDate(d.data)}</td>
             <td style="font-weight:500">${d.descricao}</td>
             <td><span class="badge b-info">${t?.icone||''} ${t?.nome||d.tipo}</span></td>
             <td style="color:var(--muted);font-size:12px">${d.provaNome||'—'}</td>
             <td style="text-align:center">${d.comprovativo?'✅':'<span style="color:var(--amber)">⚠️</span>'}</td>
             <td style="text-align:right;font-weight:600;color:var(--red)">${fmtEur(d.valor)}</td>
+            <td style="white-space:nowrap">
+              <button class="btn-sm btn-ghost" onclick="editDesp('${d.id}')">✏️</button>
+              <button class="btn-sm btn-ghost" style="color:var(--red)" onclick="delDesp('${d.id}')">🗑️</button>
+            </td>
           </tr>`;
         }).join('')}
       </tbody>
@@ -1042,17 +1060,33 @@ function renderReceitas() {
       <button class="btn-primary btn-sm" onclick="openModalReceita()">+ Receita</button>
     </div>
     <table>
-      <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Estado</th><th>Data recebimento</th><th style="text-align:right">Valor</th></tr></thead>
+      <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Estado</th><th>Data recebimento</th><th style="text-align:right">Valor</th><th></th></tr></thead>
       <tbody>
         ${FINANCEIRA_DB.receitas.sort((a,b)=>b.data.localeCompare(a.data)).map(r=>{
           const t = FINANCEIRA_DB.getTipoReceita(r.tipo);
-          return `<tr>
+          const isEditR = REC_EDIT_ID===r.id;
+          return isEditR ? `<tr style="background:var(--blue-bg)">
+            <td><input type="date" value="${r.data}" id="re-data" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;width:120px"></td>
+            <td><input type="text" value="${r.descricao}" id="re-desc" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;width:100%"></td>
+            <td><select id="re-tipo" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px">${FINANCEIRA_DB.TIPOS_RECEITA.map(t2=>`<option value="${t2.id}" ${r.tipo===t2.id?'selected':''}>${t2.icone} ${t2.nome}</option>`).join('')}</select></td>
+            <td><select id="re-rec" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px"><option value="0" ${!r.recebido?'selected':''}>Pendente</option><option value="1" ${r.recebido?'selected':''}>Recebido</option></select></td>
+            <td><input type="date" value="${r.dataRecebimento||''}" id="re-dtreceb" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;width:120px"></td>
+            <td><input type="number" step="0.01" value="${r.valor}" id="re-valor" style="padding:3px 5px;border:.5px solid var(--border);border-radius:var(--rs);font-size:12px;width:80px;text-align:right"></td>
+            <td style="white-space:nowrap">
+              <button class="btn-sm btn-green" onclick="saveRec('${r.id}')">✓</button>
+              <button class="btn-sm btn-ghost" onclick="cancelRec()">✕</button>
+            </td>
+          </tr>` : `<tr>
             <td>${fmtDate(r.data)}</td>
             <td style="font-weight:500">${r.descricao}</td>
             <td><span class="badge b-info">${t?.icone||''} ${t?.nome||r.tipo}</span></td>
             <td>${r.recebido?'<span class="badge b-ok">Recebido</span>':'<span class="badge b-warn">Pendente</span>'}</td>
             <td style="color:var(--muted);font-size:12px">${fmtDate(r.dataRecebimento)}</td>
             <td style="text-align:right;font-weight:600;color:var(--green)">${fmtEur(r.valor)}</td>
+            <td style="white-space:nowrap">
+              <button class="btn-sm btn-ghost" onclick="editRec('${r.id}')">✏️</button>
+              <button class="btn-sm btn-ghost" style="color:var(--red)" onclick="delRec('${r.id}')">🗑️</button>
+            </td>
           </tr>`;
         }).join('')}
       </tbody>
@@ -1064,6 +1098,7 @@ function renderReceitas() {
 function marcarRecebida(id) {
   const r = FINANCEIRA_DB.receitas.find(x=>x.id===id);
   if(r) { r.recebido=true; r.dataRecebimento=new Date().toISOString().split('T')[0]; }
+  salvarFinanceira();
   toast('Receita marcada como recebida!','ok');
   renderReceitas();
 }
@@ -1155,6 +1190,7 @@ function guardarConfigMeses() {
   const saved = document.getElementById('cfg-meses-saved');
   if(btn) btn.style.display='none';
   if(saved) saved.style.display='';
+  salvarFinanceira();
   toast('Configuração de meses guardada!','ok');
   // Actualizar a secção de mensalidades se estiver aberta
   if(document.getElementById('content-mensalidades').style.display!=='none') renderMensalidades();
@@ -1185,6 +1221,7 @@ function confirmarDespesa() {
   if(!desc || !valor) { toast('Preenche descrição e valor'); return; }
   FINANCEIRA_DB.despesas.unshift({id:'d'+Date.now(), data, tipo, descricao:desc, valor, provaId, provaNome:'', comprovativo:comp, obs});
   closeModal('modal-desp');
+  salvarFinanceira();
   toast('Despesa registada!','ok');
   renderDespesas();
 }
@@ -1204,6 +1241,7 @@ function confirmarReceita() {
   if(!desc || !valor) { toast('Preenche descrição e valor'); return; }
   FINANCEIRA_DB.receitas.unshift({id:'r'+Date.now(), data, tipo, descricao:desc, valor, recebido, dataRecebimento:recebido?data:'', obs});
   closeModal('modal-rec');
+  salvarFinanceira();
   toast('Receita registada!','ok');
   renderReceitas();
 }
@@ -1227,6 +1265,102 @@ function toast(msg,type=''){
 // INIT
 // ============================================================
 openTab('dashboard');
+
+// ============================================================
+// PERSISTÊNCIA — localStorage
+// ============================================================
+const FIN_STORAGE_KEY = 'escola_financeira_2026';
+
+function salvarFinanceira() {
+  try {
+    const snapshot = {
+      config_epoca: FINANCEIRA_DB.config_epoca,
+      mensalidades: FINANCEIRA_DB.mensalidades,
+      despesas: FINANCEIRA_DB.despesas,
+      receitas: FINANCEIRA_DB.receitas,
+    };
+    localStorage.setItem(FIN_STORAGE_KEY, JSON.stringify(snapshot));
+  } catch(e) { /* localStorage indisponível */ }
+}
+
+function restaurarFinanceira() {
+  try {
+    const raw = localStorage.getItem(FIN_STORAGE_KEY);
+    if(!raw) return;
+    const snap = JSON.parse(raw);
+    if(snap.config_epoca) FINANCEIRA_DB.config_epoca = snap.config_epoca;
+    if(snap.mensalidades) FINANCEIRA_DB.mensalidades = snap.mensalidades;
+    if(snap.despesas) FINANCEIRA_DB.despesas = snap.despesas;
+    if(snap.receitas) FINANCEIRA_DB.receitas = snap.receitas;
+  } catch(e) { /* ignorar */ }
+}
+
+// Restaurar ao carregar a página
+restaurarFinanceira();
+
+// Guardar ao sair/trocar de aba do browser
+window.addEventListener('beforeunload', salvarFinanceira);
+window.addEventListener('pagehide', salvarFinanceira);
+
+
+// ============================================================
+// EDIÇÃO INLINE DESPESAS
+// ============================================================
+let DESP_EDIT_ID = null;
+let REC_EDIT_ID = null;
+
+function editDesp(id) { DESP_EDIT_ID=id; renderDespesas(); }
+function cancelDesp() { DESP_EDIT_ID=null; renderDespesas(); }
+function saveDesp(id) {
+  const d = FINANCEIRA_DB.despesas.find(x=>x.id===id);
+  if(!d) return;
+  d.data = document.getElementById('de-data')?.value||d.data;
+  d.descricao = document.getElementById('de-desc')?.value||d.descricao;
+  d.tipo = document.getElementById('de-tipo')?.value||d.tipo;
+  d.provaNome = document.getElementById('de-prova')?.value||'';
+  d.comprovativo = document.getElementById('de-comp')?.checked||false;
+  d.valor = parseFloat(document.getElementById('de-valor')?.value)||d.valor;
+  DESP_EDIT_ID = null;
+  salvarFinanceira();
+  toast('Despesa guardada!','ok');
+  renderDespesas();
+}
+function delDesp(id) {
+  if(!confirm('Eliminar esta despesa?')) return;
+  FINANCEIRA_DB.despesas = FINANCEIRA_DB.despesas.filter(d=>d.id!==id);
+  salvarFinanceira();
+  toast('Despesa eliminada','warn');
+  renderDespesas();
+}
+
+// ============================================================
+// EDIÇÃO INLINE RECEITAS
+// ============================================================
+function editRec(id) { REC_EDIT_ID=id; renderReceitas(); }
+function cancelRec() { REC_EDIT_ID=null; renderReceitas(); }
+function saveRec(id) {
+  const r = FINANCEIRA_DB.receitas.find(x=>x.id===id);
+  if(!r) return;
+  r.data = document.getElementById('re-data')?.value||r.data;
+  r.descricao = document.getElementById('re-desc')?.value||r.descricao;
+  r.tipo = document.getElementById('re-tipo')?.value||r.tipo;
+  const recSel = document.getElementById('re-rec')?.value;
+  r.recebido = recSel==='1';
+  r.dataRecebimento = document.getElementById('re-dtreceb')?.value||'';
+  r.valor = parseFloat(document.getElementById('re-valor')?.value)||r.valor;
+  REC_EDIT_ID = null;
+  salvarFinanceira();
+  toast('Receita guardada!','ok');
+  renderReceitas();
+}
+function delRec(id) {
+  if(!confirm('Eliminar esta receita?')) return;
+  FINANCEIRA_DB.receitas = FINANCEIRA_DB.receitas.filter(r=>r.id!==id);
+  salvarFinanceira();
+  toast('Receita eliminada','warn');
+  renderReceitas();
+}
+
 </script>
 </body>
 </html>
