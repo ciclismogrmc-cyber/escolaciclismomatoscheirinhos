@@ -2094,8 +2094,8 @@ function renderAnual() {
   let todosGrupos = [
     { id:'escolas',  label:'Escolas',      sub:'Sub7 · Sub9 · Sub11 · Sub13 · Sub15', esc:['escolas'] },
     { id:'sub17',    label:'Sub 17',       sub:'1.17 / 2.17 · 1.19 / 2.19',           esc:['sub17'] },
-    { id:'juniores', label:'Juniores',     sub:'1.14 / 2.14 · 1.13',                  esc:['sub19'] },
-    { id:'para',     label:'Sub23 / Para', sub:'Sub23 · Paraciclismo',                 esc:['sub23','paraciclismo'] },
+    { id:'juniores', label:'Sub19',        sub:'1.14 / 2.14 · 1.13',                  esc:['sub19'] },
+    { id:'para',     label:'Paraciclismo', sub:'Sub23 · Paraciclismo',                 esc:['sub23','paraciclismo'] },
   ];
 
   // Aplicar filtro por escalão
@@ -2139,7 +2139,7 @@ function renderAnual() {
     const isWeekend=diaSem===0||diaSem===6;
     const dataStr=dia.toISOString().split('T')[0];
     const temAlguma=!!idx[dataStr];
-    if(!temAlguma&&!isWeekend) return;
+    if(!temAlguma) return;
 
     const corMes = ANUAL_CORES_MES[mes];
     const diaLabel = isWeekend
@@ -2184,7 +2184,7 @@ function renderAnual() {
       <th class="th-dia" rowspan="2" style="min-width:32px">Dia</th>
       ${grupos.map(g=>{
         const corG=ANUAL_CORES_GRUPO[todosGrupos.indexOf(g)]||ANUAL_CORES_GRUPO[0];
-        return `<th colspan="2" style="background:${corG.hd};border:.5px solid var(--border);padding:5px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--text)">${g.label}<br><span style="font-weight:400;font-size:9px;color:var(--muted)">${g.sub}</span></th>`;
+        return `<th colspan="2" style="background:${corG.hd};border:.5px solid var(--border);padding:5px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--text)">${g.label}</th>`;
       }).join('')}
     </tr>
     <tr>
