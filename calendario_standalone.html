@@ -2065,42 +2065,59 @@ render();
 // ============================================================
 // VISTA ANUAL — mapa global
 // ============================================================
+let ANUAL_FILT_ESC = '';
+
+// Cores alternadas por mês e por grupo
+const ANUAL_CORES_MES = [
+  'rgba(24,95,165,.06)',  // jan
+  'rgba(255,255,255,0)',  // fev
+  'rgba(24,95,165,.06)',  // mar
+  'rgba(255,255,255,0)',  // abr
+  'rgba(24,95,165,.06)',  // mai
+  'rgba(255,255,255,0)',  // jun
+  'rgba(24,95,165,.06)',  // jul
+  'rgba(255,255,255,0)',  // ago
+  'rgba(24,95,165,.06)',  // set
+  'rgba(255,255,255,0)',  // out
+  'rgba(24,95,165,.06)',  // nov
+  'rgba(255,255,255,0)',  // dez
+];
+const ANUAL_CORES_GRUPO = [
+  {bg:'rgba(15,110,86,.07)', hd:'rgba(15,110,86,.18)'},   // escolas — teal
+  {bg:'rgba(24,95,165,.07)', hd:'rgba(24,95,165,.18)'},   // sub17 — blue
+  {bg:'rgba(133,79,11,.07)', hd:'rgba(133,79,11,.18)'},   // juniores — amber
+  {bg:'rgba(83,74,183,.07)', hd:'rgba(83,74,183,.18)'},   // para — purple
+];
+
 function renderAnual() {
   const ano = EPOCA;
-  const provas = CALENDARIO.getProvasEpoca(ano).filter(p=>p.escola_participa!==false);
-
-  // Grupos de escalões conforme imagem
-  const grupos = [
-    { id:'escolas', label:'Escolas', sub:'Sub7, Sub9, Sub11, Sub13, Sub15', esc:['escolas'] },
-    { id:'sub17',   label:'Sub 17',  sub:'1.17 / 2.17; 1.19 / 2.19', esc:['sub17'] },
-    { id:'juniores',label:'Juniores', sub:'1.14 / 2.14; 1.13', esc:['sub19'] },
-    { id:'para',    label:'Paraciclismo', sub:'', esc:['sub23','paraciclismo'] },
+  let todosGrupos = [
+    { id:'escolas',  label:'Escolas',      sub:'Sub7 · Sub9 · Sub11 · Sub13 · Sub15', esc:['escolas'] },
+    { id:'sub17',    label:'Sub 17',       sub:'1.17 / 2.17 · 1.19 / 2.19',           esc:['sub17'] },
+    { id:'juniores', label:'Juniores',     sub:'1.14 / 2.14 · 1.13',                  esc:['sub19'] },
+    { id:'para',     label:'Sub23 / Para', sub:'Sub23 · Paraciclismo',                 esc:['sub23','paraciclismo'] },
   ];
 
-  // Colunas por grupo: Prova, Vertente, Local, Organizador
-  const colunas = ['Prova','Vertente','Local','Organizador'];
+  // Aplicar filtro por escalão
+  const grupos = ANUAL_FILT_ESC
+    ? todosGrupos.filter(g=>g.esc.some(e=>e===ANUAL_FILT_ESC||g.id===ANUAL_FILT_ESC))
+    : todosGrupos;
 
-  // Gerar lista de dias do ano
-  const dias = [];
-  let d = new Date(ano,0,1);
-  while(d.getFullYear()===ano) {
-    dias.push(new Date(d));
-    d.setDate(d.getDate()+1);
-  }
+  const provas = CALENDARIO.getProvasEpoca(ano).filter(p=>p.escola_participa!==false);
 
-  // Indexar provas por data e escalão
+  // Indexar provas por data e grupo
   const idx = {};
   provas.forEach(p=>{
     const datas = [p.data];
     if(p.data_fim && p.etapas>1) {
       let dd = new Date(p.data+'T00:00:00');
       const fim = new Date(p.data_fim+'T00:00:00');
-      while(dd<=fim) { datas.push(dd.toISOString().split('T')[0]); dd.setDate(dd.getDate()+1); }
+      while(dd<=fim){ datas.push(dd.toISOString().split('T')[0]); dd.setDate(dd.getDate()+1); }
     }
     datas.forEach(dt=>{
       if(!idx[dt]) idx[dt]={};
       grupos.forEach(g=>{
-        if(p.escaloes.some(e=>g.esc.includes(e))) {
+        if(p.escaloes.some(e=>g.esc.includes(e))){
           if(!idx[dt][g.id]) idx[dt][g.id]=[];
           if(!idx[dt][g.id].find(x=>x.id===p.id)) idx[dt][g.id].push(p);
         }
@@ -2111,69 +2128,95 @@ function renderAnual() {
   const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const DIAS_SEMANA=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
-  let rows = '';
-  let mesAnterior = -1;
+  let rows='', mesAnterior=-1;
+
+  const dias=[];
+  let d=new Date(ano,0,1);
+  while(d.getFullYear()===ano){ dias.push(new Date(d)); d.setDate(d.getDate()+1); }
 
   dias.forEach(dia=>{
-    const mes = dia.getMonth();
-    const numDia = dia.getDate();
-    const diaSemana = dia.getDay();
-    const isWeekend = diaSemana===0||diaSemana===6;
-    const dataStr = dia.toISOString().split('T')[0];
-    const temAlguma = !!idx[dataStr];
+    const mes=dia.getMonth(), numDia=dia.getDate(), diaSem=dia.getDay();
+    const isWeekend=diaSem===0||diaSem===6;
+    const dataStr=dia.toISOString().split('T')[0];
+    const temAlguma=!!idx[dataStr];
+    if(!temAlguma&&!isWeekend) return;
 
-    // Só mostrar linhas com provas OU fins de semana (para ter referência visual)
-    if(!temAlguma && !isWeekend) return;
+    const corMes = ANUAL_CORES_MES[mes];
+    const diaLabel = isWeekend
+      ? `<strong style="color:var(--blue)">${numDia}</strong><br><span style="font-size:9px;color:var(--blue);font-weight:600">${DIAS_SEMANA[diaSem]}</span>`
+      : `${numDia}<br><span style="font-size:9px;color:var(--hint)">${DIAS_SEMANA[diaSem]}</span>`;
 
     const mesCell = mes!==mesAnterior
-      ? `<td class="td-mes" rowspan="1">${MESES[mes].slice(0,3)}</td>`
-      : `<td class="td-mes" style="border-top:none;color:transparent">.</td>`;
-    mesAnterior = mes;
+      ? `<td class="td-mes" style="background:${corMes}">${MESES[mes].slice(0,3).toUpperCase()}</td>`
+      : `<td class="td-mes" style="background:${corMes};border-top:none"></td>`;
+    mesAnterior=mes;
 
-    const diaCls = isWeekend ? 'font-weight:600;color:var(--blue)' : '';
-    const trCls = isWeekend ? 'anual-weekend' : '';
-
-    const celulas = grupos.map(g=>{
+    const celulas = grupos.map((g,gi)=>{
+      const corGrupo = ANUAL_CORES_GRUPO[todosGrupos.indexOf(g)]||ANUAL_CORES_GRUPO[0];
       const provaDia = idx[dataStr]?.[g.id]?.[0];
-      if(!provaDia) return `<td class="anual-cell"></td><td class="anual-cell" style="color:var(--muted);font-size:10px"></td><td class="anual-cell" style="color:var(--muted);font-size:10px"></td><td class="anual-cell" style="color:var(--muted);font-size:10px"></td>`;
-      const multi = idx[dataStr][g.id].length>1;
-      return `<td class="anual-cell tem-prova" colspan="4" onclick="openPanel('${provaDia.id}',null)" title="${provaDia.nome}">
-        <div class="anual-prova ${provaDia.estado||'confirmado'}">${provaDia.nome}${multi?' (+'+( idx[dataStr][g.id].length-1)+')':''}</div>
-        <div class="anual-prova-sub">${provaDia.vertente||''} ${provaDia.local?'· '+provaDia.local:''} ${provaDia.organizador?'· '+provaDia.organizador:''}</div>
-      </td>`;
+      const bgBase = temAlguma ? corGrupo.bg : corMes;
+
+      if(!provaDia) return `
+        <td style="background:${bgBase};padding:3px 5px;border:.5px solid var(--border);min-width:120px"></td>
+        <td style="background:${bgBase};padding:3px 5px;border:.5px solid var(--border);min-width:60px;color:var(--muted);font-size:10px"></td>`;
+
+      const multi=idx[dataStr][g.id].length>1;
+      const cor=provaDia.estado==='confirmado'?'var(--green)':provaDia.estado==='pendente'?'var(--amber)':'var(--hint)';
+      return `
+        <td style="background:${corGrupo.bg};padding:3px 6px;border:.5px solid var(--border);min-width:120px;cursor:pointer;max-width:200px"
+            onclick="openPanel('${provaDia.id}',null)" title="${provaDia.nome} · ${provaDia.local||''}">
+          <div style="font-size:10px;font-weight:600;color:${cor};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${provaDia.nome}${multi?' <span style="font-weight:400">(+${idx[dataStr][g.id].length-1})</span>':''}</div>
+        </td>
+        <td style="background:${corGrupo.bg};padding:3px 5px;border:.5px solid var(--border);font-size:10px;color:var(--muted);white-space:nowrap">${provaDia.vertente||''}</td>`;
     }).join('');
 
-    rows += `<tr class="${trCls}">
+    rows+=`<tr>
       ${mesCell}
-      <td class="td-dia" style="${diaCls}">${numDia}<br><span style="font-size:9px;color:var(--hint)">${DIAS_SEMANA[diaSemana]}</span></td>
+      <td class="td-dia" style="background:${corMes};text-align:center">${diaLabel}</td>
       ${celulas}
     </tr>`;
   });
 
-  const thead = `<thead>
+  // Thead com cores por grupo
+  const thead=`<thead>
     <tr>
-      <th class="th-mes" rowspan="2">Mês</th>
-      <th class="th-dia" rowspan="2">Dia</th>
-      ${grupos.map(g=>`<th class="th-grupo" colspan="4">${g.label}${g.sub?'<br><span style="font-weight:400;font-size:9px">('+g.sub+')</span>':''}</th>`).join('')}
+      <th class="th-mes" rowspan="2" style="min-width:45px">Mês</th>
+      <th class="th-dia" rowspan="2" style="min-width:32px">Dia</th>
+      ${grupos.map(g=>{
+        const corG=ANUAL_CORES_GRUPO[todosGrupos.indexOf(g)]||ANUAL_CORES_GRUPO[0];
+        return `<th colspan="2" style="background:${corG.hd};border:.5px solid var(--border);padding:5px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--text)">${g.label}<br><span style="font-weight:400;font-size:9px;color:var(--muted)">${g.sub}</span></th>`;
+      }).join('')}
     </tr>
     <tr>
-      ${grupos.flatMap(()=>colunas.map(c=>`<th>${c}</th>`)).join('')}
+      ${grupos.map(g=>{
+        const corG=ANUAL_CORES_GRUPO[todosGrupos.indexOf(g)]||ANUAL_CORES_GRUPO[0];
+        return `<th style="background:${corG.hd};border:.5px solid var(--border);padding:4px 6px;text-align:left;font-size:10px;font-weight:600;color:var(--muted)">Prova</th>
+                <th style="background:${corG.hd};border:.5px solid var(--border);padding:4px 6px;font-size:10px;font-weight:600;color:var(--muted)">Vertente</th>`;
+      }).join('')}
     </tr>
   </thead>`;
 
-  const legenda = `<div style="display:flex;gap:12px;margin-bottom:.5rem;font-size:11px;flex-wrap:wrap">
-    <span style="color:var(--green);font-weight:500">● Confirmado</span>
-    <span style="color:var(--amber);font-weight:500">● Pendente</span>
-    <span style="color:var(--hint);font-weight:500">● Provisório</span>
-    <span style="color:var(--muted)">Clica numa prova para ver detalhes · Fins de semana em destaque</span>
+  // Filtros + legenda
+  const filtroHtml=`<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:.6rem">
+    <span style="font-size:12px;font-weight:500">Escalão:</span>
+    ${[{v:'',l:'Todos'},
+       {v:'escolas',l:'Escolas'},
+       {v:'sub17',l:'Sub17'},
+       {v:'juniores',l:'Juniores'},
+       {v:'para',l:'Sub23/Para'}].map(o=>`
+      <span style="font-size:11px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border);cursor:pointer;${ANUAL_FILT_ESC===o.v?'background:var(--blue);color:#fff;border-color:var(--blue)':'background:var(--bg);color:var(--muted)'}"
+        onclick="ANUAL_FILT_ESC='${o.v}';renderAnual()">${o.l}</span>`).join('')}
+    <span style="margin-left:auto;font-size:11px;color:var(--muted)">
+      <span style="color:var(--green)">●</span> Confirmado &nbsp;
+      <span style="color:var(--amber)">●</span> Pendente &nbsp;
+      <span style="color:var(--hint)">●</span> Provisório &nbsp;
+      · Clica para ver detalhes
+    </span>
   </div>`;
 
-  document.getElementById('view-anual').innerHTML = legenda + `
+  document.getElementById('view-anual').innerHTML = filtroHtml + `
   <div class="anual-wrap">
-    <table class="anual-table">
-      ${thead}
-      <tbody>${rows}</tbody>
-    </table>
+    <table class="anual-table">${thead}<tbody>${rows}</tbody></table>
   </div>`;
 }
 
