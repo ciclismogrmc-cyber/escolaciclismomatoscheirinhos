@@ -281,6 +281,28 @@ td{padding:9px 12px;vertical-align:middle;font-size:13px}
 
 select{padding:7px 9px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;background:var(--bg);color:var(--text);outline:none;cursor:pointer;font-family:inherit}
 select:focus{border-color:var(--blue)}
+
+/* VISTA ANUAL */
+.anual-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 180px)}
+.anual-table{border-collapse:collapse;font-size:11px;min-width:900px;width:100%}
+.anual-table th,.anual-table td{border:.5px solid var(--border);padding:0}
+.anual-table thead th{background:var(--bg);font-size:10px;font-weight:600;color:var(--muted);text-align:center;padding:5px 4px;white-space:nowrap;position:sticky;top:0;z-index:10}
+.anual-table thead th.th-mes{position:sticky;left:0;z-index:20;background:var(--bg);min-width:55px;text-align:left;padding-left:6px}
+.anual-table thead th.th-dia{position:sticky;left:55px;z-index:20;background:var(--bg);min-width:28px}
+.anual-table thead th.th-grupo{background:var(--blue-bg);color:var(--blue);font-size:10px;font-weight:700}
+.anual-table tbody td.td-mes{position:sticky;left:0;z-index:5;background:var(--surface);font-weight:600;font-size:11px;padding:4px 6px;vertical-align:top;min-width:55px;border-right:.5px solid var(--border2)}
+.anual-table tbody td.td-dia{position:sticky;left:55px;z-index:5;background:var(--surface);text-align:center;font-size:11px;color:var(--muted);min-width:28px;border-right:.5px solid var(--border)}
+.anual-table tbody tr:hover td{background:var(--bg)}
+.anual-table tbody tr:hover td.td-mes,.anual-table tbody tr:hover td.td-dia{background:var(--blue-bg)}
+.anual-cell{padding:3px 4px;min-width:90px;max-width:140px;vertical-align:top;height:28px;cursor:pointer}
+.anual-cell.tem-prova{background:var(--blue-bg)}
+.anual-cell.tem-prova:hover{background:var(--blue-bd)}
+.anual-prova{font-size:10px;font-weight:500;color:var(--blue);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.anual-prova.confirmado{color:var(--green)}
+.anual-prova.pendente{color:var(--amber)}
+.anual-prova.provisorio{color:var(--hint)}
+.anual-prova-sub{font-size:9px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.anual-weekend td:not(.td-mes):not(.td-dia){background:rgba(0,0,0,.02)}
 </style>
 </head>
 <body>
@@ -335,6 +357,7 @@ select:focus{border-color:var(--blue)}
       <button class="vt-btn active" id="vt-mes" onclick="setView('mes')">📅 Mensal</button>
       <button class="vt-btn" id="vt-semana" onclick="setView('semana')">🔍 Semanal</button>
       <button class="vt-btn" id="vt-tabela" onclick="setView('tabela')">📋 Tabela</button>
+      <button class="vt-btn" id="vt-anual" onclick="setView('anual')">🗓️ Anual</button>
     </div>
 
     <div class="nav-month">
@@ -375,6 +398,7 @@ select:focus{border-color:var(--blue)}
   <div id="view-mes"></div>
   <div id="view-semana" style="display:none"></div>
   <div id="view-tabela" style="display:none"></div>
+  <div id="view-anual" style="display:none"></div>
 
 </div>
 </div>
@@ -751,7 +775,7 @@ function getProvasMes(ano, mes) {
 // ============================================================
 function setView(v) {
   VIEW=v;
-  ['mes','semana','tabela'].forEach(x=>{
+  ['mes','semana','tabela','anual'].forEach(x=>{
     document.getElementById('vt-'+x).classList.toggle('active',x===v);
     document.getElementById('view-'+x).style.display=x===v?'block':'none';
   });
@@ -801,7 +825,8 @@ function render() {
   updatePeriodLabel();
   if(VIEW==='mes') renderMes();
   else if(VIEW==='semana') renderSemana();
-  else renderTabela();
+  else if(VIEW==='tabela') renderTabela();
+  else if(VIEW==='anual') renderAnual();
 }
 
 // ---- VISTA MENSAL ----
@@ -2035,6 +2060,122 @@ render();
     }).observe(ov,{attributes:true,attributeFilter:['class']});
   });
 })();
+
+
+// ============================================================
+// VISTA ANUAL — mapa global
+// ============================================================
+function renderAnual() {
+  const ano = EPOCA;
+  const provas = CALENDARIO.getProvasEpoca(ano).filter(p=>p.escola_participa!==false);
+
+  // Grupos de escalões conforme imagem
+  const grupos = [
+    { id:'escolas', label:'Escolas', sub:'Sub7, Sub9, Sub11, Sub13, Sub15', esc:['escolas'] },
+    { id:'sub17',   label:'Sub 17',  sub:'1.17 / 2.17; 1.19 / 2.19', esc:['sub17'] },
+    { id:'juniores',label:'Juniores', sub:'1.14 / 2.14; 1.13', esc:['sub19'] },
+    { id:'para',    label:'Paraciclismo', sub:'', esc:['sub23','paraciclismo'] },
+  ];
+
+  // Colunas por grupo: Prova, Vertente, Local, Organizador
+  const colunas = ['Prova','Vertente','Local','Organizador'];
+
+  // Gerar lista de dias do ano
+  const dias = [];
+  let d = new Date(ano,0,1);
+  while(d.getFullYear()===ano) {
+    dias.push(new Date(d));
+    d.setDate(d.getDate()+1);
+  }
+
+  // Indexar provas por data e escalão
+  const idx = {};
+  provas.forEach(p=>{
+    const datas = [p.data];
+    if(p.data_fim && p.etapas>1) {
+      let dd = new Date(p.data+'T00:00:00');
+      const fim = new Date(p.data_fim+'T00:00:00');
+      while(dd<=fim) { datas.push(dd.toISOString().split('T')[0]); dd.setDate(dd.getDate()+1); }
+    }
+    datas.forEach(dt=>{
+      if(!idx[dt]) idx[dt]={};
+      grupos.forEach(g=>{
+        if(p.escaloes.some(e=>g.esc.includes(e))) {
+          if(!idx[dt][g.id]) idx[dt][g.id]=[];
+          if(!idx[dt][g.id].find(x=>x.id===p.id)) idx[dt][g.id].push(p);
+        }
+      });
+    });
+  });
+
+  const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const DIAS_SEMANA=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+  let rows = '';
+  let mesAnterior = -1;
+
+  dias.forEach(dia=>{
+    const mes = dia.getMonth();
+    const numDia = dia.getDate();
+    const diaSemana = dia.getDay();
+    const isWeekend = diaSemana===0||diaSemana===6;
+    const dataStr = dia.toISOString().split('T')[0];
+    const temAlguma = !!idx[dataStr];
+
+    // Só mostrar linhas com provas OU fins de semana (para ter referência visual)
+    if(!temAlguma && !isWeekend) return;
+
+    const mesCell = mes!==mesAnterior
+      ? `<td class="td-mes" rowspan="1">${MESES[mes].slice(0,3)}</td>`
+      : `<td class="td-mes" style="border-top:none;color:transparent">.</td>`;
+    mesAnterior = mes;
+
+    const diaCls = isWeekend ? 'font-weight:600;color:var(--blue)' : '';
+    const trCls = isWeekend ? 'anual-weekend' : '';
+
+    const celulas = grupos.map(g=>{
+      const provaDia = idx[dataStr]?.[g.id]?.[0];
+      if(!provaDia) return `<td class="anual-cell"></td><td class="anual-cell" style="color:var(--muted);font-size:10px"></td><td class="anual-cell" style="color:var(--muted);font-size:10px"></td><td class="anual-cell" style="color:var(--muted);font-size:10px"></td>`;
+      const multi = idx[dataStr][g.id].length>1;
+      return `<td class="anual-cell tem-prova" colspan="4" onclick="openPanel('${provaDia.id}',null)" title="${provaDia.nome}">
+        <div class="anual-prova ${provaDia.estado||'confirmado'}">${provaDia.nome}${multi?' (+'+( idx[dataStr][g.id].length-1)+')':''}</div>
+        <div class="anual-prova-sub">${provaDia.vertente||''} ${provaDia.local?'· '+provaDia.local:''} ${provaDia.organizador?'· '+provaDia.organizador:''}</div>
+      </td>`;
+    }).join('');
+
+    rows += `<tr class="${trCls}">
+      ${mesCell}
+      <td class="td-dia" style="${diaCls}">${numDia}<br><span style="font-size:9px;color:var(--hint)">${DIAS_SEMANA[diaSemana]}</span></td>
+      ${celulas}
+    </tr>`;
+  });
+
+  const thead = `<thead>
+    <tr>
+      <th class="th-mes" rowspan="2">Mês</th>
+      <th class="th-dia" rowspan="2">Dia</th>
+      ${grupos.map(g=>`<th class="th-grupo" colspan="4">${g.label}${g.sub?'<br><span style="font-weight:400;font-size:9px">('+g.sub+')</span>':''}</th>`).join('')}
+    </tr>
+    <tr>
+      ${grupos.flatMap(()=>colunas.map(c=>`<th>${c}</th>`)).join('')}
+    </tr>
+  </thead>`;
+
+  const legenda = `<div style="display:flex;gap:12px;margin-bottom:.5rem;font-size:11px;flex-wrap:wrap">
+    <span style="color:var(--green);font-weight:500">● Confirmado</span>
+    <span style="color:var(--amber);font-weight:500">● Pendente</span>
+    <span style="color:var(--hint);font-weight:500">● Provisório</span>
+    <span style="color:var(--muted)">Clica numa prova para ver detalhes · Fins de semana em destaque</span>
+  </div>`;
+
+  document.getElementById('view-anual').innerHTML = legenda + `
+  <div class="anual-wrap">
+    <table class="anual-table">
+      ${thead}
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
 
 </script>
 </body>
